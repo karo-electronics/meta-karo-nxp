@@ -46,6 +46,9 @@ When sending patches, please use something like:
 
     git send-email --to yocto-devel@karo-electronics.de <generated patch>
 
+Please otherwise for patches use the capabilites - pull requests, issues,
+etc. - of github.
+
 ---
 https://www.karo-electronics.de
 
