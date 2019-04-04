@@ -1,0 +1,247 @@
+From a46465eb7ed0f64cb6e530cdc00536e6cfb00a11 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Tue, 26 Mar 2019 12:28:52 +0100
+Subject: [PATCH 19/23] board: karo: tx8m: add support for _noenv U-Boot
+
+---
+ board/karo/common/Makefile        |  2 +-
+ board/karo/common/env.c           | 38 +++++++++++++++
+ board/karo/common/karo.h          |  9 ++++
+ board/karo/tx8mm/Kconfig          | 14 ++++++
+ board/karo/tx8mm/tx8mm.c          |  1 +
+ cmd/Kconfig                       |  6 +++
+ configs/tx8m-1610_noenv_defconfig | 99 +++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 168 insertions(+), 1 deletion(-)
+ create mode 100644 board/karo/common/env.c
+ create mode 100644 board/karo/common/karo.h
+ create mode 100644 configs/tx8m-1610_noenv_defconfig
+
+diff --git a/board/karo/common/Makefile b/board/karo/common/Makefile
+index d58cf497de1605047851925d7021647a89ca35f6..de2c1be803d55de96a65c7136193e8c4e18a0f95 100644
+--- a/board/karo/common/Makefile
++++ b/board/karo/common/Makefile
+@@ -4,4 +4,4 @@
+ # SPDX-License-Identifier:      GPL-2.0+
+ #
+ 
+-obj-y += fdt.o
++obj-y += env.o fdt.o
+diff --git a/board/karo/common/env.c b/board/karo/common/env.c
+new file mode 100644
+index 0000000000000000000000000000000000000000..9bce93fc641ef6587e6f1f7aa6dcdd1493444bf0
+--- /dev/null
++++ b/board/karo/common/env.c
+@@ -0,0 +1,38 @@
++/*
++ * (C) Copyright 2019 Lothar Waßmann <LW@KARO-electronics.de>
++ *
++ * SPDX-License-Identifier:	GPL-2.0+
++ */
++
++#include <common.h>
++#include <environment.h>
++#include "karo.h"
++
++DECLARE_GLOBAL_DATA_PTR;
++
++#ifdef CONFIG_UBOOT_IGNORE_ENV
++void karo_env_cleanup(void)
++{
++	printf("Using default environment\n");
++	set_default_env(NULL);
++}
++#else
++static const char * const cleanup_vars[] = {
++	"bootargs",
++	"fileaddr",
++	"filesize",
++	"safeboot",
++	"wdreset",
++};
++
++void karo_env_cleanup(void)
++{
++	size_t i;
++
++	debug("%s@%d: Cleaning up environment\n", __func__, __LINE__);
++	for (i = 0; i < ARRAY_SIZE(cleanup_vars); i++) {
++		if (env_get(cleanup_vars[i]) != NULL)
++			env_set(cleanup_vars[i], NULL);
++	}
++}
++#endif
+diff --git a/board/karo/common/karo.h b/board/karo/common/karo.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..cb97f4d53eaa5d98c69eb4d03306e6411d45d2d0
+--- /dev/null
++++ b/board/karo/common/karo.h
+@@ -0,0 +1,9 @@
++// SPDX-License-Identifier:      GPL-2.0+
++/*
++ * Copyright 2019 Lothar Waßmann <LW@KARO-electronics.de>
++ *
++ */
++
++void karo_env_cleanup(void);
++
++int karo_load_fdt(const char *fdt_file);
+diff --git a/board/karo/tx8mm/Kconfig b/board/karo/tx8mm/Kconfig
+index 3757ba9795a416761e41f1bb0d97449eae7c4c4b..9443c5a31e1930772ca128db1c621edd233a31e9 100644
+--- a/board/karo/tx8mm/Kconfig
++++ b/board/karo/tx8mm/Kconfig
+@@ -17,4 +17,18 @@ config TX8MM
+ 	select MII
+ 	select PHYLIB
+ 	select MXC_UART
++
++choice
++        prompt "U-Boot image variant"
++	default TX8MM_UBOOT
++
++config TX8MM_UBOOT
++        bool "Standard U-Boot image"
++
++config TX8MM_UBOOT_NOENV
++        bool "U-Boot using only built-in environment"
++        select UBOOT_IGNORE_ENV
++
++endchoice
++
+ endif
+diff --git a/board/karo/tx8mm/tx8mm.c b/board/karo/tx8mm/tx8mm.c
+index 038cb28389e493e8257206684d1ee3389737435c..92feda7487f3d868ee08b8379af9f592f36b793c 100644
+--- a/board/karo/tx8mm/tx8mm.c
++++ b/board/karo/tx8mm/tx8mm.c
+@@ -512,6 +512,7 @@ int board_late_init(void)
+ 	u16 wrsr = readw(&wdog->wrsr);
+ 	const char *fdt_file = env_get("fdt_file");
+ 
++	karo_env_cleanup();
+ 	if (srsr & 0x10 && !(wrsr & WRSR_SFTW))
+ 		env_set("wdreset", "1");
+ 	if (had_ctrlc())
+diff --git a/cmd/Kconfig b/cmd/Kconfig
+index 16748e1f8b2d1f52a7399e9f8e0c7499581e5ec6..dcaa9cc60a93fc667df959e2d5454d5293fbfaf2 100644
+--- a/cmd/Kconfig
++++ b/cmd/Kconfig
+@@ -425,6 +425,12 @@ config CMD_ENV_FLAGS
+ 	  be deleted. This command shows the variables that have special
+ 	  flags.
+ 
++config UBOOT_IGNORE_ENV
++        bool
++        help
++          Ignore non-volatile environment settings and use default
++          environment only.
++
+ endmenu
+ 
+ menu "Memory commands"
+diff --git a/configs/tx8m-1610_noenv_defconfig b/configs/tx8m-1610_noenv_defconfig
+new file mode 100644
+index 0000000000000000000000000000000000000000..79c8992dd0e7761a727c2c2efe5e9f066795322b
+--- /dev/null
++++ b/configs/tx8m-1610_noenv_defconfig
+@@ -0,0 +1,99 @@
++CONFIG_ARM=y
++CONFIG_ARCH_IMX8M=y
++CONFIG_SYS_TEXT_BASE=0x40200000
++CONFIG_SPL_GPIO_SUPPORT=y
++CONFIG_SPL_LIBCOMMON_SUPPORT=y
++CONFIG_SPL_LIBGENERIC_SUPPORT=y
++CONFIG_SYS_MALLOC_F_LEN=0x2000
++CONFIG_TARGET_TX8M=y
++CONFIG_TX8MM_UBOOT_NOENV=y
++CONFIG_SPL_MMC_SUPPORT=y
++CONFIG_SPL_SERIAL_SUPPORT=y
++CONFIG_SPL_DRIVERS_MISC_SUPPORT=y
++CONFIG_SPL_WATCHDOG_SUPPORT=y
++CONFIG_IMX_BOOTAUX=y
++CONFIG_DEFAULT_DEVICE_TREE="imx8mm-tx8m-1610"
++CONFIG_FIT=y
++CONFIG_SPL_LOAD_FIT=y
++CONFIG_OF_BOARD_SETUP=y
++CONFIG_OF_SYSTEM_SETUP=y
++CONFIG_SYS_EXTRA_OPTIONS="IMX_CONFIG=arch/arm/mach-imx/spl_sd.cfg,SPL_TEXT_BASE=0x7E1000"
++CONFIG_SD_BOOT=y
++CONFIG_BOOTDELAY=-1
++CONFIG_USE_BOOTCOMMAND=y
++CONFIG_BOOTCOMMAND="run bootargs_${boot_mode} bootm_cmd"
++CONFIG_PRE_CONSOLE_BUFFER=y
++CONFIG_PRE_CON_BUF_ADDR=0x93F000
++CONFIG_SYS_CONSOLE_INFO_QUIET=y
++CONFIG_DEFAULT_FDT_FILE="imx8mm-tx8m-1610.dtb"
++CONFIG_VERSION_VARIABLE=y
++CONFIG_SPL=y
++CONFIG_SPL_BOARD_INIT=y
++CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_USE_SECTOR=y
++CONFIG_SYS_MMCSD_RAW_MODE_U_BOOT_SECTOR=0x300
++CONFIG_SPL_I2C_SUPPORT=y
++CONFIG_SPL_POWER_SUPPORT=y
++CONFIG_SPL_USB_HOST_SUPPORT=y
++CONFIG_SPL_USB_GADGET_SUPPORT=y
++CONFIG_SPL_USB_SDP_SUPPORT=y
++CONFIG_SYS_PROMPT="TX8M U-Boot > "
++CONFIG_CMD_MEMTEST=y
++CONFIG_CMD_CLK=y
++# CONFIG_CMD_FLASH is not set
++CONFIG_CMD_FUSE=y
++CONFIG_CMD_GPIO=y
++CONFIG_CMD_GPT=y
++CONFIG_CMD_GPT_RENAME=y
++CONFIG_CMD_I2C=y
++CONFIG_CMD_MMC=y
++CONFIG_CMD_PART=y
++CONFIG_CMD_READ=y
++CONFIG_CMD_USB=y
++CONFIG_CMD_DHCP=y
++CONFIG_CMD_MII=y
++CONFIG_CMD_PING=y
++CONFIG_CMD_CACHE=y
++CONFIG_CMD_TIME=y
++CONFIG_CMD_EXT2=y
++CONFIG_CMD_EXT4=y
++CONFIG_CMD_EXT4_WRITE=y
++CONFIG_CMD_FAT=y
++CONFIG_CMD_FS_GENERIC=y
++CONFIG_EFI_PARTITION_ENTRIES_OFF=2048
++CONFIG_PARTITION_TYPE_GUID=y
++CONFIG_OF_CONTROL=y
++CONFIG_OF_BOARD_FIXUP=y
++CONFIG_ENV_IS_IN_MMC=y
++CONFIG_ENV_VARS_UBOOT_CONFIG=y
++CONFIG_BOOTP_DNS=y
++CONFIG_BOOTP_GATEWAY=y
++CONFIG_BOOTP_SUBNETMASK=y
++CONFIG_DM_GPIO=y
++CONFIG_MXC_GPIO=y
++CONFIG_DM_I2C=y
++CONFIG_SYS_I2C_MXC=y
++CONFIG_LED=y
++CONFIG_LED_GPIO=y
++CONFIG_MXC_OCOTP=y
++CONFIG_PHY_SMSC=y
++CONFIG_DM_ETH=y
++CONFIG_PINCTRL=y
++CONFIG_PINCTRL_IMX8M=y
++CONFIG_DM_REGULATOR=y
++CONFIG_DM_THERMAL=y
++CONFIG_NXP_TMU=y
++CONFIG_USB=y
++CONFIG_DM_USB=y
++CONFIG_USB_EHCI_HCD=y
++CONFIG_USB_GADGET=y
++CONFIG_USB_GADGET_MANUFACTURER="FSL"
++CONFIG_USB_GADGET_VENDOR_NUM=0x0525
++CONFIG_USB_GADGET_PRODUCT_NUM=0xa4a5
++CONFIG_CI_UDC=y
++CONFIG_USB_GADGET_VBUS_DRAW=60
++CONFIG_SDP_LOADADDR=0x40400000
++CONFIG_USB_GADGET_DOWNLOAD=y
++CONFIG_USB_FUNCTION_MASS_STORAGE=y
++CONFIG_FAT_WRITE=y
++CONFIG_OF_LIBFDT_OVERLAY=y
++# CONFIG_EFI_LOADER is not set
+-- 
+2.7.4
+

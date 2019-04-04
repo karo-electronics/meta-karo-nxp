@@ -1,0 +1,23 @@
+From 865287e8073d616d31ef15821680fc0c4654812b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 20 Mar 2019 14:55:02 +0100
+Subject: [PATCH 06/23] imx8m: add missing prototype for
+ imx_get_mac_from_fuse()
+
+---
+ arch/arm/include/asm/arch-imx8m/sys_proto.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm/include/asm/arch-imx8m/sys_proto.h b/arch/arm/include/asm/arch-imx8m/sys_proto.h
+index cdf268f99b7dba545c9ce02b7440a56d2038c522..fbc74643cd549256199d97262ee8d2412ee70c03 100644
+--- a/arch/arm/include/asm/arch-imx8m/sys_proto.h
++++ b/arch/arm/include/asm/arch-imx8m/sys_proto.h
+@@ -16,4 +16,5 @@ int imx8m_usb_power(int usb_id, bool on);
+ extern unsigned long rom_pointer[];
+ enum boot_device get_boot_device(void);
+ bool is_usb_boot(void);
++void imx_get_mac_from_fuse(int dev_id, unsigned char *mac);
+ #endif
+-- 
+2.7.4
+

@@ -1,0 +1,30 @@
+From 9abb7a1673b61e4550ae6c56a64cd908f7feea74 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 20 Mar 2019 15:06:32 +0100
+Subject: [PATCH 08/23] imx: spl: remove 'weak' attribute from
+ jump_to_image_no_args()
+
+There is already a 'weak' implementation of this function in
+common/spl/spl.c
+Remove this attribute from the more specific implementation here to
+avoid confusion of which function to use.
+---
+ arch/arm/mach-imx/spl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/mach-imx/spl.c b/arch/arm/mach-imx/spl.c
+index 2715b3b3d4fff1946e1509cae2f2450300ebaf1f..7b9e19ed1f445e275d7dcdd9d23712d08428b9a3 100644
+--- a/arch/arm/mach-imx/spl.c
++++ b/arch/arm/mach-imx/spl.c
+@@ -247,7 +247,7 @@ u32 spl_boot_mode(const u32 boot_device)
+  * +------------+ + CSF_PAD_SIZE
+  */
+ 
+-__weak void __noreturn jump_to_image_no_args(struct spl_image_info *spl_image)
++void __noreturn jump_to_image_no_args(struct spl_image_info *spl_image)
+ {
+ 	typedef void __noreturn (*image_entry_noargs_t)(void);
+ 	uint32_t offset;
+-- 
+2.7.4
+

@@ -1,0 +1,25 @@
+From f64c20b45e166703ca5006eb42442162b04969f3 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 20 Mar 2019 14:53:26 +0100
+Subject: [PATCH 04/23] net: Add missing dependencies for IMX8 to FEC_MXC
+
+---
+ drivers/net/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index c4cbe34798e34225e16be8efe911c951a43d1d9c..41cc152d82fb5a5665084fc60a8a0e0ddeb3f16c 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -160,7 +160,7 @@ config FEC_MXC_MDIO_BASE
+ 
+ config FEC_MXC
+ 	bool "FEC Ethernet controller"
+-	depends on MX5 || MX6 || MX7
++	depends on MX5 || MX6 || MX7 || IMX8 || IMX8M
+ 	help
+ 	  This driver supports the 10/100 Fast Ethernet controller for
+ 	  NXP i.MX processors.
+-- 
+2.7.4
+

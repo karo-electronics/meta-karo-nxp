@@ -1,0 +1,41 @@
+From 60ae2cd89a1216679bb57d6626f2224c46b32991 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 27 Mar 2019 15:44:44 +0100
+Subject: [PATCH 23/23] tx8mm: removed 'loadfdt' from bootcmd
+
+---
+ include/configs/tx8mm.h | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/include/configs/tx8mm.h b/include/configs/tx8mm.h
+index 6dcea227dd00bd86ec4035596ae4a9762b5b7d09..4ef5680d41ef6e85f8ee105b1efd1a5763993e1a 100644
+--- a/include/configs/tx8mm.h
++++ b/include/configs/tx8mm.h
+@@ -85,8 +85,8 @@
+ 	" setenv bootargs root=/dev/nfs"				\
+ 	" nfsroot=${nfs_server}:${nfsroot},nolock ${append_bootargs}\0"	\
+ 	"bootcmd=run bootcmd_${boot_mode} bootm_cmd\0"			\
+-	"bootcmd_mmc=run loadfdt loadkernel bootargs_mmc\0"		\
+-	"bootcmd_nfs=run loadfdt loadkernel bootargs_nfs\0"		\
++	"bootcmd_mmc=run loadkernel bootargs_mmc\0"			\
++	"bootcmd_nfs=run loadkernel bootargs_nfs\0"			\
+ 	"bootm_cmd=booti ${loadaddr} ${initrd_addr} ${fdt_addr}\0"	\
+ 	"console=ttymxc0,115200 earlycon=ec_imx6q,0x30860000,115200\0"	\
+ 	"default_bootargs=setenv bootargs init=/linuxrc"		\
+@@ -100,10 +100,10 @@
+ 	" ${fdt_size}\0"						\
+ 	"initrd_addr=-\0"						\
+ 	"initrd_high=63800000\0"					\
+-	"linux_image=Image-tx8m-1610.bin\0"					\
++	"linux_image=Image-tx8m-1610.bin\0"				\
+ 	"loadfdt=if test \"${baseboard}\" != \"\";then"			\
+-	" fdtfile=Image-${board}-${baseboard}.dtb;else"		\
+-	" fdtfile=Image-${board}.dtb;fi"			\
++	" fdtfile=Image-${board}-${baseboard}.dtb;else"			\
++	" fdtfile=Image-${board}.dtb;fi"				\
+ 	";load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdtfile}\0"	\
+ 	"loadkernel=load mmc ${mmcdev}:${mmcpart} ${loadaddr}"		\
+ 	" ${linux_image}\0"						\
+-- 
+2.7.4
+

@@ -1,0 +1,28 @@
+From 1b36dd2797e13eea8fd5a7f4c4eea6e89e007d2b Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Tue, 26 Mar 2019 12:26:03 +0100
+Subject: [PATCH 15/23] net: bootp: convert messages about unhandled DHCP
+ options into debug messages
+
+---
+ net/bootp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/bootp.c b/net/bootp.c
+index efa959971c279fe4e74d04ec0007d0cb1ef52e34..490b81fb58e2b0ffa85c6e6075f3b2e80003f93e 100644
+--- a/net/bootp.c
++++ b/net/bootp.c
+@@ -899,8 +899,8 @@ static void dhcp_process_options(uchar *popt, uchar *end)
+ 			if (dhcp_vendorex_proc(popt))
+ 				break;
+ #endif
+-			printf("*** Unhandled DHCP Option in OFFER/ACK:"
+-			       " %d\n", *popt);
++			debug("*** Unhandled DHCP Option in OFFER/ACK: %d\n",
++			      *popt);
+ 			break;
+ 		}
+ 		popt += oplen + 2;	/* Process next option */
+-- 
+2.7.4
+

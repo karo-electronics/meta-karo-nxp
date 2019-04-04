@@ -1,0 +1,351 @@
+From a055e0c5f655143c57b81382b40f3b19e79b0448 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Tue, 26 Mar 2019 12:30:37 +0100
+Subject: [PATCH 21/23] board: karo: tx8m: add display support for MIPI-DSI
+ baseboard
+
+---
+ board/karo/tx8mm/tx8mm.c      | 251 ++++++++++++++++++++++++++++++++++++++++++
+ configs/tx8m-1610_defconfig   |   6 +-
+ drivers/video/sec_mipi_dsim.c |  15 ++-
+ include/configs/tx8mm.h       |   1 +
+ 4 files changed, 269 insertions(+), 4 deletions(-)
+
+diff --git a/board/karo/tx8mm/tx8mm.c b/board/karo/tx8mm/tx8mm.c
+index 92feda7487f3d868ee08b8379af9f592f36b793c..51fa19e173f1986654bcae90bb3559982649eac6 100644
+--- a/board/karo/tx8mm/tx8mm.c
++++ b/board/karo/tx8mm/tx8mm.c
+@@ -534,3 +534,254 @@ int mmc_map_to_kernel_blk(int devno)
+ void board_quiesce_devices(void)
+ {
+ }
++
++#ifdef CONFIG_VIDEO
++static const struct sec_mipi_dsim_plat_data imx8mm_mipi_dsim_plat_data = {
++	.version	= 0x1060200,
++	.max_data_lanes = 4,
++	.max_data_rate  = 1500000000ULL,
++	.reg_base = MIPI_DSI_BASE_ADDR,
++	.gpr_base = CSI_BASE_ADDR + 0x8000,
++};
++
++#define DSI_DDR_MODE 0
++
++struct mipi_dsi_client_dev dsi83_dev = {
++	.channel = 0,
++	.lanes = 4,
++	.format = MIPI_DSI_FMT_RGB888,
++	.mode_flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_SYNC_PULSE,
++	.name = "DSI83",
++};
++
++#define DISPLAY_MIX_SFT_RSTN_CSR	0x00
++#define DISPLAY_MIX_CLK_EN_CSR		0x04
++
++   /* 'DISP_MIX_SFT_RSTN_CSR' bit fields */
++#define BUS_RSTN_BLK_SYNC_SFT_EN	BIT(6)
++
++   /* 'DISP_MIX_CLK_EN_CSR' bit fields */
++#define LCDIF_PIXEL_CLK_SFT_EN		BIT(7)
++#define LCDIF_APB_CLK_SFT_EN		BIT(6)
++
++static void disp_mix_bus_rstn_reset(ulong gpr_base, bool reset)
++{
++	if (!reset)
++		/* release reset */
++		setbits_le32(gpr_base + DISPLAY_MIX_SFT_RSTN_CSR,
++			     BUS_RSTN_BLK_SYNC_SFT_EN);
++	else
++		/* hold reset */
++		clrbits_le32(gpr_base + DISPLAY_MIX_SFT_RSTN_CSR,
++			     BUS_RSTN_BLK_SYNC_SFT_EN);
++}
++
++static void disp_mix_lcdif_clks_enable(ulong gpr_base, bool enable)
++{
++	if (enable)
++		/* enable lcdif clks */
++		setbits_le32(gpr_base + DISPLAY_MIX_CLK_EN_CSR,
++			     LCDIF_PIXEL_CLK_SFT_EN | LCDIF_APB_CLK_SFT_EN);
++	else
++		/* disable lcdif clks */
++		clrbits_le32(gpr_base + DISPLAY_MIX_CLK_EN_CSR,
++			     LCDIF_PIXEL_CLK_SFT_EN | LCDIF_APB_CLK_SFT_EN);
++}
++
++#define LINE_LENGTH	1280
++#define H_FRONT_PORCH	64
++#define H_BACK_PORCH	4
++#define HSYNC_LEN	1
++#define VERT_SIZE	800
++#define V_FRONT_PORCH	40
++#define V_BACK_PORCH	1
++#define VSYNC_LEN	1
++#define VREFRESH	60
++
++#define BPP	24
++#define SYNC_DELAY	64
++#define HTOTAL		(HSYNC_LEN + H_BACK_PORCH + LINE_LENGTH + H_FRONT_PORCH)
++#define VTOTAL		(VSYNC_LEN + V_BACK_PORCH + VERT_SIZE + V_FRONT_PORCH)
++#define PCLK		(HTOTAL * VTOTAL * VREFRESH)
++#define DSI_CLK		(PCLK * BPP / 4 / (!!DSI_DDR_MODE + 1))
++#define DSI_CLK_DIV	((DSI_CLK + PCLK - 1) / PCLK)
++#define LVDS_CLK	(DSI_CLK / DSI_CLK_DIV)
++#define LVDS_CLK_DIV	((LVDS_CLK + 12500000) / 25000000 - 1)
++
++static struct dsi83_data {
++	u8 addr;
++	u8 val;
++	u8 mask;
++} dsi83_data[] = {
++	{ 0x09, 1, },
++	{ 0x0d, 0x00, 0x01, },
++	{ 0x10, 0x00, 0x18, }, // DSI lanes 0x00: 4 lanes; 0x08: 3 lanes
++	{ 0x10, 0x00, 0x01, }, // SOT_ERR_TOL_DIS
++	{ 0x11, 0xc0, 0xc0, }, // DSI DATA equalization
++	{ 0x11, 0x0c, 0x0c, }, // DSI clock equalization
++	{ 0x12, DSI_CLK / 1000000 / 5, }, // DSI clk range 8: 40..45MHz; 9: 45..50MHz; ...
++	{ 0x0a, 0x01, 0x01, },
++	{ 0x0a, LVDS_CLK_DIV << 1, 0x0e, },
++	{ 0x0b, 0x00, 0x03, },
++	{ 0x0b, (DSI_CLK_DIV - 1) << 3, 0x7c, },
++	{ 0x18, 0x60, 0xe0, }, // DE_NEG HS_NEG VS_NEG
++	{ 0x18, 0x08, 0x9, }, // CHA_24BPP_MODE CHA24BPP_FORMAT1
++	{ 0x20, LINE_LENGTH % 256, },
++	{ 0x21, LINE_LENGTH / 256, },
++	{ 0x24, VERT_SIZE % 256, },
++	{ 0x25, VERT_SIZE / 256, },
++	{ 0x28, SYNC_DELAY % 256, },
++	{ 0x29, SYNC_DELAY / 256, },
++	{ 0x2c, HSYNC_LEN % 256, },
++	{ 0x2d, HSYNC_LEN / 256, },
++	{ 0x30, VSYNC_LEN % 256, },
++	{ 0x31, VSYNC_LEN / 256, },
++	{ 0x34, H_BACK_PORCH + HSYNC_LEN, },
++	{ 0x36, V_BACK_PORCH + VSYNC_LEN, },
++	{ 0x38, H_FRONT_PORCH, },
++	{ 0x3a, V_FRONT_PORCH, },
++	//{ 0x3c, 0x10, 0x10, }, // enable CHA_TEST_PATTERN
++	{ 0x3c, 0x00, },
++	{ 0x0d, 0x01, 0x01, }, // enable PLL
++	{ 0xe5, 0xfd, 0xfd, }, // clear error status
++};
++
++#define DSI83_SLAVE_ADDR	0x2c
++
++static int dsi83_init(void)
++{
++	int ret;
++	struct udevice *dev;
++	struct udevice *chip;
++	u8 val;
++
++	debug("DSI clock: %u.%03uMHz dsi_clk_div=%u\n",
++	      DSI_CLK / 1000000, DSI_CLK / 1000 % 1000, DSI_CLK_DIV);
++	debug("LVDS clock: %u.%03uMHz lvds_clk_range=%u\n",
++	      LVDS_CLK / 1000000, LVDS_CLK / 1000 % 1000, LVDS_CLK_DIV);
++
++	ret = uclass_get_device_by_seq(UCLASS_I2C, 1, &dev);
++	if (ret) {
++		printf("%s: Failed to find I2C bus device: %d\n",
++		       __func__, ret);
++		return ret;
++	}
++	ret = dm_i2c_probe(dev, DSI83_SLAVE_ADDR, 0x0, &chip);
++	if (ret) {
++		printf("%s: I2C probe failed for slave addr %02x: %d\n",
++		       __func__, DSI83_SLAVE_ADDR, ret);
++		return ret;
++	}
++	for (size_t i = 0; i < ARRAY_SIZE(dsi83_data); i++) {
++		struct dsi83_data *p = &dsi83_data[i];
++
++		ret = dm_i2c_read(chip, p->addr, &val, 1);
++		if (ret) {
++			printf("%s: Failed to read reg %02x\n",
++			       __func__, p->val);
++			return ret;
++		}
++		debug("%s@%d: Read %02x from reg %02x\n",
++		      __func__, __LINE__, val, p->addr);
++		val = (val & ~p->mask) | p->val;
++		debug("%s@%d: Writing %02x to reg %02x\n",
++		      __func__, __LINE__, val, p->addr);
++		ret = dm_i2c_write(chip, p->addr, &val, 1);
++		if (ret) {
++			printf("%s: Failed to write %02x to reg %02x\n",
++			       __func__, p->val, p->addr);
++			return ret;
++		}
++	}
++	return 0;
++}
++
++#define FSL_SIP_GPC			0xC2000000
++#define FSL_SIP_CONFIG_GPC_PM_DOMAIN	0x3
++#define DISPMIX				9
++#define MIPI				10
++
++static void do_enable_mipi2lvds(struct display_info_t const *disp)
++{
++	/* enable the dispmix & mipi phy power domain */
++	call_imx_sip(FSL_SIP_GPC, FSL_SIP_CONFIG_GPC_PM_DOMAIN,
++		     DISPMIX, true, 0);
++	call_imx_sip(FSL_SIP_GPC, FSL_SIP_CONFIG_GPC_PM_DOMAIN,
++		     MIPI, true, 0);
++
++	/* Get lcdif out of reset */
++	disp_mix_bus_rstn_reset(imx8mm_mipi_dsim_plat_data.gpr_base, false);
++	disp_mix_lcdif_clks_enable(imx8mm_mipi_dsim_plat_data.gpr_base, true);
++
++	sec_mipi_dsim_setup(&imx8mm_mipi_dsim_plat_data);
++	imx_mipi_dsi_bridge_attach(&dsi83_dev);
++	dsi83_init();
++}
++
++static struct display_info_t const panel_info[] = {
++	{
++		.bus = LCDIF_BASE_ADDR,
++		.pixfmt = BPP,
++		.enable	= do_enable_mipi2lvds,
++		.mode	= {
++			.name		= "MIPI2LVDS",
++			.refresh	= VREFRESH,
++			.xres		= LINE_LENGTH,
++			.yres		= VERT_SIZE,
++			.pixclock	= KHZ2PICOS(PCLK / 1000),
++			.left_margin	= H_BACK_PORCH,
++			.hsync_len	= HSYNC_LEN,
++			.right_margin	= H_FRONT_PORCH,
++			.upper_margin	= V_BACK_PORCH,
++			.vsync_len	= VSYNC_LEN,
++			.lower_margin	= V_FRONT_PORCH,
++			.sync		= FB_SYNC_EXT,
++			.vmode		= FB_VMODE_NONINTERLACED,
++		},
++	},
++};
++
++int board_video_skip(void)
++{
++	int ret;
++	const char *baseboard = env_get("baseboard");
++	const char *panel = env_get("panel");
++	size_t i;
++
++	if (had_ctrlc()) {
++		printf("<CTRL-C> detected; disabling display\n");
++		return 1;
++	}
++
++	if (!panel) {
++		printf("No LCD panel configured\n");
++		return 1;
++	}
++
++	if (!baseboard || strcmp(baseboard, "mipi-mb") != 0) {
++		printf("No Display support for '%s' baseboard\n",
++		       baseboard ?: "unspecified");
++		return 1;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(panel_info); i++) {
++		const struct display_info_t *pi = &panel_info[i];
++
++		if (strcmp(panel, pi->mode.name) != 0)
++			continue;
++
++		ret = mxs_lcd_panel_setup(pi->mode,
++					  pi->pixfmt,
++					  pi->bus);
++		if (ret)
++			return ret;
++
++		if (pi->enable)
++			pi->enable(panel_info + i);
++
++		printf("Display: %s (%ux%u)\n", pi->mode.name,
++		       pi->mode.xres, pi->mode.yres);
++	}
++	return ret;
++}
++#endif
+diff --git a/configs/tx8m-1610_defconfig b/configs/tx8m-1610_defconfig
+index 24ff902638deef7541cf153536d96fffbc955763..904970f53731da21f3958d92add23af43564d830 100644
+--- a/configs/tx8m-1610_defconfig
++++ b/configs/tx8m-1610_defconfig
+@@ -24,7 +24,7 @@ CONFIG_BOOTCOMMAND="run bootargs_${boot_mode} bootm_cmd"
+ CONFIG_PRE_CONSOLE_BUFFER=y
+ CONFIG_PRE_CON_BUF_ADDR=0x93F000
+ CONFIG_SYS_CONSOLE_INFO_QUIET=y
+-CONFIG_DEFAULT_FDT_FILE="imx8mm-tx8m-1610.dtb"
++CONFIG_DEFAULT_FDT_FILE="imx8mm-tx8m-1610-mipi-mb.dtb"
+ CONFIG_VERSION_VARIABLE=y
+ CONFIG_SPL=y
+ CONFIG_SPL_BOARD_INIT=y
+@@ -95,6 +95,10 @@ CONFIG_USB_GADGET_VBUS_DRAW=60
+ CONFIG_SDP_LOADADDR=0x40400000
+ CONFIG_USB_GADGET_DOWNLOAD=y
+ CONFIG_USB_FUNCTION_MASS_STORAGE=y
++CONFIG_VIDEO=y
++CONFIG_IMX_SEC_MIPI_DSI=y
++CONFIG_SYS_CONSOLE_BG_COL=0xc0
++CONFIG_SYS_CONSOLE_FG_COL=0x10
+ CONFIG_FAT_WRITE=y
+ CONFIG_OF_LIBFDT_OVERLAY=y
+ # CONFIG_EFI_LOADER is not set
+diff --git a/drivers/video/sec_mipi_dsim.c b/drivers/video/sec_mipi_dsim.c
+index 7329d23dbfd36e315eca8ca2598cc4ec6741a505..d95af7b3d9e81dc6be12e159e82abeea5115fe0a 100644
+--- a/drivers/video/sec_mipi_dsim.c
++++ b/drivers/video/sec_mipi_dsim.c
+@@ -439,6 +439,12 @@ static int sec_mipi_dsim_config_pll(struct sec_mipi_dsim *dsim)
+ 	return 0;
+ }
+ 
++#ifndef CONFIG_TARGET_TX8M
++#define NXP_FUDGE 6
++#else
++#define NXP_FUDGE 0
++#endif
++
+ static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
+ {
+ 	uint32_t bpp, hfp_wc, hbp_wc, hsa_wc;
+@@ -462,8 +468,10 @@ static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
+ 		hfp_wc = vmode->right_margin * (bpp >> 3);
+ 		hbp_wc = vmode->left_margin * (bpp >> 3);
+ 	} else {
+-		hfp_wc = vmode->right_margin * (bpp >> 3) / dsim->lanes - 6;
+-		hbp_wc = vmode->left_margin * (bpp >> 3) / dsim->lanes - 6;
++		hfp_wc = vmode->right_margin * (bpp >> 3) / dsim->lanes -
++			NXP_FUDGE;
++		hbp_wc = vmode->left_margin * (bpp >> 3) / dsim->lanes -
++			NXP_FUDGE;
+ 	}
+ 
+ 	mhporch |= MHPORCH_SET_MAINHFP(hfp_wc) |
+@@ -475,7 +483,8 @@ static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
+ 	if (dsim->dsi_panel_drv) {
+ 		hsa_wc = vmode->hsync_len * (bpp >> 3);
+ 	} else {
+-		hsa_wc = vmode->hsync_len * (bpp >> 3) / dsim->lanes - 6;
++		hsa_wc = vmode->hsync_len * (bpp >> 3) / dsim->lanes -
++			NXP_FUDGE;
+ 	}
+ 
+ 	msync |= MSYNC_SET_MAINVSA(vmode->vsync_len) |
+diff --git a/include/configs/tx8mm.h b/include/configs/tx8mm.h
+index 012a3d0223d757d5b49f54306d45b34bf14f58c7..6dcea227dd00bd86ec4035596ae4a9762b5b7d09 100644
+--- a/include/configs/tx8mm.h
++++ b/include/configs/tx8mm.h
+@@ -109,6 +109,7 @@
+ 	" ${linux_image}\0"						\
+ 	"mmcdev=0\0"							\
+ 	"mmcpart=1\0"							\
++	"panel=MIPI2LVDS\0"						\
+ 	"uuid_rootfs=0cc66cc0-5458-384d-1610-726f6f746673\0"
+ #else
+ #define CONFIG_EXTRA_ENV_SETTINGS					\
+-- 
+2.7.4
+

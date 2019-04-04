@@ -1,0 +1,29 @@
+From 97c4b45fa3a443c5e65cf9159b9ec1e90c3a4266 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 27 Mar 2019 14:58:33 +0100
+Subject: [PATCH 22/23] common: add call to show_activity() in main cmd loop
+
+---
+ common/cli_readline.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/common/cli_readline.c b/common/cli_readline.c
+index ecded11ca3985f27b132ef4d20f7e79ee02c8379..a059ea1f59e1b3312b853411f210c6ce605d674b 100644
+--- a/common/cli_readline.c
++++ b/common/cli_readline.c
+@@ -272,6 +272,12 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len,
+ 			first = 0;
+ 		}
+ 
++#ifdef CONFIG_SHOW_ACTIVITY
++		while (!tstc()) {	/* while no incoming data */
++			show_activity(0);
++			WATCHDOG_RESET();
++		}
++#endif
+ 		ichar = getcmd_getch();
+ 
+ 		if ((ichar == '\n') || (ichar == '\r')) {
+-- 
+2.7.4
+

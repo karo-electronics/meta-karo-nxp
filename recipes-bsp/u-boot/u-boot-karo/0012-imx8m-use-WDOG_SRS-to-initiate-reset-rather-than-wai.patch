@@ -1,0 +1,81 @@
+From aa8ec7a7579c73c76389377bcff76aa9781d2db5 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 20 Mar 2019 16:14:47 +0100
+Subject: [PATCH 12/23] imx8m: use WDOG_SRS to initiate reset rather than
+ waiting for a watchdog timeout
+
+---
+ arch/arm/mach-imx/imx8m/soc.c | 20 +++++++++++++-------
+ include/fsl_wdog.h            | 18 +++++++++++-------
+ 2 files changed, 24 insertions(+), 14 deletions(-)
+
+diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
+index ee945d116ffe36ba52cc0fa4ee9b4853a6c50555..c6745ddffa5863be17e83736624d1ae801e4b63b 100644
+--- a/arch/arm/mach-imx/imx8m/soc.c
++++ b/arch/arm/mach-imx/imx8m/soc.c
+@@ -619,15 +619,21 @@ usb_modify_speed:
+ void reset_cpu(ulong addr)
+ {
+ 	struct watchdog_regs *wdog = (struct watchdog_regs *)WDOG1_BASE_ADDR;
++	struct src *src_regs = (struct src *)SRC_BASE_ADDR;
+ 
+-	/* Clear WDA to trigger WDOG_B immediately */
+-	writew((WCR_WDE | WCR_SRS), &wdog->wcr);
++	/* clear reset cause bits */
++	writel(readl(&src_regs->srsr), &src_regs->srsr);
+ 
+-	while (1) {
+-		/*
+-		 * spin for .5 seconds before reset
+-		 */
+-	}
++	/* Initiate SW Reset */
++	clrbits_le16(&wdog->wcr, WCR_SRS);
++	puts(".\n");
++	/* Try Watchdog reset, if Soft Reset fails */
++	setbits_le16(&wdog->wcr, WCR_WDE | SET_WCR_WT(1));
++	puts(".\n");
++
++	/* SW Reset should happen immediately */
++	printf("SW Reset FAILED\n");
++	hang();
+ }
+ 
+ #if defined(CONFIG_ARCH_MISC_INIT)
+diff --git a/include/fsl_wdog.h b/include/fsl_wdog.h
+index 683c3f3bac6600e2cfc27c738ca7867d66d956ce..4d77830a3d29d40798c977ad40d5d3b378903748 100644
+--- a/include/fsl_wdog.h
++++ b/include/fsl_wdog.h
+@@ -3,6 +3,7 @@
+  *
+  * SPDX-License-Identifier:	GPL-2.0+
+  */
++#include <linux/bitops.h>
+ 
+ struct watchdog_regs {
+ 	u16	wcr;	/* Control */
+@@ -10,11 +11,14 @@ struct watchdog_regs {
+ 	u16	wrsr;	/* Reset Status */
+ };
+ 
+-#define WCR_WDZST	0x01
+-#define WCR_WDBG	0x02
+-#define WCR_WDE		0x04
+-#define WCR_WDT		0x08
+-#define WCR_SRS		0x10
+-#define WCR_WDA 	0x20
+-#define SET_WCR_WT(x)	(x << 8)
++#define WCR_WDZST	BIT(0)
++#define WCR_WDBG	BIT(1)
++#define WCR_WDE		BIT(2)
++#define WCR_WDT		BIT(3)
++#define WCR_SRS		BIT(4)
++#define WCR_WDA		BIT(5)
++#define SET_WCR_WT(x)	((x) << 8)
+ #define WCR_WT_MSK	SET_WCR_WT(0xFF)
++
++#define WRSR_SFTW	BIT(0)
++#define WRSR_TOUT	BIT(1)
+-- 
+2.7.4
+

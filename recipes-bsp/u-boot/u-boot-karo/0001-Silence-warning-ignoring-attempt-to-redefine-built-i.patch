@@ -1,0 +1,30 @@
+From 6159e7d8dd5e50d2afcbcf0f54cc124739b01c7a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 20 Mar 2019 12:28:41 +0100
+Subject: [PATCH 01/23] Silence warning: ignoring attempt to redefine built-in
+ register 'lr'
+
+---
+ arch/arm/include/asm/macro.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/include/asm/macro.h b/arch/arm/include/asm/macro.h
+index 0c8652a675fa98ba399a98cfc7489c992ae33ef4..cf3e228a92d3957d123f610d1fe9f7d74ca9f7d4 100644
+--- a/arch/arm/include/asm/macro.h
++++ b/arch/arm/include/asm/macro.h
+@@ -60,10 +60,12 @@
+ .endm
+ 
+ #ifdef CONFIG_ARM64
++#if __GNUC__ < 7
+ /*
+  * Register aliases.
+  */
+ lr	.req	x30
++#endif
+ 
+ /*
+  * Branch according to exception level
+-- 
+2.7.4
+

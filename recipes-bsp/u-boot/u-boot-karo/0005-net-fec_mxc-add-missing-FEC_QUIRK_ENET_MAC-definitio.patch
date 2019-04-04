@@ -1,0 +1,23 @@
+From c1ab7d7eae94cb10cca4230e98b8e27251fc1d9d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 20 Mar 2019 14:54:11 +0100
+Subject: [PATCH 05/23] net: fec_mxc: add missing FEC_QUIRK_ENET_MAC definition
+ for imx8m
+
+---
+ arch/arm/include/asm/arch-imx8m/imx-regs.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm/include/asm/arch-imx8m/imx-regs.h b/arch/arm/include/asm/arch-imx8m/imx-regs.h
+index 08a06c32e81134bdd9825d35cfcd06f3b61545c8..20396efcb36c576f073e70d129d4fbb0b8ac672e 100644
+--- a/arch/arm/include/asm/arch-imx8m/imx-regs.h
++++ b/arch/arm/include/asm/arch-imx8m/imx-regs.h
+@@ -11,3 +11,5 @@
+ #else
+ #error "Error no imx-regs.h"
+ #endif
++
++#define FEC_QUIRK_ENET_MAC
+-- 
+2.7.4
+
