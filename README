@@ -23,7 +23,7 @@ To contribute to and patches specific to the Ka-Ro should be sent for review
 to <yocto-devel@karo-electronics.de>, or throw it into github's issues system,
 provided here:
 
-    https://github.com/karo-electronics/karo-nxp-bsp/issues
+    https://github.com/karo-electronics/meta-karo-nxp/issues
 
 For commit/patch message guidelines, please refer to:
 
@@ -36,7 +36,7 @@ Mailing list:
 
 Source code:
 
-    https://github.com/karo-electronics/karo-nxp-bsp
+    https://github.com/karo-electronics/meta-karo-nxp
 
 When creating a patch of the last commit, use:
 
