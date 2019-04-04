@@ -1,0 +1,52 @@
+OpenEmbedded/Yocto BSP layer for Ka-Ro flavoured NXP i.MX BSP release
+=====================================================================
+
+This layer provides support for Freescale's ARM based platforms offering a
+Ka-Ro flavour for NXP i.MX BSP release for use with OpenEmbedded and/or Yocto
+Freescale's BSP layer.
+
+This layer depends on:
+
+URI: git://git.openembedded.org/openembedded-core
+branch: sumo
+revision: HEAD
+
+URI: git://git.yoctoproject.org/meta-freescale
+branch: sumo
+revision: HEAD
+
+
+Contributing
+------------
+
+To contribute to and patches specific to the Ka-Ro should be sent for review
+to <yocto-devel@karo-electronics.de>, or throw it into github's issues system,
+provided here:
+
+    https://github.com/karo-electronics/karo-nxp-bsp/issues
+
+For commit/patch message guidelines, please refer to:
+
+    http://openembedded.org/wiki/Commit_Patch_Message_Guidelines
+
+Mailing list:
+
+    Ka-Ro has no mailing list, to contribute sent patches specific
+    for review to <yocto-devel@karo-electronics.de>.
+
+Source code:
+
+    https://github.com/karo-electronics/karo-nxp-bsp
+
+When creating a patch of the last commit, use:
+
+    git format-patch -s --subject-prefix='meta-karo-nxp][PATCH][master' -1
+
+When sending patches, please use something like:
+
+    git send-email --to yocto-devel@karo-electronics.de <generated patch>
+
+---
+http://www.karo-electronics.de
+
+Contact support: support@karo-electronics.de
