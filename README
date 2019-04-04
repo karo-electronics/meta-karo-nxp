@@ -1,6 +1,10 @@
 OpenEmbedded/Yocto BSP layer for Ka-Ro flavoured NXP i.MX BSP release
 =====================================================================
 
+See the official, full documentation here: https://karo-electronics.github.io/docs/yocto-sumo-guide/index.html
+
+-------------------------------------------------------------------------------------------------------------------
+
 This layer provides support for Freescale's ARM based platforms offering a
 Ka-Ro flavour for NXP i.MX BSP release for use with OpenEmbedded and/or Yocto
 Freescale's BSP layer.
