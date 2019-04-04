@@ -27,7 +27,7 @@ provided here:
 
 For commit/patch message guidelines, please refer to:
 
-    http://openembedded.org/wiki/Commit_Patch_Message_Guidelines
+    https://openembedded.org/wiki/Commit_Patch_Message_Guidelines
 
 Mailing list:
 
@@ -47,6 +47,6 @@ When sending patches, please use something like:
     git send-email --to yocto-devel@karo-electronics.de <generated patch>
 
 ---
-http://www.karo-electronics.de
+https://www.karo-electronics.de
 
 Contact support: support@karo-electronics.de
