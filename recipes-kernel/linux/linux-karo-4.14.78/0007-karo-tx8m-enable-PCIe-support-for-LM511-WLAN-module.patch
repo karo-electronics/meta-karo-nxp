@@ -1,0 +1,170 @@
+From 16ceead7a5f48dd98db3bda7ffafdb0db3a72a68 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Tue, 26 Mar 2019 10:03:48 +0100
+Subject: [PATCH 7/8] karo: tx8m: enable PCIe support (for LM511 WLAN module)
+
+---
+ .../dts/freescale/imx8mm-tx8m-mipi-mb.dtsi    | 14 +++++
+ arch/arm64/configs/tx8m_defconfig             | 63 ++++++++++++++++++-
+ 2 files changed, 75 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-mipi-mb.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-mipi-mb.dtsi
+index 99f7f3e77f7b..5a07750499b3 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-mipi-mb.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-mipi-mb.dtsi
+@@ -123,6 +123,14 @@
+ 	};
+ };
+ 
++&pcie0 {
++	pinctrl-names = "default";
++	pinctrl-0 = <&pinctrl_pcie_reset>;
++	hard-wired;
++	reset-gpio = <&gpio2 19 GPIO_ACTIVE_LOW>;
++	status = "okay";
++};
++
+ &pwm1 {
+ 	pinctrl-names = "default";
+ 	pinctrl-0 = <&pinctrl_pwm1>;
+@@ -149,6 +157,12 @@
+ };
+ 
+ &iomuxc {
++	pinctrl_pcie_reset: pcie-resetgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_SD2_RESET_B_GPIO2_IO19		0x06
++		>;
++	};
++
+ 	pinctrl_pwm1: pwm1grp {
+ 		fsl,pins = <
+ 			MX8MM_IOMUXC_GPIO1_IO01_PWM1_OUT		0x06
+diff --git a/arch/arm64/configs/tx8m_defconfig b/arch/arm64/configs/tx8m_defconfig
+index 015b512198e2..8e62c22342e7 100644
+--- a/arch/arm64/configs/tx8m_defconfig
++++ b/arch/arm64/configs/tx8m_defconfig
+@@ -42,6 +42,16 @@ CONFIG_BLK_DEV_INTEGRITY=y
+ CONFIG_ARCH_FSL_IMX8QM=y
+ CONFIG_ARCH_FSL_IMX8MQ=y
+ CONFIG_ARCH_FSL_IMX8MM=y
++CONFIG_PCI=y
++CONFIG_PCIEASPM_DEBUG=y
++CONFIG_PCI_DEBUG=y
++CONFIG_PCI_IMX6=y
++CONFIG_PCI_IMX6_COMPLIANCE_TEST=y
++CONFIG_RC_MODE_IN_EP_RC_SYS=y
++# CONFIG_PCI_IMX_EP_DRV is not set
++CONFIG_PCI_ENDPOINT=y
++CONFIG_PCI_ENDPOINT_CONFIGFS=y
++CONFIG_PCI_EPF_TEST=m
+ # CONFIG_ARM64_ERRATUM_832075 is not set
+ # CONFIG_ARM64_ERRATUM_1024718 is not set
+ # CONFIG_CAVIUM_ERRATUM_22375 is not set
+@@ -83,7 +93,16 @@ CONFIG_IP_PNP_BOOTP=y
+ # CONFIG_INET_DIAG is not set
+ # CONFIG_IPV6 is not set
+ CONFIG_DNS_RESOLVER=y
+-# CONFIG_WIRELESS is not set
++CONFIG_CFG80211=y
++CONFIG_CFG80211_INTERNAL_REGDB=y
++CONFIG_CFG80211_WEXT=y
++CONFIG_MAC80211=y
++CONFIG_MAC80211_MESSAGE_TRACING=y
++CONFIG_MAC80211_DEBUG_MENU=y
++CONFIG_MAC80211_VERBOSE_DEBUG=y
++CONFIG_MAC80211_MLME_DEBUG=y
++CONFIG_MAC80211_STA_DEBUG=y
++CONFIG_MAC80211_PS_DEBUG=y
+ CONFIG_UEVENT_HELPER_PATH="/sbin/mdev"
+ CONFIG_DEVTMPFS=y
+ CONFIG_DEVTMPFS_MOUNT=y
+@@ -99,37 +118,76 @@ CONFIG_BLK_DEV_SD=y
+ # CONFIG_SCSI_LOWLEVEL is not set
+ CONFIG_NETDEVICES=y
+ # CONFIG_NET_CORE is not set
++# CONFIG_NET_VENDOR_3COM is not set
++# CONFIG_NET_VENDOR_ADAPTEC is not set
++# CONFIG_NET_VENDOR_AGERE is not set
+ # CONFIG_NET_VENDOR_ALACRITECH is not set
++# CONFIG_NET_VENDOR_ALTEON is not set
+ # CONFIG_NET_VENDOR_AMAZON is not set
+ # CONFIG_NET_VENDOR_AMD is not set
+ # CONFIG_NET_VENDOR_AQUANTIA is not set
+ # CONFIG_NET_VENDOR_ARC is not set
++# CONFIG_NET_VENDOR_ATHEROS is not set
+ # CONFIG_NET_CADENCE is not set
+ # CONFIG_NET_VENDOR_BROADCOM is not set
++# CONFIG_NET_VENDOR_BROCADE is not set
++# CONFIG_NET_VENDOR_CAVIUM is not set
++# CONFIG_NET_VENDOR_CHELSIO is not set
++# CONFIG_NET_VENDOR_CISCO is not set
++# CONFIG_NET_VENDOR_DEC is not set
++# CONFIG_NET_VENDOR_DLINK is not set
++# CONFIG_NET_VENDOR_EMULEX is not set
+ # CONFIG_NET_VENDOR_EZCHIP is not set
++# CONFIG_NET_VENDOR_EXAR is not set
+ # CONFIG_NET_VENDOR_HISILICON is not set
++# CONFIG_NET_VENDOR_HP is not set
+ # CONFIG_NET_VENDOR_HUAWEI is not set
+ # CONFIG_NET_VENDOR_INTEL is not set
+ # CONFIG_NET_VENDOR_MARVELL is not set
+ # CONFIG_NET_VENDOR_MELLANOX is not set
+ # CONFIG_NET_VENDOR_MICREL is not set
+ # CONFIG_NET_VENDOR_MICROCHIP is not set
++# CONFIG_NET_VENDOR_MYRI is not set
+ # CONFIG_NET_VENDOR_NATSEMI is not set
+ # CONFIG_NET_VENDOR_NETRONOME is not set
++# CONFIG_NET_VENDOR_NVIDIA is not set
++# CONFIG_NET_VENDOR_OKI is not set
++# CONFIG_NET_VENDOR_QLOGIC is not set
+ # CONFIG_NET_VENDOR_QUALCOMM is not set
+ # CONFIG_NET_VENDOR_RENESAS is not set
++# CONFIG_NET_VENDOR_RDC is not set
+ # CONFIG_NET_VENDOR_ROCKER is not set
+ # CONFIG_NET_VENDOR_SAMSUNG is not set
+ # CONFIG_NET_VENDOR_SEEQ is not set
++# CONFIG_NET_VENDOR_SILAN is not set
++# CONFIG_NET_VENDOR_SIS is not set
+ # CONFIG_NET_VENDOR_SOLARFLARE is not set
+ # CONFIG_NET_VENDOR_SMSC is not set
+ # CONFIG_NET_VENDOR_STMICRO is not set
++# CONFIG_NET_VENDOR_SUN is not set
++# CONFIG_NET_VENDOR_TEHUTI is not set
++# CONFIG_NET_VENDOR_TI is not set
+ # CONFIG_NET_VENDOR_VIA is not set
+ # CONFIG_NET_VENDOR_WIZNET is not set
+ # CONFIG_NET_VENDOR_SYNOPSYS is not set
+ CONFIG_SMSC_PHY=y
+ # CONFIG_USB_NET_DRIVERS is not set
+-# CONFIG_WLAN is not set
++# CONFIG_WLAN_VENDOR_ADMTEK is not set
++# CONFIG_WLAN_VENDOR_ATH is not set
++# CONFIG_WLAN_VENDOR_ATMEL is not set
++# CONFIG_WLAN_VENDOR_BROADCOM is not set
++# CONFIG_WLAN_VENDOR_CISCO is not set
++# CONFIG_WLAN_VENDOR_INTEL is not set
++# CONFIG_WLAN_VENDOR_INTERSIL is not set
++# CONFIG_WLAN_VENDOR_MARVELL is not set
++# CONFIG_WLAN_VENDOR_MEDIATEK is not set
++# CONFIG_WLAN_VENDOR_RALINK is not set
++CONFIG_RTL8821AE=y
++# CONFIG_WLAN_VENDOR_RSI is not set
++# CONFIG_WLAN_VENDOR_ST is not set
++# CONFIG_WLAN_VENDOR_TI is not set
++# CONFIG_WLAN_VENDOR_ZYDAS is not set
++# CONFIG_WLAN_VENDOR_QUANTENNA is not set
+ CONFIG_INPUT_EVDEV=y
+ CONFIG_INPUT_EVBUG=m
+ # CONFIG_KEYBOARD_ATKBD is not set
+@@ -138,6 +196,7 @@ CONFIG_KEYBOARD_MATRIX=y
+ # CONFIG_INPUT_MOUSE is not set
+ CONFIG_INPUT_TOUCHSCREEN=y
+ # CONFIG_TOUCHSCREEN_CT36X_WLD is not set
++CONFIG_TOUCHSCREEN_EDT_FT5X06=y
+ CONFIG_TOUCHSCREEN_USB_COMPOSITE=y
+ # CONFIG_TOUCHSCREEN_USB_PANJIT is not set
+ # CONFIG_TOUCHSCREEN_USB_3M is not set
+-- 
+2.20.1
+

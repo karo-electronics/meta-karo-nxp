@@ -1,0 +1,52 @@
+From 2c94bee9c9d4690c23fd88a9c58a1f3c8d6f2744 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Mon, 18 Mar 2019 15:46:29 +0100
+Subject: [PATCH 3/8] mfd: bd71837: select missing features for BD71837 PMIC
+ driver
+
+The BD71837 driver requires REGMAP_I2C and REGMAP_IRQ.
+Select those configs to prevent a link error:
+bd71837.c:(.text+0x28): undefined reference to `regmap_del_irq_chip'
+---
+ drivers/mfd/Kconfig | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 997a6172735e..676b7c7f813e 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -133,6 +133,16 @@ config MFD_BCM590XX
+ 	help
+ 	  Support for the BCM590xx PMUs from Broadcom
+ 
++config MFD_BD71837
++	bool "Rohm BD71837 Power Management chip"
++	depends on I2C
++	select MFD_CORE
++	select REGMAP_I2C
++	select REGMAP_IRQ
++	help
++	  if you say yes here you get support for the BD71837
++	  Power Management chips.
++
+ config MFD_BD9571MWV
+ 	tristate "ROHM BD9571MWV PMIC"
+ 	select MFD_CORE
+@@ -1810,14 +1820,6 @@ config MFD_STM32_TIMERS
+ 	  for PWM and IIO Timer. This driver allow to share the
+ 	  registers between the others drivers.
+ 
+-config MFD_BD71837
+-	bool "BD71837 Power Management chip"
+-	depends on I2C=y
+-	select MFD_CORE
+-	help
+-	  if you say yes here you get support for the BD71837
+-	  Power Management chips.
+-
+ menu "Multimedia Capabilities Port drivers"
+ 	depends on ARCH_SA1100
+ 
+-- 
+2.20.1
+

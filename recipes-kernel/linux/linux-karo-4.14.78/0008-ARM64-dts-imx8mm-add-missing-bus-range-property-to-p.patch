@@ -1,0 +1,25 @@
+From 5e62109b852603c272ee3159b7b41afa560305c6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Tue, 26 Mar 2019 10:05:09 +0100
+Subject: [PATCH 8/8] ARM64: dts: imx8mm: add missing 'bus-range' property to
+ pcie node
+
+---
+ arch/arm64/boot/dts/freescale/fsl-imx8mm.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/fsl-imx8mm.dtsi b/arch/arm64/boot/dts/freescale/fsl-imx8mm.dtsi
+index 4ca9cf01d80d..449633d78085 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-imx8mm.dtsi
++++ b/arch/arm64/boot/dts/freescale/fsl-imx8mm.dtsi
+@@ -1071,6 +1071,7 @@
+ 			<&clk IMX8MM_CLK_PCIE1_AUX_CG>,
+ 			<&clk IMX8MM_CLK_PCIE1_PHY_CG>;
+ 		clock-names = "pcie", "pcie_bus", "pcie_phy";
++		bus-range = <0x0 0xff>;
+ 		fsl,max-link-speed = <2>;
+ 		ctrl-id = <0>;
+ 		power-domains = <&pcie0_pd>;
+-- 
+2.20.1
+
