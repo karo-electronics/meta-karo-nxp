@@ -20,7 +20,7 @@ SRC_URI = " ${KERNEL_SRC};branch=${SRCBRANCH} \
 "
 
 # Ka-Ro specific Device Tree files to be compiled
-KERNEL_DEVICETREE_append = " freescale/imx8mm-tx8m-1610.dtb \"
+KERNEL_DEVICETREE_append = " freescale/imx8mm-tx8m-1610.dtb \
                              freescale/imx8mm-tx8m-1610-mipi-mb.dtb \
 "
 
