@@ -20,17 +20,27 @@ SRC_URI = " ${KERNEL_SRC};branch=${SRCBRANCH} \
 "
 
 # Ka-Ro specific Device Tree files to be compiled
-KERNEL_DEVICETREE_append = " freescale/imx8mm-tx8m-1610.dtb \
+KERNEL_DEVICETREE_append_tx8m-1610 = " freescale/imx8mm-tx8m-1610.dtb \
                              freescale/imx8mm-tx8m-1610-mipi-mb.dtb \
 "
 
+UBOOT_LOADADDRESS = "0x40480000"
 KERNEL_IMAGETYPE = "uImage"
 
-KERNEL_DEVICETREE ?= "${DEFAULT_DEVICETREE}"
+#KERNEL_DEVICETREE ?= "${DEFAULT_DEVICETREE}"
 
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES',"wifi"," wifi","",d)}"
 
 # Ka-Ro specific Kernel config to be used for compiling
-KERNEL_DEFCONFIG = "${KERNEL_SRC}/arch/arm64/configs/tx8m_defconfig"
+KERNEL_DEFCONFIG_tx8m-1610 = "${KERNEL_SRC}/arch/arm64/configs/tx8m_defconfig"
 
-COMPATIBLE_MACHINE  = "(tx8m)"
+COMPATIBLE_MACHINE = "(tx8m*)"
+
+addtask copy_defconfig after do_unpack before do_preconfigure
+do_copy_defconfig () {
+    install -d ${B}
+    # copy latest defconfig to use for tx8m
+    mkdir -p ${B}
+    cp ${S}/arch/arm64/configs/tx8m_defconfig ${B}/.config
+    cp ${S}/arch/arm64/configs/tx8m_defconfig ${B}/../defconfig
+}
