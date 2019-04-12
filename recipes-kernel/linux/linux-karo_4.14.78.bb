@@ -19,11 +19,6 @@ SRC_URI = " ${KERNEL_SRC};branch=${SRCBRANCH} \
             file://0008-ARM64-dts-imx8mm-add-missing-bus-range-property-to-p.patch \
 "
 
-# Ka-Ro specific Device Tree files to be compiled
-KERNEL_DEVICETREE_append_tx8m-1610 = " freescale/imx8mm-tx8m-1610.dtb \
-                             freescale/imx8mm-tx8m-1610-mipi-mb.dtb \
-"
-
 UBOOT_LOADADDRESS = "0x40480000"
 KERNEL_IMAGETYPE = "uImage"
 
