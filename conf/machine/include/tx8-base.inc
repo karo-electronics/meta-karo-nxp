@@ -41,6 +41,10 @@ UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = ""
 IMX_BOOT_SEEK = "33"
 
+# Set U-Boot DTB
+UBOOT_DTB_NAME = "imx8mm-tx8m-1610.dtb"
+
+# Kernel Configs 
 PREFERRED_VERSION_linux-karo ?= "4.14.78%"
 
 #IMAGE_FSTYPES_remove = " sdcard ext4 sdcard.bz2"
