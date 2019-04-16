@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # i.MX Yocto Project Build Environment Setup Script
 #
@@ -29,7 +29,8 @@
 . sources/meta-fsl-bsp-release/imx/tools/setup-utils.sh
 
 CWD=`pwd`
-PROGNAME="$(basename $0)"
+BASENAME="karo-nxp-release.sh"
+PROGNAME="setup-environment"
 
 exit_message () {
     echo "To return to this build environment later please run:"
@@ -37,7 +38,7 @@ exit_message () {
 }
 
 usage() {
-    echo "Usage: source $PROGNAME [-b <build-dir>] [-h]"
+    echo "Usage: source $BASENAME [-b <build-dir>] [-h]"
 
     echo "Optional parameters:
 * [-b <build-dir>]: Build directory, where <build-dir> is a sensible name of a
@@ -47,8 +48,15 @@ usage() {
 "
 }
 
-clean_up() {
+test_builddir () {
+    if [ ! -e $BUILD_DIR/conf/local.conf ]; then
+	echo -e "\n ERROR - No build directory is set yet. Run the 'setup-environment' script before running this script to create " $BUILD_DIR
+	echo -e "\n"
+	return 1
+    fi
+}
 
+clean_up() {
     unset CWD BUILD_DIR FSLDISTRO
     unset fsl_setup_help fsl_setup_error fsl_setup_flag
     unset usage clean_up
@@ -60,15 +68,17 @@ clean_up() {
 OLD_OPTIND=$OPTIND
 unset FSLDISTRO
 
-while getopts "k:r:t:b:e:gh" fsl_setup_flag
-do
-    case $fsl_setup_flag in
-        b) BUILD_DIR="$OPTARG";
-           echo -e "\n Build directory is " $BUILD_DIR
+while getopts b:h: fsl_setup_flag; do
+    case ${fsl_setup_flag} in
+        b)
+	    BUILD_DIR="$OPTARG"
+            echo "Build directory is: " $BUILD_DIR
            ;;
-        h) fsl_setup_help='true';
+        h)
+	    fsl_setup_help='true'
            ;;
-        \?) fsl_setup_error='true';
+        ?)
+	    fsl_setup_error='true'
            ;;
     esac
 done
@@ -103,7 +113,7 @@ if [ -z "$MACHINE" ]; then
 fi
 
 case $MACHINE in
-    imx8*)
+    tx8m*)
         case $DISTRO in
             *wayland)
                 : ok
@@ -123,6 +133,9 @@ esac
 # copy new EULA into community so setup uses latest i.MX EULA
 cp sources/meta-fsl-bsp-release/imx/EULA.txt sources/meta-freescale/EULA
 
+# Backup CWD value as it's going to be unset by upcoming external scripts calls
+CURRENT_CWD=$CWD
+
 # Set up the basic yocto environment
 if [ -z "$DISTRO" ]; then
    DISTRO=$FSLDISTRO MACHINE=$MACHINE . ./$PROGNAME $BUILD_DIR
@@ -130,14 +143,23 @@ else
    MACHINE=$MACHINE . ./$PROGNAME $BUILD_DIR
 fi
 
-# Point to the current directory since the last command changed the directory to $BUILD_DIR
-BUILD_DIR=.
+# Set CWD to a value again as it's being unset by the external scripts calls
+[ -z $CWD ] && CWD=$CURRENT_CWD
 
-if [ ! -e $BUILD_DIR/conf/local.conf ]; then
-    echo -e "\n ERROR - No build directory is set yet. Run the 'setup-environment' script before running this script to create " $BUILD_DIR
-    echo -e "\n"
-    return 1
-fi
+TCWD=$(pwd)
+# Point to the current directory since the last command changed the directory to $BUILD_DIR
+set_builddir_current () {
+    if [[ $BUILD_DIR == $CWD ]]; then
+	BUILD_DIR=.
+    elif [[ $CWD/$BUILD_DIR == $TCWD ]]; then
+	BUILD_DIR=.
+    else
+	BUILD_DIR=$TCWD
+    fi
+}
+[ ! $CWD == $TCWD ] && set_builddir_current
+
+test_builddir
 
 # On the first script run, backup the local.conf file
 # Consecutive runs, it restores the backup and changes are appended on this one.
