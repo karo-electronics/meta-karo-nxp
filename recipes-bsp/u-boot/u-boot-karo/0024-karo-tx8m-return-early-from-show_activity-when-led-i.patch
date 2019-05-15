@@ -1,0 +1,27 @@
+From 3eef6defe76e6b52720951b99baf1d583b602fb6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Fri, 3 May 2019 14:22:58 +0200
+Subject: [PATCH 24/25] karo: tx8m: return early from show_activity() when led
+ is disabled
+
+---
+ board/karo/tx8mm/tx8mm.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/board/karo/tx8mm/tx8mm.c b/board/karo/tx8mm/tx8mm.c
+index 51fa19e173f1986654bcae90bb3559982649eac6..23c0d619337b1685768cf2806fef674ced317830 100644
+--- a/board/karo/tx8mm/tx8mm.c
++++ b/board/karo/tx8mm/tx8mm.c
+@@ -416,6 +416,9 @@ void show_activity(int arg)
+ 	static ulong last;
+ 	int ret;
+ 
++	if (led_state == LED_STATE_DISABLED)
++		return;
++
+ 	if (led_state == LED_STATE_INIT) {
+ 		last = get_timer(0);
+ 		ret = led_set_state(leddev, LEDST_ON);
+-- 
+2.7.4
+

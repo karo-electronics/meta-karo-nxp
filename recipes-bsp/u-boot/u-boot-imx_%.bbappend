@@ -23,4 +23,7 @@ SRC_URI_append = " \
 		file://0020-board-karo-tx8m-add-support-for-_mfg-U-Boot.patch \
 		file://0021-board-karo-tx8m-add-display-support-for-MIPI-DSI-bas.patch \
 		file://0022-common-add-call-to-show_activity-in-main-cmd-loop.patch \
-		file://0023-tx8mm-removed-loadfdt-from-bootcmd.patch "
+		file://0023-tx8mm-removed-loadfdt-from-bootcmd.patch \
+		file://0024-karo-tx8m-return-early-from-show_activity-when-led-i.patch \
+		file://0025-karo-tx8m-implement-backlight-support.patch \
+"
