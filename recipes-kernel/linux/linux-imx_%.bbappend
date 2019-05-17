@@ -10,6 +10,17 @@ SRC_URI_append = "\
 	    file://0004-regulator-bd71837-prevent-warning-when-compiled-with.patch \
 	    file://0005-soc-imx-select-missing-PM_GENERIC_DOMAINS-for-i.MX8-.patch \
 	    file://0006-ARM64-dts-imx8mm-tx8m-1610-disable-arm-idle.patch \
-      ${@bb.utils.contains('KERNEL_FEATURES',"wifi","file://0007-karo-tx8m-enable-PCIe-support-for-LM511-WLAN-module.patch","",d)} \
-      file://0008-ARM64-dts-imx8mm-add-missing-bus-range-property-to-p.patch \
+      	    ${@bb.utils.contains('KERNEL_FEATURES',"wifi","file://0007-karo-tx8m-enable-PCIe-support-for-LM511-WLAN-module.patch","",d)} \
+            file://0008-ARM64-dts-imx8mm-add-missing-bus-range-property-to-p.patch \
 "
+
+KBUILD_DEFCONFIG_tx8m = "tx8m_defconfig"
+
+addtask copy_defconfig after do_unpack before do_preconfigure
+do_copy_defconfig () {
+    install -d ${B}
+    # copy latest defconfig to use for tx8m
+    mkdir -p ${B}
+    cp ${S}/arch/arm64/configs/tx8m_defconfig ${B}/.config
+    cp ${S}/arch/arm64/configs/tx8m_defconfig ${B}/../defconfig
+}

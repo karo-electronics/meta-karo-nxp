@@ -13,7 +13,9 @@ require conf/machine/include/arm/arch-arm64.inc
 
 MACHINE_FEATURES += " optee qca9377 qca6174"
 MACHINE_FEATURES += " pci wifi bluetooth"
-#MACHINE_FEATURES_remove = " bluetooth"
+
+MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
+MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
 
 UBOOT_CONFIG ??= "default"
 UBOOT_CONFIG[default] = "tx8m-1610_config"

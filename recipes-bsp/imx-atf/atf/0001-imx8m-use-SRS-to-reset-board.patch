@@ -1,0 +1,45 @@
+From f83c37e6a52d1470f3704961cf0746208bdfdc92 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 15 May 2019 11:28:44 +0200
+Subject: [PATCH] imx8m: use SRS to reset board
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
+---
+ plat/imx/imx8mm/imx8mm_psci.c          | 4 +---
+ plat/imx/imx8mm/include/platform_def.h | 1 -
+ 2 files changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/plat/imx/imx8mm/imx8mm_psci.c b/plat/imx/imx8mm/imx8mm_psci.c
+index 8a8cd957..d115cae3 100644
+--- a/plat/imx/imx8mm/imx8mm_psci.c
++++ b/plat/imx/imx8mm/imx8mm_psci.c
+@@ -187,12 +187,10 @@ void __dead2 imx_system_reset(void)
+ #ifdef IMX_WDOG_B_RESET
+ 	val = (val & 0x00FF) | (7 << 2) | (1 << 0);
+ #else
+-	val = (val & 0x00FF) | (4 << 2) | (1 << 0);
++	val &= ~(1 << 4);
+ #endif
+ 	mmio_write_16(wdog_base, val);
+ 
+-	mmio_write_16(wdog_base + 0x2, 0x5555);
+-	mmio_write_16(wdog_base + 0x2, 0xaaaa);
+ 	while (1)
+ 		;
+ }
+diff --git a/plat/imx/imx8mm/include/platform_def.h b/plat/imx/imx8mm/include/platform_def.h
+index 9f1f1fa5..da892ad4 100644
+--- a/plat/imx/imx8mm/include/platform_def.h
++++ b/plat/imx/imx8mm/include/platform_def.h
+@@ -100,5 +100,4 @@
+ #define COUNTER_FREQUENCY		8000000 /* 8MHz */
+ 
+ #define DEBUG_CONSOLE			0
+-#define IMX_WDOG_B_RESET
+ #define PLAT_IMX8MM			1
+-- 
+2.11.0
+
