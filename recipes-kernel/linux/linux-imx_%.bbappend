@@ -21,6 +21,6 @@ do_copy_defconfig () {
     install -d ${B}
     # copy latest defconfig to use for tx8m
     mkdir -p ${B}
-    cp ${S}/arch/arm64/configs/tx8m_defconfig ${B}/.config
-    cp ${S}/arch/arm64/configs/tx8m_defconfig ${B}/../defconfig
+		cp ${S}/arch/arm64/configs/${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)} ${B}/.config
+    cp ${S}/arch/arm64/configs/${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)} ${B}/../defconfig
 }
