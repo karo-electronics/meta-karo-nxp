@@ -12,11 +12,13 @@ diff --git a/arch/arm/include/asm/arch-imx8m/sys_proto.h b/arch/arm/include/asm/
 index cdf268f99b7dba545c9ce02b7440a56d2038c522..fbc74643cd549256199d97262ee8d2412ee70c03 100644
 --- a/arch/arm/include/asm/arch-imx8m/sys_proto.h
 +++ b/arch/arm/include/asm/arch-imx8m/sys_proto.h
-@@ -16,4 +16,5 @@ int imx8m_usb_power(int usb_id, bool on);
+@@ -16,6 +16,7 @@ int imx8m_usb_power(int usb_id, bool on);
  extern unsigned long rom_pointer[];
  enum boot_device get_boot_device(void);
  bool is_usb_boot(void);
 +void imx_get_mac_from_fuse(int dev_id, unsigned char *mac);
+ #ifdef CONFIG_IMX8MQ
+ bool check_dcss_fused(void);
  #endif
 -- 
 2.7.4

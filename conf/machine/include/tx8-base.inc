@@ -4,7 +4,7 @@
 #@DESCRIPTION: Machine configuration for Ka-Ro electronics TX8M Computer-On-Module
 #@MAINTAINER: Ka-Ro electronics GmbH <support@karo-electronics.com>
 #@VERSION: 1
-#@DATE: 2019-04-12
+#@DATE: 2019-06-11
 
 MACHINEOVERRIDES =. "mx8:mx8m:mx8mm:tx8m:"
 
@@ -47,7 +47,7 @@ IMX_BOOT_SEEK = "33"
 UBOOT_DTB_NAME = "imx8mm-tx8m-1610.dtb"
 
 # Kernel Configs
-PREFERRED_VERSION_linux-imx ?= "4.14.78%"
+PREFERRED_VERSION_linux-imx ?= "4.14.98%"
 
 # Remove some image types we don't need
 IMAGE_FSTYPES_remove = "sdcard ext4"

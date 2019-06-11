@@ -20,12 +20,12 @@ diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freesc
 index fcbca40bc8fa..4bd8c58e8529 100644
 --- a/arch/arm64/boot/dts/freescale/Makefile
 +++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -126,7 +126,10 @@ dtb-$(CONFIG_ARCH_FSL_IMX8MM) += fsl-imx8mm-evk.dtb \
- 				 fsl-imx8mm-evk-root.dtb \
- 				 fsl-imx8mm-evk-revb.dtb \
- 				 fsl-imx8mm-evk-revb-rm67191.dtb \
--				 fsl-imx8mm-ddr4-evk-rm67191.dtb
-+				 fsl-imx8mm-ddr4-evk-rm67191.dtb \
+@@ -126,7 +126,10 @@ fsl-imx8mm-evk-inmate.dtb \
+				 fsl-imx8mm-evk-revb.dtb \
+				 fsl-imx8mm-evk-revb-rm67191.dtb \
+				 fsl-imx8mm-ddr4-evk-rm67191.dtb \
+-				 fsl-imx8mm-ddr4-qca9377-evk.dtb
++				 fsl-imx8mm-ddr4-qca9377-evk.dtb \
 +				 imx8mm-tx8m-1610.dtb \
 +				 imx8mm-tx8m-1610-mipi-mb.dtb
 +
