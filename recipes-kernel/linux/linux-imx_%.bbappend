@@ -13,6 +13,7 @@ SRC_URI_append = "\
       	    ${@bb.utils.contains('KERNEL_FEATURES',"wifi","file://0007-karo-tx8m-enable-PCIe-support-for-LM511-WLAN-module.patch","",d)} \
             file://0008-ARM64-dts-imx8mm-add-missing-bus-range-property-to-p.patch \
 	    file://0009-enable-display-with-downgrading-sec-dsim.patch \
+	    file://0010-add-dtb-for-using-can-spi-mcp251x-device.patch \
 "
 
 KBUILD_DEFCONFIG_tx8m = "tx8m_defconfig"
@@ -20,7 +21,7 @@ KBUILD_DEFCONFIG_tx8m = "tx8m_defconfig"
 addtask copy_defconfig after do_unpack before do_preconfigure
 do_copy_defconfig () {
     install -d ${B}
-    # copy latest defconfig to use for tx8m
+    # copy latest defconfig to use for mx8
     mkdir -p ${B}
     cp ${S}/arch/arm64/configs/${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)} ${B}/.config
     cp ${S}/arch/arm64/configs/${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)} ${B}/../defconfig

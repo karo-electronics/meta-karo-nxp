@@ -8,6 +8,9 @@
 
 MACHINEOVERRIDES =. "mx8:mx8m:mx8mm:tx8m:"
 
+KBUILD_BUILD_USER := "support"
+KBUILD_BUILD_HOST := "karo-electronics.de"
+
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/arch-arm64.inc
 
