@@ -55,4 +55,6 @@ PREFERRED_VERSION_linux-imx ?= "4.14.98%"
 # Remove some image types we don't need
 IMAGE_FSTYPES_remove = "sdcard ext4"
 
+IS_MODULE_TX8 = "yes"
+
 DL_DIR ?= "${BSPDIR}/downloads/"
