@@ -10,7 +10,6 @@ SRC_URI_append = "\
 	    file://0004-regulator-bd71837-prevent-warning-when-compiled-with.patch \
 	    file://0005-soc-imx-select-missing-PM_GENERIC_DOMAINS-for-i.MX8-.patch \
 	    file://0006-ARM64-dts-imx8mm-tx8m-1610-disable-arm-idle.patch \
-      	    ${@bb.utils.contains('KERNEL_FEATURES',"wifi","file://0007-karo-tx8m-enable-PCIe-support-for-LM511-WLAN-module.patch","",d)} \
             file://0008-ARM64-dts-imx8mm-add-missing-bus-range-property-to-p.patch \
 	    file://0009-enable-display-with-downgrading-sec-dsim.patch \
 	    file://0010-add-dtb-for-using-can-spi-mcp251x-device.patch \
@@ -19,29 +18,35 @@ SRC_URI_append = "\
 	    file://0013-busformat-override.patch \
 	    file://0014-display-support.patch \
 	    file://0015-adding-txul-and-tx6-defconfings.patch \
+	    file://0016-adding-defconfig-extension-for-wifi-and-systemd.patch \
+	    file://0017-Revert-MLK-11117-01-ARM-clk-imx6-adjust-axi-clock-to.patch \
+	    file://0018-ARM-imx-enable-OCOTP-clock-before-accessing-fuse-reg.patch \
+	    file://0019-ARM-imx-enable-OCOTP-clock-before-accessing-ocotp-re.patch \
+	    file://0020-thermal-imx_thermal-enable-OCOTP-clock-before-access.patch \
 "
 
-KBUILD_DEFCONFIG_tx8m = "tx8m_defconfig"
-KBUILD_DEFCONFIG_txul = "txul_defconfig"
-KBUILD_DEFCONFIG_tx6 = "tx6_defconfig"
+# add this later, now patch is broken --^
+# ${@bb.utils.contains('KERNEL_FEATURES',"wifi","file://0007-karo-tx8m-enable-PCIe-support-for-LM511-WLAN-module.patch","",d)} 
 
-addtask copy_defconfig after do_patch before do_preconfigure
+KBUILD_DEFCONFIG_tx8m = "${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)}"
+KBUILD_DEFCONFIG_mx6ul = "txul_defconfig"
+KBUILD_DEFCONFIG_mx6 = "tx6_defconfig"
+
+DEFCONFIG_PATH = "arch/arm/configs"
+DEFCONFIG_PATH_tx8m = "arch/arm64/configs"
+
 do_copy_defconfig () {
     install -d ${B}
-    if [ ${IS_MODULE_TXUL} = "yes" ]; then
-        # copy txul_defconfig to use for mx6ul
-        mkdir -p ${B}
-        cp ${S}/arch/arm/configs/txul_defconfig ${B}/.config
-        cp ${S}/arch/arm/configs/txul_defconfig ${B}/../defconfig
-    elif [ ${IS_MODULE_TX6} = "yes" ]; then
-        # copy latest defconfig to use for mx6
-        mkdir -p ${B}
-        cp ${S}/arch/arm/configs/tx6_defconfig ${B}/.config
-        cp ${S}/arch/arm/configs/tx6_defconfig ${B}/../defconfig
-    elif [ ${IS_MODULE_TX8} = "yes" ]; then
-        # copy latest defconfig to use for tx8m
-        mkdir -p ${B}
-	cp ${S}/arch/arm64/configs/${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)} ${B}/.config
-	cp ${S}/arch/arm64/configs/${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)} ${B}/../defconfig
+    mkdir -p ${B}
+    cp ${S}/${DEFCONFIG_PATH}/${KBUILD_DEFCONFIG} ${B}/.config
+    cp ${S}/${DEFCONFIG_PATH}/${KBUILD_DEFCONFIG} ${B}/../defconfig
+    if [ ${@bb.utils.contains('KERNEL_FEATURES',"wifi","yes","no",d)} = "yes" ]; then
+	cat ${S}/arch/arm/configs/wifi.cfg >> ${B}/.config
+	cat ${S}/arch/arm/configs/wifi.cfg >> ${B}/../defconfig
+    fi
+    if [ ${@bb.utils.contains('KERNEL_FEATURES',"systemd","yes","no",d)} = "yes" ]; then
+	cat ${S}/arch/arm/configs/systemd.cfg >> ${B}/.config
+	cat ${S}/arch/arm/configs/systemd.cfg >> ${B}/../defconfig
     fi
 }
+addtask copy_defconfig after do_patch before do_preconfigure

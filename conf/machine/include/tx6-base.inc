@@ -32,6 +32,7 @@ PREFERRED_PROVIDER_virtual/libg2d_mx6ul ?= ""
 PREFERRED_PROVIDER_virtual/kernel ??= "linux-imx"
 PREFERRED_VERSION_linux-imx ?= "4.14.98"
 KERNEL_IMAGETYPE = "uImage"
+KERNEL_FEATURES += "wifi systemd"
 
 #MACHINE_ESSENTIAL_EXTRA_RDEPENDS = " \
 #                 linux-firmware-imx-sdma-imx6q \

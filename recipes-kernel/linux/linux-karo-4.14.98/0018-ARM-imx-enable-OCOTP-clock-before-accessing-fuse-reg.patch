@@ -1,0 +1,145 @@
+From f27b011ee0b1e06e5fc707f66f373fe0f2c585bb Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 10 Jul 2019 16:25:33 +0200
+Subject: [PATCH] ARM: imx: enable OCOTP clock before accessing fuse registers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Accessing the OCOTP registers requires the OCOTP clock to be enabled.
+Furthermore, make sure the ocotp register range is only mapped once
+and being unmapped after use.
+
+Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
+---
+ arch/arm/mach-imx/common.c | 62 ++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 43 insertions(+), 19 deletions(-)
+
+diff --git a/arch/arm/mach-imx/common.c b/arch/arm/mach-imx/common.c
+index cf57b55a369b..36f833c72a35 100644
+--- a/arch/arm/mach-imx/common.c
++++ b/arch/arm/mach-imx/common.c
+@@ -8,6 +8,7 @@
+  * http://www.opensource.org/licenses/gpl-license.html
+  * http://www.gnu.org/copyleft/gpl.html
+  */
++#include <linux/clk.h>
+ #include <linux/io.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -41,9 +42,10 @@ void restore_ttbr1(unsigned long ttbr1)
+
+ #define OCOTP_MAC_OFF	(cpu_is_imx7d() ? 0x640 : 0x620)
+ #define OCOTP_MACn(n)	(OCOTP_MAC_OFF + (n) * 0x10)
++
+ void __init imx6_enet_mac_init(const char *enet_compat, const char *ocotp_compat)
+ {
+-	struct device_node *ocotp_np, *enet_np, *from = NULL;
++	struct device_node *ocotp_np, *enet_np = NULL, *from = NULL;
+ 	void __iomem *base;
+ 	struct property *newmac;
+ 	u32 macaddr_low;
+@@ -51,31 +53,46 @@ void __init imx6_enet_mac_init(const char *enet_compat, const char *ocotp_compat
+ 	u32 macaddr1_high = 0;
+ 	u8 *macaddr;
+ 	int i, id;
++	struct clk *ocotp_clk;
++
++	ocotp_np = of_find_compatible_node(NULL, NULL, ocotp_compat);
++	if (!ocotp_np) {
++		pr_warn("failed to find ocotp node\n");
++		return;
++	}
++
++	ocotp_clk = of_clk_get(ocotp_np, 0);
++	if (IS_ERR(ocotp_clk)) {
++		pr_err("failed to get OCOTP clock: %ld\n", PTR_ERR(ocotp_clk));
++		goto put_ocotp_node;
++	}
++
++	base = of_iomap(ocotp_np, 0);
++	if (!base) {
++		pr_warn("failed to map ocotp\n");
++		goto put_clk;
++	}
+
+ 	for (i = 0; i < 2; i++) {
++		int ret;
++
+ 		enet_np = of_find_compatible_node(from, NULL, enet_compat);
+ 		if (!enet_np)
+-			return;
++			break;
+
+ 		from = enet_np;
+
+ 		if (of_get_mac_address(enet_np))
+-			goto put_enet_node;
++			break;
+
+ 		id = of_alias_get_id(enet_np, "ethernet");
+ 		if (id < 0)
+ 			id = i;
+
+-		ocotp_np = of_find_compatible_node(NULL, NULL, ocotp_compat);
+-		if (!ocotp_np) {
+-			pr_warn("failed to find ocotp node\n");
+-			goto put_enet_node;
+-		}
+-
+-		base = of_iomap(ocotp_np, 0);
+-		if (!base) {
+-			pr_warn("failed to map ocotp\n");
+-			goto put_ocotp_node;
++		ret = clk_prepare_enable(ocotp_clk);
++		if (ret) {
++			pr_err("failed to enable OCOTP clock: %d\n", ret);
++			break;
+ 		}
+
+ 		macaddr_low = readl_relaxed(base + OCOTP_MACn(1));
+@@ -84,16 +101,18 @@ void __init imx6_enet_mac_init(const char *enet_compat, const char *ocotp_compat
+ 		else
+ 			macaddr_high = readl_relaxed(base + OCOTP_MACn(0));
+
++		clk_disable_unprepare(ocotp_clk);
++
+ 		newmac = kzalloc(sizeof(*newmac) + 6, GFP_KERNEL);
+ 		if (!newmac)
+-			goto put_ocotp_node;
++			break;
+
+ 		newmac->value = newmac + 1;
+ 		newmac->length = 6;
+ 		newmac->name = kstrdup("local-mac-address", GFP_KERNEL);
+ 		if (!newmac->name) {
+ 			kfree(newmac);
+-			goto put_ocotp_node;
++			break;
+ 		}
+
+ 		macaddr = newmac->value;
+@@ -114,12 +133,17 @@ void __init imx6_enet_mac_init(const char *enet_compat, const char *ocotp_compat
+ 		}
+
+ 		of_update_property(enet_np, newmac);
++		of_node_put(enet_np);
++		enet_np = NULL;
++	}
+
+-put_ocotp_node:
++	if (enet_np)
++		of_node_put(enet_np);
++	iounmap(base);
++ put_clk:
++	clk_put(ocotp_clk);
++ put_ocotp_node:
+ 	of_node_put(ocotp_np);
+-put_enet_node:
+-	of_node_put(enet_np);
+-	}
+ }
+
+ #ifndef CONFIG_HAVE_IMX_GPC
+--
+2.11.0

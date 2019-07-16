@@ -1,0 +1,94 @@
+From 13dbf14c98636be9fbaa29bccf0d37d69c5dd425 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Wed, 10 Jul 2019 17:24:39 +0200
+Subject: [PATCH 2/2] thermal: imx_thermal: enable OCOTP clock before accessing
+ ocotp registers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
+---
+ drivers/thermal/imx_thermal.c | 36 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 31 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/thermal/imx_thermal.c b/drivers/thermal/imx_thermal.c
+index deb2d16f893f..151209923b94 100644
+--- a/drivers/thermal/imx_thermal.c
++++ b/drivers/thermal/imx_thermal.c
+@@ -595,6 +595,8 @@ static int imx_get_sensor_data(struct platform_device *pdev)
+ {
+ 	struct imx_thermal_data *data = platform_get_drvdata(pdev);
+ 	struct regmap *map;
++	struct clk *ocotp_clk;
++	struct device_node *ocotp_np;
+ 	int ret;
+ 	u32 val;
+
+@@ -606,19 +608,37 @@ static int imx_get_sensor_data(struct platform_device *pdev)
+ 		return ret;
+ 	}
+
++	ocotp_np = of_parse_phandle(pdev->dev.of_node, "fsl,tempmon-data", 0);
++	if (IS_ERR(ocotp_np)) {
++		ret = PTR_ERR(ocotp_np);
++		dev_err(&pdev->dev, "failed to get ocotp node: %d\n", ret);
++		return ret;
++	}
++
++	ocotp_clk = of_clk_get(ocotp_np, 0);
++	if (IS_ERR(ocotp_clk)) {
++		ret = PTR_ERR(ocotp_clk);
++		dev_err(&pdev->dev, "failed to get ocotp clock: %d\n", ret);
++		goto put_ocotp_node;
++	}
++	ret = clk_prepare_enable(ocotp_clk);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to enable ocotp clock: %d\n", ret);
++		goto put_clk;
++	}
+ 	if (data->socdata->version == TEMPMON_IMX7)
+ 		ret = regmap_read(map, IMX7_OCOTP_ANA1, &val);
+ 	else
+ 		ret = regmap_read(map, IMX6_OCOTP_ANA1, &val);
+-
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to read sensor data: %d\n", ret);
+-		return ret;
++		goto disable_clk;
+ 	}
+
+ 	if (val == 0 || val == ~0) {
+ 		dev_err(&pdev->dev, "invalid sensor calibration data\n");
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto disable_clk;
+ 	}
+
+ 	if (data->socdata->version == TEMPMON_IMX7)
+@@ -634,7 +654,7 @@ static int imx_get_sensor_data(struct platform_device *pdev)
+
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to read temp grade: %d\n", ret);
+-		return ret;
++		goto disable_clk;
+ 	}
+
+ 	/* The maximum die temp is specified by the Temperature Grade */
+@@ -664,7 +684,13 @@ static int imx_get_sensor_data(struct platform_device *pdev)
+ 	data->temp_critical = data->temp_max - (1000 * 5);
+ 	data->temp_passive = data->temp_max - (1000 * 10);
+
+-	return 0;
++ disable_clk:
++	clk_disable_unprepare(ocotp_clk);
++ put_clk:
++	clk_put(ocotp_clk);
++ put_ocotp_node:
++	of_node_put(ocotp_np);
++	return ret;
+ }
+
+ static irqreturn_t imx_thermal_alarm_irq(int irq, void *dev)
+--
+2.11.0
