@@ -14,12 +14,12 @@ index c6eba8ff..51a9bb9 100644
  #include "imx6dl.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6DL Module on CoMpact TFT";
  	compatible = "karo,imx6dl-tx6dl", "fsl,imx6dl";
 +};
- 
+
 -	backlight: backlight {
 -		compatible = "pwm-backlight";
 -		pwms = <&pwm2 0 500000 0>;
@@ -55,12 +55,12 @@ index c6eba8ff..51a9bb9 100644
 +	pwms = <&pwm2 0 500000 0>;
 +	/delete-property/ turn-on-delay-ms;
  };
- 
+
  &can1 {
 @@ -92,6 +66,10 @@
  	status = "disabled";
  };
- 
+
 +&lcd_panel {
 +	compatible = "edt,etm0700g0edh6";
 +};
@@ -138,11 +138,11 @@ index ff8f7b1..9eb2ef1 100644
  #include "imx6dl.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6S-8034 Module";
  	compatible = "karo,imx6dl-tx6dl", "fsl,imx6dl";
- 
+
 -	aliases {
 -		display = &display;
 -		ipu1 = &ipu1;
@@ -307,7 +307,7 @@ index ff8f7b1..9eb2ef1 100644
 -		};
 -	};
  };
- 
+
  &ds1339 {
 @@ -227,11 +68,3 @@
  		MX6QDL_PAD_SD3_CMD__GPIO7_IO02		0x170b0 /* SD1 CD */
@@ -391,11 +391,11 @@ index f988950..a5532ec 100644
  #include "imx6dl.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6S-8035 Module";
  	compatible = "karo,imx6dl-tx6dl", "fsl,imx6dl";
- 
+
 -	aliases {
 -		display = &display;
 -		ipu1 = &ipu1;
@@ -560,12 +560,12 @@ index f988950..a5532ec 100644
 -		};
 -	};
  };
- 
+
  &ds1339 {
 @@ -220,14 +61,6 @@
  	status = "disabled";
  };
- 
+
 -&ipu1_di0_disp0 {
 -	remote-endpoint = <&display0_in>;
 -};
@@ -862,11 +862,6 @@ index bf70787..67ed045 100644
   *
   * This file is dual-licensed: you can use it either under the terms
   * of the GPL or the X11 license, at your option. Note that this dual
-@@ -48,4 +48,3 @@
- 	model = "Ka-Ro electronics TX6U-801x Module";
- 	compatible = "karo,imx6dl-tx6dl", "fsl,imx6dl";
- };
--
 diff --git a/arch/arm/boot/dts/imx6dl-tx6u-8033-mb7.dts b/arch/arm/boot/dts/imx6dl-tx6u-8033-mb7.dts
 new file mode 100755
 index 0000000..d34189f
@@ -937,7 +932,7 @@ index 4d3204a..7030b26 100644
  #include "imx6dl.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6U-8033 Module";
  	compatible = "karo,imx6dl-tx6dl", "fsl,imx6dl";
@@ -1101,12 +1096,12 @@ index 4d3204a..7030b26 100644
 -		};
 -	};
  };
- 
+
  &ds1339 {
 @@ -215,14 +57,6 @@
  	status = "disabled";
  };
- 
+
 -&ipu1_di0_disp0 {
 -	remote-endpoint = <&display0_in>;
 -};
@@ -1188,7 +1183,7 @@ index 5e0c6bb..5342f2f 100644
  #include "imx6dl.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lvds.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6U-811x Module";
  	compatible = "karo,imx6dl-tx6dl", "fsl,imx6dl";
@@ -1477,13 +1472,13 @@ index b9a783f..c4588fb 100644
   * of the GPL or the X11 license, at your option. Note that this dual
 @@ -40,216 +40,9 @@
   */
- 
+
  /dts-v1/;
 -#include "imx6dl.dtsi"
 -#include "imx6qdl-tx6.dtsi"
 +#include "imx6dl-tx6u-811x.dts"
 +#include "imx6qdl-tx6-mb7.dtsi"
- 
+
  / {
 -	model = "Ka-Ro electronics TX6U-81xx Module on MB7 baseboard";
 -	compatible = "karo,imx6dl-tx6dl", "fsl,imx6dl";
@@ -1711,12 +1706,12 @@ index 2a129af..ac3050a 100644
  #include "imx6q.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6Q-1010 Module on CoMpact TFT";
  	compatible = "karo,imx6q-tx6q", "fsl,imx6q";
 +};
- 
+
 -	backlight: backlight {
 -		compatible = "pwm-backlight";
 -		pwms = <&pwm2 0 500000 0>;
@@ -1752,12 +1747,12 @@ index 2a129af..ac3050a 100644
 +	pwms = <&pwm2 0 500000 0>;
 +	/delete-property/ turn-on-delay-ms;
  };
- 
+
  &can1 {
 @@ -92,6 +66,10 @@
  	status = "disabled";
  };
- 
+
 +&lcd_panel {
 +	compatible = "edt,etm0700g0edh6";
 +};
@@ -1781,13 +1776,13 @@ index 2d2df488..4ee860b6 100644
  #include "imx6q.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
 -	model = "Ka-Ro electronics TX6Q-1010 Module";
 +	model = "Ka-Ro electronics TX6Q-1010/-1030 Module";
  	compatible = "karo,imx6q-tx6q", "fsl,imx6q";
 +};
- 
+
 -	backlight: backlight {
 -		compatible = "pwm-backlight";
 -		pwms = <&pwm2 0 500000 PWM_POLARITY_INVERTED>;
@@ -1829,7 +1824,7 @@ index 51d8b01..959ff3fb 100644
 @@ -47,6 +47,10 @@
  	model = "Ka-Ro electronics TX6Q-1020 Module on CoMpact TFT";
  	compatible = "karo,imx6q-tx6q", "fsl,imx6q";
- 
+
 +	aliases {
 +		display = &display;
 +	};
@@ -1840,7 +1835,7 @@ index 51d8b01..959ff3fb 100644
 @@ -69,14 +73,38 @@
  		default-brightness-level = <50>;
  	};
- 
+
 -	lcd@0 {
 -		compatible = "fsl,lcd";
 -		ipu_id = <0>;
@@ -1880,11 +1875,11 @@ index 51d8b01..959ff3fb 100644
 +		};
  	};
  };
- 
+
 @@ -96,6 +124,10 @@
  	status = "disabled";
  };
- 
+
 +&ipu1_di0_disp0 {
 +	remote-endpoint = <&display0_in>;
 +};
@@ -1962,7 +1957,7 @@ index a3a87cc..0a4daec 100644
  #include "imx6q.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6Q-1020 Module";
  	compatible = "karo,imx6q-tx6q", "fsl,imx6q";
@@ -1999,12 +1994,12 @@ index a3a87cc..0a4daec 100644
 -		status = "okay";
 -	};
  };
- 
+
  &ds1339 {
 @@ -88,10 +57,15 @@
  	status = "disabled";
  };
- 
+
 +&ipu2 {
 +	status = "disabled";
 +};
@@ -2087,7 +2082,7 @@ index 7c152e3..cb2fcb4 100644
  #include "imx6q.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lcd.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6Q-1036 Module";
  	compatible = "karo,imx6q-tx6q", "fsl,imx6q";
@@ -2251,12 +2246,12 @@ index 7c152e3..cb2fcb4 100644
 -		};
 -	};
  };
- 
+
  &ds1339 {
 @@ -215,18 +57,10 @@
  	status = "disabled";
  };
- 
+
 -&ipu1_di0_disp0 {
 -	remote-endpoint = <&display0_in>;
 -};
@@ -2264,7 +2259,7 @@ index 7c152e3..cb2fcb4 100644
  &ipu2 {
  	status = "disabled";
  };
- 
+
 -&reg_lcd0_pwr {
 -	status = "disabled";
 -};
@@ -2342,7 +2337,7 @@ index 0433e22..f7b0acb 100644
  #include "imx6q.dtsi"
  #include "imx6qdl-tx6.dtsi"
 +#include "imx6qdl-tx6-lvds.dtsi"
- 
+
  / {
 -	model = "Ka-Ro electronics TX6Q-1110 Module";
 +	model = "Ka-Ro electronics TX6Q-1110/-1130 Module";
@@ -2411,7 +2406,7 @@ index 0433e22..f7b0acb 100644
 -		wakeup-source;
 -	};
  };
- 
+
 -&kpp {
 -	status = "disabled"; /* pad conflict with backlight1 PWM */
 -};
@@ -2471,7 +2466,7 @@ index 0433e22..f7b0acb 100644
 +&ipu2 {
 +	status = "disabled";
  };
- 
+
  &sata {
  	status = "okay";
  };
@@ -2496,13 +2491,13 @@ index d78b129..387edf2 100644
   * of the GPL or the X11 license, at your option. Note that this dual
 @@ -40,225 +40,9 @@
   */
- 
+
  /dts-v1/;
 -#include "imx6q.dtsi"
 -#include "imx6qdl-tx6.dtsi"
 +#include "imx6q-tx6q-1110.dts"
 +#include "imx6qdl-tx6-mb7.dtsi"
- 
+
  / {
  	model = "Ka-Ro electronics TX6Q-1110/-1130 Module on MB7 baseboard";
 -	compatible = "karo,imx6q-tx6q", "fsl,imx6q";
@@ -3399,7 +3394,7 @@ index c6bec97..8be2de1 100644
  #include <dt-bindings/interrupt-controller/irq.h>
  #include <dt-bindings/pwm/pwm.h>
 +#include <dt-bindings/sound/fsl-imx-audmux.h>
- 
+
  / {
  	aliases {
 @@ -145,7 +146,7 @@
@@ -3409,7 +3404,7 @@ index c6bec97..8be2de1 100644
 -		regulator-boot-on;
 +		status = "disabled";
  	};
- 
+
  	reg_lcd1_pwr: regulator-lcd1-pwr {
 @@ -157,7 +158,7 @@
  		pinctrl-0 = <&pinctrl_lcd1_pwr>;
@@ -3418,11 +3413,11 @@ index c6bec97..8be2de1 100644
 -		regulator-boot-on;
 +		status = "disabled";
  	};
- 
+
  	reg_usbh1_vbus: regulator-usbh1-vbus {
 @@ -183,24 +184,56 @@
  	};
- 
+
  	sound {
 -		compatible = "karo,imx6qdl-tx6qdl-sgtl5000",
 -			     "fsl,imx-audio-sgtl5000";
@@ -3459,7 +3454,7 @@ index c6bec97..8be2de1 100644
 +		};
  	};
  };
- 
+
  &audmux {
  	status = "okay";
 +
@@ -3483,10 +3478,10 @@ index c6bec97..8be2de1 100644
 +		>;
 +	};
  };
- 
+
  &can1 {
 @@ -241,7 +274,7 @@
- 
+
  &fec {
  	pinctrl-names = "default";
 -	pinctrl-0 = <&pinctrl_enet>;
@@ -3516,7 +3511,7 @@ index c6bec97..8be2de1 100644
  };
 @@ -276,25 +311,34 @@
  };
- 
+
  &i2c1 {
 -	pinctrl-names = "default";
 +	pinctrl-names = "default", "gpio";
@@ -3526,7 +3521,7 @@ index c6bec97..8be2de1 100644
 +	sda-gpios = <&gpio3 28 GPIO_ACTIVE_HIGH>;
  	clock-frequency = <400000>;
  	status = "okay";
- 
+
  	ds1339: rtc@68 {
  		compatible = "dallas,ds1339";
  		reg = <0x68>;
@@ -3534,7 +3529,7 @@ index c6bec97..8be2de1 100644
 +		trickle-diode-disable;
  	};
  };
- 
+
  &i2c3 {
 -	pinctrl-names = "default";
 +	pinctrl-names = "default", "gpio";
@@ -3544,7 +3539,7 @@ index c6bec97..8be2de1 100644
 +	sda-gpios = <&gpio1 6 GPIO_ACTIVE_HIGH>;
  	clock-frequency = <400000>;
  	status = "okay";
- 
+
  	sgtl5000: sgtl5000@0a {
  		compatible = "fsl,sgtl5000";
 +		#sound-dai-cells = <0>;
@@ -3554,7 +3549,7 @@ index c6bec97..8be2de1 100644
 @@ -326,14 +370,108 @@
  	};
  };
- 
+
 +&kpp {
 +	pinctrl-names = "default";
 +	pinctrl-0 = <&pinctrl_kpp>;
@@ -3654,7 +3649,7 @@ index c6bec97..8be2de1 100644
  &iomuxc {
  	pinctrl-names = "default";
  	pinctrl-0 = <&pinctrl_hog>;
- 
+
  	pinctrl_hog: hoggrp {
  		fsl,pins = <
 -			MX6QDL_PAD_SD3_DAT2__GPIO7_IO06		0x1b0b1 /* ETN PHY RESET */
@@ -3665,7 +3660,7 @@ index c6bec97..8be2de1 100644
 @@ -451,12 +589,24 @@
  		>;
  	};
- 
+
 +	pinctrl_etnphy_int: etnphy-intgrp {
 +		fsl,pins = <
 +			MX6QDL_PAD_SD3_DAT4__GPIO7_IO01		0x1b0b1 /* ETN PHY INT */
@@ -3677,7 +3672,7 @@ index c6bec97..8be2de1 100644
  			MX6QDL_PAD_EIM_D20__GPIO3_IO20		0x1b0b1 /* ETN PHY POWER */
  		>;
  	};
- 
+
 +	pinctrl_etnphy_rst: etnphy-rstgrp {
 +		fsl,pins = <
 +			MX6QDL_PAD_SD3_DAT2__GPIO7_IO06		0x1b0b1 /* ETN PHY RESET */
@@ -3690,7 +3685,7 @@ index c6bec97..8be2de1 100644
 @@ -504,6 +654,13 @@
  		>;
  	};
- 
+
 +	pinctrl_i2c1_gpio: i2c1-gpiogrp {
 +		fsl,pins = <
 +			MX6QDL_PAD_EIM_D21__GPIO3_IO21		0x4001b8b1
@@ -3704,7 +3699,7 @@ index c6bec97..8be2de1 100644
 @@ -511,6 +668,13 @@
  		>;
  	};
- 
+
 +	pinctrl_i2c3_gpio: i2c3-gpiogrp {
 +		fsl,pins = <
 +			MX6QDL_PAD_GPIO_3__GPIO1_IO03		0x4001b8b1
@@ -4132,7 +4127,7 @@ index ec745eb..0f92c30 100644
   * This file is dual-licensed: you can use it either under the terms
   * of the GPL or the X11 license, at your option. Note that this dual
 @@ -45,9 +45,9 @@
- 
+
  / {
  	aliases {
 -		can0 = &can2;
@@ -4161,7 +4156,7 @@ index ec745eb..0f92c30 100644
 @@ -127,6 +127,22 @@
  		};
  	};
- 
+
 +	lcd-panel {
 +		compatible = "edt,etm0700g0dh6";
 +		pinctrl-names = "default";
@@ -4180,11 +4175,11 @@ index ec745eb..0f92c30 100644
 +
  	leds {
  		compatible = "gpio-leds";
- 
+
 @@ -176,19 +192,6 @@
  		gpio = <&gpio3 5 GPIO_ACTIVE_LOW>;
  	};
- 
+
 -	reg_lcd_pwr: regulator-lcdpwr {
 -		compatible = "regulator-fixed";
 -		regulator-name = "LCD POWER";
@@ -4204,7 +4199,7 @@ index ec745eb..0f92c30 100644
 @@ -267,14 +270,14 @@
  	};
  };
- 
+
 -&can1 {
 +&flexcan1 {
  	pinctrl-names = "default";
@@ -4212,7 +4207,7 @@ index ec745eb..0f92c30 100644
  	xceiver-supply = <&reg_can_xcvr>;
  	status = "okay";
  };
- 
+
 -&can2 {
 +&flexcan2 {
  	pinctrl-names = "default";
@@ -4220,7 +4215,7 @@ index ec745eb..0f92c30 100644
  	xceiver-supply = <&reg_can_xcvr>;
 @@ -304,10 +307,13 @@
  };
- 
+
  &fec1 {
 -	pinctrl-names = "default";
 +	pinctrl-names = "default", "sleep";
@@ -4235,7 +4230,7 @@ index ec745eb..0f92c30 100644
  	status = "okay";
 @@ -357,8 +363,11 @@
  };
- 
+
  &i2c2 {
 -	pinctrl-names = "default";
 +	pinctrl-names = "default", "gpio";
@@ -4245,7 +4240,7 @@ index ec745eb..0f92c30 100644
 +	sda-gpios = <&gpio1 1 GPIO_ACTIVE_HIGH>;
  	clock-frequency = <400000>;
  	status = "okay";
- 
+
 @@ -420,127 +429,129 @@
  &lcdif {
  	pinctrl-names = "default";
@@ -4253,7 +4248,7 @@ index ec745eb..0f92c30 100644
 -	lcd-supply = <&reg_lcd_pwr>;
 -	display = <&display>;
  	status = "okay";
- 
+
 -	display: display@di0 {
 -		bits-per-pixel = <32>;
 -		bus-width = <24>;
@@ -4263,7 +4258,7 @@ index ec745eb..0f92c30 100644
 +			remote-endpoint = <&panel_in>;
 +		};
 +	};
- 
+
 -		display-timings {
 -			VGA {
 -				clock-frequency = <25200000>;
@@ -4296,7 +4291,7 @@ index ec745eb..0f92c30 100644
 +			de-active = <1>;
 +			pixelclk-active = <1>;
 +		};
- 
+
 -			ETV570 {
 -				clock-frequency = <25200000>;
 -				hactive = <640>;
@@ -4328,7 +4323,7 @@ index ec745eb..0f92c30 100644
 +			de-active = <1>;
 +			pixelclk-active = <1>;
 +		};
- 
+
 -			ET0350 {
 -				clock-frequency = <6413760>;
 -				hactive = <320>;
@@ -4360,7 +4355,7 @@ index ec745eb..0f92c30 100644
 +			de-active = <1>;
 +			pixelclk-active = <1>;
 +		};
- 
+
 -			ET0430 {
 -				clock-frequency = <9009000>;
 -				hactive = <480>;
@@ -4392,7 +4387,7 @@ index ec745eb..0f92c30 100644
 +			de-active = <1>;
 +			pixelclk-active = <0>;
 +		};
- 
+
 -			ET0500 {
 -				clock-frequency = <33264000>;
 -				hactive = <800>;
@@ -4423,7 +4418,7 @@ index ec745eb..0f92c30 100644
 +			de-active = <1>;
 +			pixelclk-active = <1>;
 +		};
- 
+
 -			ET0700 { /* same as ET0500 */
 -				clock-frequency = <33264000>;
 -				hactive = <800>;
@@ -4455,7 +4450,7 @@ index ec745eb..0f92c30 100644
 +			de-active = <1>;
 +			pixelclk-active = <1>;
 +		};
- 
+
 -			ETQ570 {
 -				clock-frequency = <6596040>;
 -				hactive = <320>;
@@ -4491,7 +4486,7 @@ index ec745eb..0f92c30 100644
 @@ -713,6 +724,19 @@
  		>;
  	};
- 
+
 +	pinctrl_enet1_sleep: enet1-sleepgrp {
 +		fsl,pins = <
 +			MX6UL_PAD_ENET1_RX_DATA0__GPIO2_IO00	0x038b0
@@ -4511,7 +4506,7 @@ index ec745eb..0f92c30 100644
 @@ -733,6 +757,13 @@
  		>;
  	};
- 
+
 +	pinctrl_enet1_mdio_sleep: enet1-mdio-sleepgrp {
 +		fsl,pins = <
 +			MX6UL_PAD_GPIO1_IO07__GPIO1_IO07	0x038b0
@@ -4525,7 +4520,7 @@ index ec745eb..0f92c30 100644
 @@ -751,6 +782,12 @@
  		>;
  	};
- 
+
 +	pinctrl_etnphy0_rst_sleep: etnphy-rst-sleepgrp-0 {
 +		fsl,pins = <
 +			MX6UL_PAD_SNVS_TAMPER6__GPIO5_IO06	0x038b0
@@ -4538,7 +4533,7 @@ index ec745eb..0f92c30 100644
 @@ -817,6 +854,13 @@
  		>;
  	};
- 
+
 +	pinctrl_i2c2_gpio: i2c2-gpiogrp {
 +		fsl,pins = <
 +			MX6UL_PAD_GPIO1_IO00__GPIO1_IO00	0x4001b0b9
@@ -5310,7 +5305,7 @@ index 88d3f87..0258c46 100644
 --- a/arch/arm/boot/dts/imx6ull.dtsi
 +++ b/arch/arm/boot/dts/imx6ull.dtsi
 @@ -42,6 +42,7 @@
- 
+
  #include <dt-bindings/clock/imx6ul-clock.h>
  #include <dt-bindings/gpio/gpio.h>
 +#include <dt-bindings/input/input.h>
@@ -5324,7 +5319,7 @@ index a153546..0c81e47 100644
 @@ -505,7 +505,7 @@
  				status = "disabled";
  			};
- 
+
 -			can1: flexcan@02090000 {
 +			flexcan1: flexcan@02090000 {
  				compatible = "fsl,imx6ul-flexcan", "fsl,imx6q-flexcan";
@@ -5333,7 +5328,7 @@ index a153546..0c81e47 100644
 @@ -516,7 +516,7 @@
  				status = "disabled";
  			};
- 
+
 -			can2: flexcan@02094000 {
 +			flexcan2: flexcan@02094000 {
  				compatible = "fsl,imx6ul-flexcan", "fsl,imx6q-flexcan";

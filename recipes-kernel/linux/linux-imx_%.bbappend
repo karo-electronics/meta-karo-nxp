@@ -10,7 +10,7 @@ SRC_URI_append = "\
 	    file://0004-regulator-bd71837-prevent-warning-when-compiled-with.patch \
 	    file://0005-soc-imx-select-missing-PM_GENERIC_DOMAINS-for-i.MX8-.patch \
 	    file://0006-ARM64-dts-imx8mm-tx8m-1610-disable-arm-idle.patch \
-            file://0008-ARM64-dts-imx8mm-add-missing-bus-range-property-to-p.patch \
+			file://0008-ARM64-dts-imx8mm-add-missing-bus-range-property-to-p.patch \
 	    file://0009-enable-display-with-downgrading-sec-dsim.patch \
 	    file://0010-add-dtb-for-using-can-spi-mcp251x-device.patch \
 	    file://0011-patch-for-edt-m12.patch \
@@ -23,10 +23,12 @@ SRC_URI_append = "\
 	    file://0018-ARM-imx-enable-OCOTP-clock-before-accessing-fuse-reg.patch \
 	    file://0019-ARM-imx-enable-OCOTP-clock-before-accessing-ocotp-re.patch \
 	    file://0020-thermal-imx_thermal-enable-OCOTP-clock-before-access.patch \
+	    file://0021-tianma-add-2-lanes-version.patch \
+	    file://0022-add-dtbs-to-Makefile.patch \
 "
 
 # add this later, now patch is broken --^
-# ${@bb.utils.contains('KERNEL_FEATURES',"wifi","file://0007-karo-tx8m-enable-PCIe-support-for-LM511-WLAN-module.patch","",d)} 
+# ${@bb.utils.contains('KERNEL_FEATURES',"wifi","file://0007-karo-tx8m-enable-PCIe-support-for-LM511-WLAN-module.patch","",d)}
 
 KBUILD_DEFCONFIG_tx8m = "${@bb.utils.contains('KERNEL_FEATURES',"qt5","defconfig","tx8m_defconfig",d)}"
 KBUILD_DEFCONFIG_mx6ul = "txul_defconfig"

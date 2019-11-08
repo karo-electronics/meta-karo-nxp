@@ -1,0 +1,56 @@
+From 59cac6c4990117ae63f28be3a745d1fda9dbbf75 Mon Sep 17 00:00:00 2001
+From: OpenEmbedded <oe.patch@oe>
+Date: Thu, 7 Nov 2019 15:16:58 +0000
+
+---
+ drivers/gpu/drm/panel/panel-simple.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index 82a8307..e359813 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -2570,8 +2570,8 @@ static const struct display_timing tianma_tm101jvhg32_timing = {
+ 	.pixelclock = { 62600000, 68200000, 78100000, },
+ 	.hactive = { 1280, 1280, 1280, },
+ 	.hfront_porch = { 15, 64, 159, },
+-	.hback_porch = { 5, 4, 100, },
+-	.hsync_len = { 20, 1, 164, },
++	.hback_porch = { 5, 4, 149, },
++	.hsync_len = { 20, 1, 256, },
+ 	.vactive = { 800, 800, 800, },
+ 	.vfront_porch = { 3, 40, 99, },
+ 	.vback_porch = { 2, 1, 61, },
+@@ -2596,6 +2596,22 @@ static const struct panel_desc_dsi tianma_tm101jvhg32 = {
+ 	.lanes = 4,
+ };
+ 
++static const struct panel_desc_dsi tianma_tm101jvhg32_2 = {
++	.desc = {
++		.timings = &tianma_tm101jvhg32_timing,
++		.num_timings = 1,
++		.bpc = 8,
++		.size = {
++			.width = 217,
++			.height = 136,
++		},
++		.bus_format = MEDIA_BUS_FMT_RGB888_1X24,
++	},
++	.flags = MIPI_DSI_MODE_VIDEO | MIPI_DSI_MODE_VIDEO_BURST,
++	.format = MIPI_DSI_FMT_RGB888,
++	.lanes = 2,
++};
++
+ static const struct of_device_id dsi_of_match[] = {
+ 	{
+ 		.compatible = "auo,b080uan01",
+@@ -2616,6 +2632,9 @@ static const struct of_device_id dsi_of_match[] = {
+ 		.compatible = "tianma,tm101jvhg32",
+ 		.data = &tianma_tm101jvhg32,
+ 	}, {
++		.compatible = "tianma,tm101jvhg32-2",
++		.data = &tianma_tm101jvhg32_2,
++	}, {
+ 		/* sentinel */
+ 	}
+ };

@@ -5,33 +5,16 @@ Subject: [PATCH 2/8] ARM64: dts: add support for Ka-Ro electronics TX8M-1610
  module
 
 ---
- arch/arm64/boot/dts/freescale/Makefile        |   5 +-
  .../freescale/imx8mm-tx8m-1610-mipi-mb.dts    |  12 +
  .../boot/dts/freescale/imx8mm-tx8m-1610.dts   | 597 ++++++++++++++++++
  .../dts/freescale/imx8mm-tx8m-mipi-mb.dtsi    | 178 ++++++
  arch/arm64/configs/tx8m_defconfig             | 381 +++++++++++
- 5 files changed, 1172 insertions(+), 1 deletion(-)
+ 4 files changed, 1172 insertions(+), 1 deletion(-)
  create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610-mipi-mb.dts
  create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610.dts
  create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-tx8m-mipi-mb.dtsi
  create mode 100644 arch/arm64/configs/tx8m_defconfig
 
-diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-index fcbca40bc8fa..4bd8c58e8529 100644
---- a/arch/arm64/boot/dts/freescale/Makefile
-+++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -126,7 +126,10 @@ fsl-imx8mm-evk-inmate.dtb \
-				 fsl-imx8mm-evk-revb.dtb \
-				 fsl-imx8mm-evk-revb-rm67191.dtb \
-				 fsl-imx8mm-ddr4-evk-rm67191.dtb \
--				 fsl-imx8mm-ddr4-qca9377-evk.dtb
-+				 fsl-imx8mm-ddr4-qca9377-evk.dtb \
-+				 imx8mm-tx8m-1610.dtb \
-+				 imx8mm-tx8m-1610-mipi-mb.dtb
-+
- always		:= $(dtb-y)
- subdir-y	:= $(dts-dirs)
- clean-files	:= *.dtb
 diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610-mipi-mb.dts b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610-mipi-mb.dts
 new file mode 100644
 index 000000000000..a52c87e49a81
@@ -1284,6 +1267,5 @@ index 000000000000..015b512198e2
 +CONFIG_CRYPTO_GHASH_ARM64_CE=y
 +CONFIG_CRYPTO_AES_ARM64_CE_CCM=y
 +CONFIG_CRYPTO_AES_ARM64_CE_BLK=y
--- 
+--
 2.20.1
-
