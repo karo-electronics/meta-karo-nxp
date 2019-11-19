@@ -674,39 +674,38 @@ diff --git a/arch/arm/mach-imx/imx8m/Kconfig b/arch/arm/mach-imx/imx8m/Kconfig
 index 249436c33e155af907adda25a88fd82de8933d51..56971325fe423b36d8c5e7415ac73362935557ee 100644
 --- a/arch/arm/mach-imx/imx8m/Kconfig
 +++ b/arch/arm/mach-imx/imx8m/Kconfig
-@@ -60,6 +60,11 @@ config TARGET_IMX8MM_DDR4_EVK
- 	select SUPPORT_SPL
- 	select IMX8M_DDR4
- 
+@@ -78,6 +78,11 @@ config TARGET_IMX8MN_EVK
+        select SUPPORT_SPL
+        select IMX8M_DDR4
+
 +config TARGET_TX8M
-+	bool "Ka-Ro electronics imx8mm boards"
-+	select IMX8MM
-+	select SUPPORT_SPL
++  bool "Ka-Ro electronics imx8mm boards"
++  select IMX8MM
++  select SUPPORT_SPL
 +
  endchoice
- 
+
  config SYS_SOC
-@@ -70,5 +75,6 @@ source "board/freescale/imx8mq_arm2/Kconfig"
- source "board/freescale/imx8mq_phanbell/Kconfig"
+@@ -90,5 +95,6 @@ source "board/freescale/imx8mq_aiy/Kconfig"
  source "board/freescale/imx8mm_evk/Kconfig"
  source "board/freescale/imx8mm_val/Kconfig"
+ source "board/freescale/imx8mn_evk/Kconfig"
 +source "board/karo/tx8mm/Kconfig"
- 
+
  endif
 diff --git a/arch/arm/mach-imx/spl.c b/arch/arm/mach-imx/spl.c
 index 7b9e19ed1f445e275d7dcdd9d23712d08428b9a3..143c335a9285bb674c27905f1a16e23957092ec6 100644
 --- a/arch/arm/mach-imx/spl.c
 +++ b/arch/arm/mach-imx/spl.c
-@@ -125,7 +125,7 @@ u32 spl_boot_device(void)
+@@ -129,7 +129,7 @@ u32 spl_boot_device(void)
  	case SD1_BOOT:
  	case MMC1_BOOT:
  		return BOOT_DEVICE_MMC1;
--#if defined(CONFIG_IMX8MM)
-+#if defined(CONFIG_IMX8MM) && !defined(CONFIG_TARGET_TX8M)
+-#if defined(CONFIG_IMX8MM) || defined(CONFIG_IMX8MN)
++#if defined(CONFIG_IMX8MM) || defined(CONFIG_IMX8MN) && !defined(CONFIG_TARGET_TX8M)
  	case SD2_BOOT:
  	case MMC2_BOOT:
- 		return BOOT_DEVICE_MMC1;
-diff --git a/board/karo/common/Makefile b/board/karo/common/Makefile
+ 		return BOOT_DEVICE_MMC1;diff --git a/board/karo/common/Makefile b/board/karo/common/Makefile
 new file mode 100644
 index 0000000000000000000000000000000000000000..d58cf497de1605047851925d7021647a89ca35f6
 --- /dev/null
@@ -6548,6 +6547,5 @@ J?EiG(e*tm14153p
 literal 0
 HcmV?d00001
 
--- 
+--
 2.7.4
-
