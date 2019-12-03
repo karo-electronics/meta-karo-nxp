@@ -1,17 +1,17 @@
-From 5e9996b5dac459dd5aa76a37089cf030cd0b9c5e Mon Sep 17 00:00:00 2001
+From 7d6af26c7ed965577736ab3384b93e5d0a56524b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 12:29:51 +0100
-Subject: [PATCH 02/23] Fix alignment of reserved memory section
+Subject: [PATCH 02/39] Fix alignment of reserved memory section
 
 ---
  arch/arm/mach-imx/imx8m/soc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
-index 9408105569a56aecf4a3aa67e6b79cc50781be89..ee945d116ffe36ba52cc0fa4ee9b4853a6c50555 100644
+index 1f90d66..f35bfaf 100644
 --- a/arch/arm/mach-imx/imx8m/soc.c
 +++ b/arch/arm/mach-imx/imx8m/soc.c
-@@ -150,7 +150,7 @@ void enable_caches(void)
+@@ -160,7 +160,7 @@ void enable_caches(void)
  {
  	/* If OPTEE runs, remove OPTEE memory from MMU table to avoid speculative prefetch */
  	if (rom_pointer[1]) {

@@ -1,0 +1,25 @@
+From 2140a22741df1c6948d6f2d546148f7b8ddd4d26 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Fri, 29 Nov 2019 14:23:31 +0100
+Subject: [PATCH 2/2] usb: gadget: sdp: silence another annoying message
+
+---
+ drivers/usb/gadget/f_sdp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/usb/gadget/f_sdp.c b/drivers/usb/gadget/f_sdp.c
+index cebaa99..54b85df 100644
+--- a/drivers/usb/gadget/f_sdp.c
++++ b/drivers/usb/gadget/f_sdp.c
+@@ -777,7 +777,7 @@ static void sdp_handle_in_ep(void)
+ 				panic("Error in search header, failed to jump\n");
+ 			}
+ 
+-			printf("Found header at 0x%08x\n", sdp_func->jmp_address);
++			debug("Found header at 0x%08x\n", sdp_func->jmp_address);
+ 
+ 			header = (struct image_header *)(ulong)(sdp_func->jmp_address);
+ 
+-- 
+2.7.4
+

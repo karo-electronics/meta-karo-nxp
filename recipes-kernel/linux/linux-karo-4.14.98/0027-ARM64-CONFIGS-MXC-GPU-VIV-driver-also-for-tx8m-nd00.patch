@@ -1,0 +1,19 @@
+commit 66dabde4005aa6303a10811b6ef80e7dc5a389ed
+Author: mb-karo <mb@karo-electronics.de>
+Date:   Fri Nov 29 09:19:40 2019 +0000
+
+    arm64/configs: MXC_GPU_VIV driver also for tx8m-nd00
+
+diff --git a/arch/arm64/configs/tx8m-nd00_defconfig b/arch/arm64/configs/tx8m-nd00_defconfig
+index c377c47..1d39400 100644
+--- a/arch/arm64/configs/tx8m-nd00_defconfig
++++ b/arch/arm64/configs/tx8m-nd00_defconfig
+@@ -390,7 +390,7 @@ CONFIG_UDF_FS=y
+ CONFIG_VFAT_FS=y
+ CONFIG_TMPFS=y
+ CONFIG_HUGETLBFS=y
+-# CONFIG_MXC_GPU_VIV is not set
++CONFIG_MXC_GPU_VIV=y
+ # CONFIG_MISC_FILESYSTEMS is not set
+ CONFIG_NFS_FS=y
+ CONFIG_NFS_V4=y

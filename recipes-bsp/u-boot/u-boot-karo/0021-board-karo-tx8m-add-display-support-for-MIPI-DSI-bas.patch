@@ -1,7 +1,7 @@
-From a055e0c5f655143c57b81382b40f3b19e79b0448 Mon Sep 17 00:00:00 2001
+From 657e60563f6fe3215ad4cf69775da462ccaedf35 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 12:30:37 +0100
-Subject: [PATCH 21/23] board: karo: tx8m: add display support for MIPI-DSI
+Subject: [PATCH 21/39] board: karo: tx8m: add display support for MIPI-DSI
  baseboard
 
 ---
@@ -12,7 +12,7 @@ Subject: [PATCH 21/23] board: karo: tx8m: add display support for MIPI-DSI
  4 files changed, 269 insertions(+), 4 deletions(-)
 
 diff --git a/board/karo/tx8mm/tx8mm.c b/board/karo/tx8mm/tx8mm.c
-index 92feda7487f3d868ee08b8379af9f592f36b793c..51fa19e173f1986654bcae90bb3559982649eac6 100644
+index 92feda7..51fa19e 100644
 --- a/board/karo/tx8mm/tx8mm.c
 +++ b/board/karo/tx8mm/tx8mm.c
 @@ -534,3 +534,254 @@ int mmc_map_to_kernel_blk(int devno)
@@ -271,7 +271,7 @@ index 92feda7487f3d868ee08b8379af9f592f36b793c..51fa19e173f1986654bcae90bb355998
 +}
 +#endif
 diff --git a/configs/tx8m-1610_defconfig b/configs/tx8m-1610_defconfig
-index 24ff902638deef7541cf153536d96fffbc955763..904970f53731da21f3958d92add23af43564d830 100644
+index 24ff902..904970f 100644
 --- a/configs/tx8m-1610_defconfig
 +++ b/configs/tx8m-1610_defconfig
 @@ -24,7 +24,7 @@ CONFIG_BOOTCOMMAND="run bootargs_${boot_mode} bootm_cmd"
@@ -295,10 +295,10 @@ index 24ff902638deef7541cf153536d96fffbc955763..904970f53731da21f3958d92add23af4
  CONFIG_OF_LIBFDT_OVERLAY=y
  # CONFIG_EFI_LOADER is not set
 diff --git a/drivers/video/sec_mipi_dsim.c b/drivers/video/sec_mipi_dsim.c
-index 7329d23dbfd36e315eca8ca2598cc4ec6741a505..d95af7b3d9e81dc6be12e159e82abeea5115fe0a 100644
+index a56414f..08429e7 100644
 --- a/drivers/video/sec_mipi_dsim.c
 +++ b/drivers/video/sec_mipi_dsim.c
-@@ -439,6 +439,12 @@ static int sec_mipi_dsim_config_pll(struct sec_mipi_dsim *dsim)
+@@ -449,6 +449,12 @@ static int sec_mipi_dsim_config_pll(struct sec_mipi_dsim *dsim)
  	return 0;
  }
  
@@ -311,7 +311,7 @@ index 7329d23dbfd36e315eca8ca2598cc4ec6741a505..d95af7b3d9e81dc6be12e159e82abeea
  static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
  {
  	uint32_t bpp, hfp_wc, hbp_wc, hsa_wc;
-@@ -462,8 +468,10 @@ static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
+@@ -472,8 +478,10 @@ static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
  		hfp_wc = vmode->right_margin * (bpp >> 3);
  		hbp_wc = vmode->left_margin * (bpp >> 3);
  	} else {
@@ -324,7 +324,7 @@ index 7329d23dbfd36e315eca8ca2598cc4ec6741a505..d95af7b3d9e81dc6be12e159e82abeea
  	}
  
  	mhporch |= MHPORCH_SET_MAINHFP(hfp_wc) |
-@@ -475,7 +483,8 @@ static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
+@@ -485,7 +493,8 @@ static void sec_mipi_dsim_set_main_mode(struct sec_mipi_dsim *dsim)
  	if (dsim->dsi_panel_drv) {
  		hsa_wc = vmode->hsync_len * (bpp >> 3);
  	} else {
@@ -335,7 +335,7 @@ index 7329d23dbfd36e315eca8ca2598cc4ec6741a505..d95af7b3d9e81dc6be12e159e82abeea
  
  	msync |= MSYNC_SET_MAINVSA(vmode->vsync_len) |
 diff --git a/include/configs/tx8mm.h b/include/configs/tx8mm.h
-index 012a3d0223d757d5b49f54306d45b34bf14f58c7..6dcea227dd00bd86ec4035596ae4a9762b5b7d09 100644
+index 012a3d0..6dcea22 100644
 --- a/include/configs/tx8mm.h
 +++ b/include/configs/tx8mm.h
 @@ -109,6 +109,7 @@

@@ -1,7 +1,7 @@
-From aeb5c7f861ffb8a71545d7c64876878865e29451 Mon Sep 17 00:00:00 2001
+From a89fca1ad36333a0aced2bbe91be491c7698662a Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 13:58:25 +0100
-Subject: [PATCH 09/23] pmic: bd71837: silence noisy output and prevent
+Subject: [PATCH 09/39] pmic: bd71837: silence noisy output and prevent
  compiler warning
 
 Make the message printed upon driver init a debug message and fix the
@@ -11,7 +11,7 @@ WARNING: Prefer using '"%s...", __func__' to using 'power_bd71837_init', this fu
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/power/pmic/pmic_bd71837.c b/drivers/power/pmic/pmic_bd71837.c
-index 74195ccae89fe4c202b177dc062aaaaf6df961f3..5131ce65437a4fd9fc96b4a1bc5f5e7174c9754b 100644
+index 74195cc..5131ce6 100644
 --- a/drivers/power/pmic/pmic_bd71837.c
 +++ b/drivers/power/pmic/pmic_bd71837.c
 @@ -27,7 +27,7 @@ int power_bd71837_init (unsigned char bus) {

@@ -5,5 +5,5 @@ SRC_URI_append = " \
 "
 
 do_compile_prepend() {
-    export dtbs_ddr3l=imx8mm-tx8m-1610.dtb
+    export dtbs_ddr3l=${UBOOT_DTB_NAME}
 }

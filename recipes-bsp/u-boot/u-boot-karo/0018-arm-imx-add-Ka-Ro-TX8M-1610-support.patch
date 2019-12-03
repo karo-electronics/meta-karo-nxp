@@ -1,13 +1,13 @@
-From e2081c2f0400df1e71d505fd72c2242b50d7a9eb Mon Sep 17 00:00:00 2001
+From 34242b268fd144242c35fa6be297f28d1841c620 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 12:28:07 +0100
-Subject: [PATCH 18/23] arm: imx: add Ka-Ro TX8M-1610 support
+Subject: [PATCH 18/39] arm: imx: add Ka-Ro TX8M-1610 support
 
 ---
  arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi          |   12 +
  arch/arm/dts/imx8mm-tx8m-1610.dts                  |  590 ++++++++++
  arch/arm/mach-imx/imx8m/Kconfig                    |    6 +
- arch/arm/mach-imx/spl.c                            |    2 +-
+ arch/arm/mach-imx/spl.c                            |    9 +-
  board/karo/common/Makefile                         |    7 +
  board/karo/common/fdt.c                            |   57 +
  board/karo/tx8mm/Kconfig                           |   20 +
@@ -30,7 +30,7 @@ Subject: [PATCH 18/23] arm: imx: add Ka-Ro TX8M-1610 support
  board/karo/tx8mm/tx8mm.c                           |  535 +++++++++
  configs/tx8m-1610_defconfig                        |  100 ++
  include/configs/tx8mm.h                            |  188 ++++
- 27 files changed, 6220 insertions(+), 1 deletion(-)
+ 27 files changed, 6224 insertions(+), 4 deletions(-)
  create mode 100644 arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi
  create mode 100644 arch/arm/dts/imx8mm-tx8m-1610.dts
  create mode 100644 board/karo/common/Makefile
@@ -58,7 +58,7 @@ Subject: [PATCH 18/23] arm: imx: add Ka-Ro TX8M-1610 support
 
 diff --git a/arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi b/arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi
 new file mode 100644
-index 0000000000000000000000000000000000000000..a8fb4907476a2559e7f03303b1e707e93e74d0cb
+index 0000000..a8fb490
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi
 @@ -0,0 +1,12 @@
@@ -76,7 +76,7 @@ index 0000000000000000000000000000000000000000..a8fb4907476a2559e7f03303b1e707e9
 +};
 diff --git a/arch/arm/dts/imx8mm-tx8m-1610.dts b/arch/arm/dts/imx8mm-tx8m-1610.dts
 new file mode 100644
-index 0000000000000000000000000000000000000000..2f457314506a4bf62533054ef76baaab41674ac8
+index 0000000..2f45731
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-tx8m-1610.dts
 @@ -0,0 +1,590 @@
@@ -671,17 +671,17 @@ index 0000000000000000000000000000000000000000..2f457314506a4bf62533054ef76baaab
 +	};
 +};
 diff --git a/arch/arm/mach-imx/imx8m/Kconfig b/arch/arm/mach-imx/imx8m/Kconfig
-index 249436c33e155af907adda25a88fd82de8933d51..56971325fe423b36d8c5e7415ac73362935557ee 100644
+index 597ea53..9b58030 100644
 --- a/arch/arm/mach-imx/imx8m/Kconfig
 +++ b/arch/arm/mach-imx/imx8m/Kconfig
 @@ -78,6 +78,11 @@ config TARGET_IMX8MN_EVK
-        select SUPPORT_SPL
-        select IMX8M_DDR4
+ 	select SUPPORT_SPL
+ 	select IMX8M_DDR4
 
 +config TARGET_TX8M
-+  bool "Ka-Ro electronics imx8mm boards"
-+  select IMX8MM
-+  select SUPPORT_SPL
++	bool "Ka-Ro electronics imx8mm boards"
++	select IMX8MM
++	select SUPPORT_SPL
 +
  endchoice
 
@@ -694,20 +694,36 @@ index 249436c33e155af907adda25a88fd82de8933d51..56971325fe423b36d8c5e7415ac73362
 
  endif
 diff --git a/arch/arm/mach-imx/spl.c b/arch/arm/mach-imx/spl.c
-index 7b9e19ed1f445e275d7dcdd9d23712d08428b9a3..143c335a9285bb674c27905f1a16e23957092ec6 100644
+index e6a6b39..df4ef78 100644
 --- a/arch/arm/mach-imx/spl.c
 +++ b/arch/arm/mach-imx/spl.c
-@@ -129,7 +129,7 @@ u32 spl_boot_device(void)
+@@ -118,18 +118,19 @@ u32 spl_boot_device(void)
+ 		return BOOT_DEVICE_MMC1;
+ #elif defined(CONFIG_IMX8)
+ 	case MMC1_BOOT:
+-                return BOOT_DEVICE_MMC1;
++		return BOOT_DEVICE_MMC1;
+ 	case SD2_BOOT:
+ 		return BOOT_DEVICE_MMC2_2;
+-        case SD3_BOOT:
+-                return BOOT_DEVICE_MMC1;
++	case SD3_BOOT:
++		return BOOT_DEVICE_MMC1;
+ 	case FLEXSPI_BOOT:
+ 		return BOOT_DEVICE_SPI;
+ #elif defined(CONFIG_IMX8M)
  	case SD1_BOOT:
  	case MMC1_BOOT:
  		return BOOT_DEVICE_MMC1;
 -#if defined(CONFIG_IMX8MM) || defined(CONFIG_IMX8MN)
-+#if defined(CONFIG_IMX8MM) || defined(CONFIG_IMX8MN) && !defined(CONFIG_TARGET_TX8M)
++#if (defined(CONFIG_IMX8MM) || defined(CONFIG_IMX8MN)) && \
++	!defined(CONFIG_TARGET_TX8M)
  	case SD2_BOOT:
  	case MMC2_BOOT:
- 		return BOOT_DEVICE_MMC1;diff --git a/board/karo/common/Makefile b/board/karo/common/Makefile
+ 		return BOOT_DEVICE_MMC1;
+diff --git a/board/karo/common/Makefile b/board/karo/common/Makefile
 new file mode 100644
-index 0000000000000000000000000000000000000000..d58cf497de1605047851925d7021647a89ca35f6
+index 0000000..d58cf49
 --- /dev/null
 +++ b/board/karo/common/Makefile
 @@ -0,0 +1,7 @@
@@ -720,7 +736,7 @@ index 0000000000000000000000000000000000000000..d58cf497de1605047851925d7021647a
 +obj-y += fdt.o
 diff --git a/board/karo/common/fdt.c b/board/karo/common/fdt.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..a769276e36d63cc52635158f62afe1bc7f5f56e1
+index 0000000..a769276
 --- /dev/null
 +++ b/board/karo/common/fdt.c
 @@ -0,0 +1,57 @@
@@ -783,7 +799,7 @@ index 0000000000000000000000000000000000000000..a769276e36d63cc52635158f62afe1bc
 +}
 diff --git a/board/karo/tx8mm/Kconfig b/board/karo/tx8mm/Kconfig
 new file mode 100644
-index 0000000000000000000000000000000000000000..3757ba9795a416761e41f1bb0d97449eae7c4c4b
+index 0000000..3757ba9
 --- /dev/null
 +++ b/board/karo/tx8mm/Kconfig
 @@ -0,0 +1,20 @@
@@ -809,7 +825,7 @@ index 0000000000000000000000000000000000000000..3757ba9795a416761e41f1bb0d97449e
 +endif
 diff --git a/board/karo/tx8mm/Makefile b/board/karo/tx8mm/Makefile
 new file mode 100644
-index 0000000000000000000000000000000000000000..3a5a9eb5adc0fb6b6072ec503231794984c01202
+index 0000000..3a5a9eb
 --- /dev/null
 +++ b/board/karo/tx8mm/Makefile
 @@ -0,0 +1,12 @@
@@ -827,7 +843,7 @@ index 0000000000000000000000000000000000000000..3a5a9eb5adc0fb6b6072ec5032317949
 +endif
 diff --git a/board/karo/tx8mm/ddr/Makefile b/board/karo/tx8mm/ddr/Makefile
 new file mode 100644
-index 0000000000000000000000000000000000000000..30b5b92189fa7be2464c877c3aba85c514cfe319
+index 0000000..30b5b92
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/Makefile
 @@ -0,0 +1,10 @@
@@ -843,7 +859,7 @@ index 0000000000000000000000000000000000000000..30b5b92189fa7be2464c877c3aba85c5
 +endif
 diff --git a/board/karo/tx8mm/ddr/ddr.h b/board/karo/tx8mm/ddr/ddr.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..66cefce03d6819b6246807b90b92036d0fb3f493
+index 0000000..66cefce
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr.h
 @@ -0,0 +1,59 @@
@@ -908,7 +924,7 @@ index 0000000000000000000000000000000000000000..66cefce03d6819b6246807b90b92036d
 +#endif
 diff --git a/board/karo/tx8mm/ddr/ddr3l/Makefile b/board/karo/tx8mm/ddr/ddr3l/Makefile
 new file mode 100644
-index 0000000000000000000000000000000000000000..dac4d50678318cc8f6467f454cf7c25ba14a8f6d
+index 0000000..dac4d50
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/Makefile
 @@ -0,0 +1,13 @@
@@ -927,7 +943,7 @@ index 0000000000000000000000000000000000000000..dac4d50678318cc8f6467f454cf7c25b
 +endif
 diff --git a/board/karo/tx8mm/ddr/ddr3l/anamix_common.h b/board/karo/tx8mm/ddr/ddr3l/anamix_common.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..2413fe1e38d92052c0e7372b3e8118fec9a596af
+index 0000000..2413fe1
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/anamix_common.h
 @@ -0,0 +1,88 @@
@@ -1021,7 +1037,7 @@ index 0000000000000000000000000000000000000000..2413fe1e38d92052c0e7372b3e8118fe
 +#endif
 diff --git a/board/karo/tx8mm/ddr/ddr3l/ddr3_define.h b/board/karo/tx8mm/ddr/ddr3l/ddr3_define.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..e2ce7271afda5d8ea2ca3a0aea85584d8ab80053
+index 0000000..e2ce727
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/ddr3_define.h
 @@ -0,0 +1,43 @@
@@ -1070,7 +1086,7 @@ index 0000000000000000000000000000000000000000..e2ce7271afda5d8ea2ca3a0aea85584d
 +#endif
 diff --git a/board/karo/tx8mm/ddr/ddr3l/ddr3_phyinit_task.c b/board/karo/tx8mm/ddr/ddr3l/ddr3_phyinit_task.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..fb1bfe41624dd3ec5ca388e9a7d97c85629b34f5
+index 0000000..fb1bfe4
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/ddr3_phyinit_task.c
 @@ -0,0 +1,73 @@
@@ -1149,7 +1165,7 @@ index 0000000000000000000000000000000000000000..fb1bfe41624dd3ec5ca388e9a7d97c85
 +}
 diff --git a/board/karo/tx8mm/ddr/ddr3l/ddr3_phyinit_train_sw_ffc_fw09.c b/board/karo/tx8mm/ddr/ddr3l/ddr3_phyinit_train_sw_ffc_fw09.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..0cf71a7675daada1ece38f35fdbfa0f7cd8c8f9c
+index 0000000..0cf71a7
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/ddr3_phyinit_train_sw_ffc_fw09.c
 @@ -0,0 +1,1156 @@
@@ -2311,7 +2327,7 @@ index 0000000000000000000000000000000000000000..0cf71a7675daada1ece38f35fdbfa0f7
 +}
 diff --git a/board/karo/tx8mm/ddr/ddr3l/ddr3_sw_fast_freq_chg_fw09.c b/board/karo/tx8mm/ddr/ddr3l/ddr3_sw_fast_freq_chg_fw09.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..e3875f5a3663f8fa77d277752bebd8ea196206a3
+index 0000000..e3875f5
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/ddr3_sw_fast_freq_chg_fw09.c
 @@ -0,0 +1,277 @@
@@ -2594,7 +2610,7 @@ index 0000000000000000000000000000000000000000..e3875f5a3663f8fa77d277752bebd8ea
 +}
 diff --git a/board/karo/tx8mm/ddr/ddr3l/restore_1d2d_trained_csr_ddr3_p012.c b/board/karo/tx8mm/ddr/ddr3l/restore_1d2d_trained_csr_ddr3_p012.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..f01ed9f69bab5f46d299a68278adf2617d8519f5
+index 0000000..f01ed9f
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/restore_1d2d_trained_csr_ddr3_p012.c
 @@ -0,0 +1,969 @@
@@ -3569,7 +3585,7 @@ index 0000000000000000000000000000000000000000..f01ed9f69bab5f46d299a68278adf261
 +}
 diff --git a/board/karo/tx8mm/ddr/ddr3l/save_1d2d_trained_csr_ddr3_p012.c b/board/karo/tx8mm/ddr/ddr3l/save_1d2d_trained_csr_ddr3_p012.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..4ea62bbc2bdb387911115b311aa7e9ff2a549c60
+index 0000000..4ea62bb
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr3l/save_1d2d_trained_csr_ddr3_p012.c
 @@ -0,0 +1,971 @@
@@ -4546,7 +4562,7 @@ index 0000000000000000000000000000000000000000..4ea62bbc2bdb387911115b311aa7e9ff
 +}
 diff --git a/board/karo/tx8mm/ddr/ddr_init.c b/board/karo/tx8mm/ddr/ddr_init.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..6d15c114380dbfb389139cc932a136121625660e
+index 0000000..6d15c11
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddr_init.c
 @@ -0,0 +1,173 @@
@@ -4725,7 +4741,7 @@ index 0000000000000000000000000000000000000000..6d15c114380dbfb389139cc932a13612
 +}
 diff --git a/board/karo/tx8mm/ddr/ddrphy_train.c b/board/karo/tx8mm/ddr/ddrphy_train.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..3d9fe28925d922473e4d0c4144f8585aaf9071fe
+index 0000000..3d9fe28
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/ddrphy_train.c
 @@ -0,0 +1,351 @@
@@ -5082,7 +5098,7 @@ index 0000000000000000000000000000000000000000..3d9fe28925d922473e4d0c4144f8585a
 +}
 diff --git a/board/karo/tx8mm/ddr/helper.c b/board/karo/tx8mm/ddr/helper.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..a63be80de0950b83e10ee1a8807436eb1033b458
+index 0000000..a63be80
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/helper.c
 @@ -0,0 +1,102 @@
@@ -5190,7 +5206,7 @@ index 0000000000000000000000000000000000000000..a63be80de0950b83e10ee1a8807436eb
 +}
 diff --git a/board/karo/tx8mm/ddr/wait_ddrphy_training_complete.c b/board/karo/tx8mm/ddr/wait_ddrphy_training_complete.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..8b1febe4fc27d7cf502d8a1ce70ddfc2cdce10c5
+index 0000000..8b1febe
 --- /dev/null
 +++ b/board/karo/tx8mm/ddr/wait_ddrphy_training_complete.c
 @@ -0,0 +1,101 @@
@@ -5297,7 +5313,7 @@ index 0000000000000000000000000000000000000000..8b1febe4fc27d7cf502d8a1ce70ddfc2
 +}
 diff --git a/board/karo/tx8mm/spl.c b/board/karo/tx8mm/spl.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..2394d0f1e4629aa40e4cddb8f9ea915ba22c1e05
+index 0000000..2394d0f
 --- /dev/null
 +++ b/board/karo/tx8mm/spl.c
 @@ -0,0 +1,306 @@
@@ -5609,7 +5625,7 @@ index 0000000000000000000000000000000000000000..2394d0f1e4629aa40e4cddb8f9ea915b
 +}
 diff --git a/board/karo/tx8mm/tx8mm.c b/board/karo/tx8mm/tx8mm.c
 new file mode 100644
-index 0000000000000000000000000000000000000000..038cb28389e493e8257206684d1ee3389737435c
+index 0000000..038cb28
 --- /dev/null
 +++ b/board/karo/tx8mm/tx8mm.c
 @@ -0,0 +1,535 @@
@@ -6150,7 +6166,7 @@ index 0000000000000000000000000000000000000000..038cb28389e493e8257206684d1ee338
 +}
 diff --git a/configs/tx8m-1610_defconfig b/configs/tx8m-1610_defconfig
 new file mode 100644
-index 0000000000000000000000000000000000000000..24ff902638deef7541cf153536d96fffbc955763
+index 0000000..24ff902
 --- /dev/null
 +++ b/configs/tx8m-1610_defconfig
 @@ -0,0 +1,100 @@
@@ -6256,7 +6272,7 @@ index 0000000000000000000000000000000000000000..24ff902638deef7541cf153536d96fff
 +# CONFIG_EFI_LOADER is not set
 diff --git a/include/configs/tx8mm.h b/include/configs/tx8mm.h
 new file mode 100644
-index 0000000000000000000000000000000000000000..012a3d0223d757d5b49f54306d45b34bf14f58c7
+index 0000000..012a3d0
 --- /dev/null
 +++ b/include/configs/tx8mm.h
 @@ -0,0 +1,188 @@
@@ -6448,104 +6464,3 @@ index 0000000000000000000000000000000000000000..012a3d0223d757d5b49f54306d45b34b
 +#endif
 +
 +#endif
-new file mode 100644
-index 0000000000000000000000000000000000000000..001cca700efd7316addf23d545b08d092bc4cd58
-GIT binary patch
-literal 15414
-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
-zz|9Eu1`1nZekHus=fU+)zI7ddS0UW_B%0AWI{9zuX|x*(hdd74ITPVh?_yj@I=l%P
-zz3`BycZN0uJ4fE|G483qj6uQeagBE&+#Kd!qObHJ_c%T@dpLE?LyLElqn#z&?1=4X
-zN5r~&kkCbFD&C3+QLIvKG2)07pL-D2hRjU1KnL6t{cgrJ;qPyM>M>-z_2%I%kdT>P
-zNs_&Cu;q($raUD7K;>Fb0B^m>n~c~#Siq&>Q?yu;7r{+(|El~N%%K!riN=tvmmmw3
-z_?%-)=OV~WMJ#(UZMgcwYk=b{!bZMOn&Y6aut$=%qWy`>CALRO7p?!R>x;XykSnh>
-zV*p3@BAtcj{R#6ya=b(gv83!8uc+PO7$M?udLfcMyk!pN-o8<ZwUUx8=6_zfQkNXD
-z6U*nO7CXVBAl^Qe8=p%rqHHcD;*)n>v%>&|O;avK3Wiv|0l%a;QF-3YD=(?Q6*c4&
-zZP|A3gy8~7+Qj0b`G3BweDrl6`fjGjZdDjI5aoX-$Q~+U*_QvYSXy>wFHBE0O^e}T
-z=nqyDkk;ygr3>e!rp`sb`C7ZJrdj?XN9jNcHTWgN_i=gq>j6(`LR;e#BZ-m7zZs6N
-z!M4pYbQQ?$ef<3sGUOle*`XV8FE4iSR3u-%kSojOW`A}1l)P<pY*s)610xUx2Kv&D
-zNoyJ$%|gEC_j=SNkS`A_7Uzz?{efk9n~I8d6c!ee+=jjmpuZa6BIYd4c`|R~h7B9?
-z@^W*Q&7U*g3!x{b+cSI$o(<mWu9%8T%F2rI%0^EE!ck(t1}u#8x;?MlaYdrIDK0DD
-z@ZjyfUfd*xjIRgW{44QoH}ew(dWFMx9FDsq*KO(HF~#NEw=BDVJU9DwG{qL|jj8m0
-z(2c;}u|#yEAw*K`d^0vccZ9h`8}3*CsY_alV14PMLU%oT#S;bg+LMj7U9_Eoid)dD
-zEh4umlo#Lq$9M4(%Dp-(i{?+LwpMJrG@1p3Li4_ZhYlUwUx}cdXD^nNZ%9K?HmCRb
-z0t>*8&rU&OmfyB&5bSUgprWu}W=dy1*ekf%UCav%%ypj5Won}N;Cn}&-J-Zq(N>Z+
-zBiuY}J7GVw0I~x<@qhjf(%MO`SXPvFB})jsp-IwLtI@;DvKR3RG7FV<h&3E{4}uj7
-zkGWkhP9Lvub~Jg)cA8306>$$vOBqNn&KI9Sgu;UkPd=--d*2e!gK_uIB1bFStlblo
-zW1Bz@(fI1d`R1TKQ`m>5Vb^VG>K6wEQFtFstvfn>#6@RE(LI$ZEWXNcWAf0QQK)qm
-z-_RxP7lj_)<4^Aw(ChgX6FE;?5;-pXr3$nLM3#~r!Cy1?{F-^Z(%H?unS(&StlGsT
-z{Y|PA%%WpNDbV|RyuTrroIc_b*_TBYDu^eW(9fm!3+SSD#37;-TzNNC819A7E3atl
-z!^x0^(8uNy^Hto$&%9%HUd%nJEWV>m{ZQrMUg)KCcQ1TW(Q9ClTA9c=-JONqrT4%&
-zQ;WU>>kSF!tJBbJ4j=T&*5Wn3oS;DY673e3)mVJbZNgX2ID9#kMd9$(qjV$Tlf6BM
-zm(X(#>PBL(SjgCi%$M9NMBy^2uU8nC>U661Qt3<BqnsQrHTb{g<2;0n-A#Ono_`{g
-zK7OqNo&Frak%{*y$??Bdsuu%4dw;)Jh|ivc3eE3${yR`*Rws|t?%Pwj=e2`JJ?B>i
-J?EiG(e*tm14153p
-
-literal 0
-HcmV?d00001
-
---
-2.7.4

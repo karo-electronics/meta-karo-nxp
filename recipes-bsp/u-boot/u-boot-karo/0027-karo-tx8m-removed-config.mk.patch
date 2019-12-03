@@ -1,0 +1,24 @@
+From e981cc918887ff0888adaa101941227079e475a2 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Fri, 15 Nov 2019 16:05:44 +0100
+Subject: [PATCH 27/39] karo: tx8m: removed config.mk
+
+---
+ board/karo/tx8m/config.mk | 5 -----
+ 1 file changed, 5 deletions(-)
+ delete mode 100644 board/karo/tx8m/config.mk
+
+diff --git a/board/karo/tx8m/config.mk b/board/karo/tx8m/config.mk
+deleted file mode 100644
+index 01f5eb4..0000000
+--- a/board/karo/tx8m/config.mk
++++ /dev/null
+@@ -1,5 +0,0 @@
+-ifeq ($(CONFIG_SPL_BUILD),)
+-#	PLATFORM_CPPFLAGS += -DDEBUG
+-else
+-#	PLATFORM_CPPFLAGS += -DDEBUG
+-endif
+-- 
+2.7.4
+

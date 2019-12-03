@@ -1,7 +1,7 @@
-From c94a68e274f60729ec267bf833c6213aa65c60a7 Mon Sep 17 00:00:00 2001
+From a3f9a1468b834a224c033cb6aff16cd9e92b7109 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 14:55:53 +0100
-Subject: [PATCH 07/23] net: define missing Kconfig symbol MII which is
+Subject: [PATCH 07/39] net: define missing Kconfig symbol MII which is
  'select'ed but was never defined
 
 ---
@@ -9,7 +9,7 @@ Subject: [PATCH 07/23] net: define missing Kconfig symbol MII which is
  1 file changed, 3 insertions(+)
 
 diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 41cc152d82fb5a5665084fc60a8a0e0ddeb3f16c..ad52bb2b46ffc67548a60093a1b6ef7fb127b352 100644
+index 41cc152..ad52bb2 100644
 --- a/drivers/net/Kconfig
 +++ b/drivers/net/Kconfig
 @@ -217,6 +217,9 @@ config RGMII

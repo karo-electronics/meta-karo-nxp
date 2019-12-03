@@ -1,14 +1,14 @@
-From 95e6ba529d56ea77cb23586d3f45951c87f14eaa Mon Sep 17 00:00:00 2001
+From d94ef1cd8231207a8c9ab25af4d4f774a42b27bd Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 12:31:35 +0100
-Subject: [PATCH 03/23] serial: Add missing dependencies for IMX8 to MXC_UART
+Subject: [PATCH 03/39] serial: Add missing dependencies for IMX8 to MXC_UART
 
 ---
  drivers/serial/Kconfig | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/serial/Kconfig b/drivers/serial/Kconfig
-index e52a7e0f6376c08c6fc6958f4f038b78f115cd4f..e4d966c575dfbf88fc788fd1bd802cdeda56e9fb 100644
+index e52a7e0..e4d966c 100644
 --- a/drivers/serial/Kconfig
 +++ b/drivers/serial/Kconfig
 @@ -437,7 +437,7 @@ config MVEBU_A3700_UART

@@ -1,7 +1,7 @@
-From 1f14a2a67fc66d3e685008cddc1c1420fcee9eb7 Mon Sep 17 00:00:00 2001
+From 5f9d26482476112347f614ad5cf07de945525822 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 10:40:25 +0100
-Subject: [PATCH 14/23] imx8mm: don't clear the reset status upon reading it
+Subject: [PATCH 14/39] imx8mm: don't clear the reset status upon reading it
 
 The operating system may want to know the last reset cause too. So
 don't clear the SRSR register after reading it.
@@ -10,7 +10,7 @@ don't clear the SRSR register after reading it.
  1 file changed, 1 insertion(+), 8 deletions(-)
 
 diff --git a/arch/arm/mach-imx/cpu.c b/arch/arm/mach-imx/cpu.c
-index 22baeab8d01213ebeab92d4f29b3c5e53b348632..d23a0b136bb1a87b85a307483ee6d29db6a4151c 100644
+index e04219f..677866c 100644
 --- a/arch/arm/mach-imx/cpu.c
 +++ b/arch/arm/mach-imx/cpu.c
 @@ -40,18 +40,11 @@ static u32 reset_cause = -1;

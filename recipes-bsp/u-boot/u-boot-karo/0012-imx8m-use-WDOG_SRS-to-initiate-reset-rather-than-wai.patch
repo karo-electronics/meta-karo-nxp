@@ -1,7 +1,7 @@
-From aa8ec7a7579c73c76389377bcff76aa9781d2db5 Mon Sep 17 00:00:00 2001
+From bcee3590e295a25a45b83f83305529362634f795 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 16:14:47 +0100
-Subject: [PATCH 12/23] imx8m: use WDOG_SRS to initiate reset rather than
+Subject: [PATCH 12/39] imx8m: use WDOG_SRS to initiate reset rather than
  waiting for a watchdog timeout
 
 ---
@@ -10,10 +10,10 @@ Subject: [PATCH 12/23] imx8m: use WDOG_SRS to initiate reset rather than
  2 files changed, 24 insertions(+), 14 deletions(-)
 
 diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
-index ee945d116ffe36ba52cc0fa4ee9b4853a6c50555..c6745ddffa5863be17e83736624d1ae801e4b63b 100644
+index f35bfaf..e3e9ef0 100644
 --- a/arch/arm/mach-imx/imx8m/soc.c
 +++ b/arch/arm/mach-imx/imx8m/soc.c
-@@ -619,15 +619,21 @@ usb_modify_speed:
+@@ -789,15 +789,21 @@ usb_modify_speed:
  void reset_cpu(ulong addr)
  {
  	struct watchdog_regs *wdog = (struct watchdog_regs *)WDOG1_BASE_ADDR;
@@ -43,7 +43,7 @@ index ee945d116ffe36ba52cc0fa4ee9b4853a6c50555..c6745ddffa5863be17e83736624d1ae8
  
  #if defined(CONFIG_ARCH_MISC_INIT)
 diff --git a/include/fsl_wdog.h b/include/fsl_wdog.h
-index 683c3f3bac6600e2cfc27c738ca7867d66d956ce..4d77830a3d29d40798c977ad40d5d3b378903748 100644
+index 683c3f3..4d77830 100644
 --- a/include/fsl_wdog.h
 +++ b/include/fsl_wdog.h
 @@ -3,6 +3,7 @@

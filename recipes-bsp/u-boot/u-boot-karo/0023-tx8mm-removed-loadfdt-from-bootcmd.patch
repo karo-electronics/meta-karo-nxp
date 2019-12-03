@@ -1,14 +1,14 @@
-From 60ae2cd89a1216679bb57d6626f2224c46b32991 Mon Sep 17 00:00:00 2001
+From a2cb54f0e64bc1a9eb476d19867c89b609f4137b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 27 Mar 2019 15:44:44 +0100
-Subject: [PATCH 23/23] tx8mm: removed 'loadfdt' from bootcmd
+Subject: [PATCH 23/39] tx8mm: removed 'loadfdt' from bootcmd
 
 ---
  include/configs/tx8mm.h | 10 +++++-----
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/include/configs/tx8mm.h b/include/configs/tx8mm.h
-index 6dcea227dd00bd86ec4035596ae4a9762b5b7d09..4ef5680d41ef6e85f8ee105b1efd1a5763993e1a 100644
+index 6dcea22..4ef5680 100644
 --- a/include/configs/tx8mm.h
 +++ b/include/configs/tx8mm.h
 @@ -85,8 +85,8 @@

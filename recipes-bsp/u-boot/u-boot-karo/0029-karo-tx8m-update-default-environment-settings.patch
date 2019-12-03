@@ -1,0 +1,102 @@
+From 7ece04eebf9dc753cb639f8bf6052f373e87f23a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Tue, 26 Nov 2019 09:20:24 +0100
+Subject: [PATCH 29/39] karo: tx8m: update default environment settings
+
+---
+ include/configs/tx8m.h | 41 ++++++++++++++++++++++++-----------------
+ 1 file changed, 24 insertions(+), 17 deletions(-)
+
+diff --git a/include/configs/tx8m.h b/include/configs/tx8m.h
+index faa5065..769711c 100644
+--- a/include/configs/tx8m.h
++++ b/include/configs/tx8m.h
+@@ -23,10 +23,6 @@
+ #define CONFIG_USBD_HS
+ #if defined(CONFIG_IMX8MM)
+ #define CONFIG_SPL_BSS_START_ADDR	0x00910000
+-#if 0
+-#define CONFIG_SYS_SPL_MALLOC_START	0x42200000
+-#define CONFIG_SYS_SPL_MALLOC_SIZE	SZ_512K
+-#endif
+ #define CONFIG_SYS_SPL_MALLOC_START	0x00911000
+ #define CONFIG_SYS_SPL_MALLOC_SIZE	SZ_64K
+ #define CONFIG_MALLOC_F_ADDR		0x00912000 /* malloc f used before GD_FLG_FULL_MALLOC_INIT set */
+@@ -41,9 +37,6 @@
+ #endif
+ 
+ #define CONFIG_SPL_BSS_MAX_SIZE		SZ_8K
+-#define CONFIG_SPL_LOAD_FIT_ADDRESS	0
+-
+-#define CONFIG_SPL_ABORT_ON_RAW_IMAGE /* For RAW image gives an error info not panic */
+ 
+ #if defined(CONFIG_KARO_TX8MM) || defined(CONFIG_KARO_TX8MN)
+ #define CONFIG_POWER
+@@ -66,6 +59,7 @@
+ 
+ #define CONFIG_ENV_VARS_UBOOT_RUNTIME_CONFIG
+ #endif /* CONFIG_SPL_BUILD */
++
+ #define CONFIG_SYS_INIT_SP_ADDR		0x00920000
+ 
+ #define CONFIG_SERIAL_TAG
+@@ -91,7 +85,24 @@
+ #define FDTADDR_STR			__stringify(CONFIG_FDTADDR)
+ 
+ /* Initial environment variables */
+-#ifndef CONFIG_TX8M_UBOOT_MFG
++#ifdef CONFIG_UBOOT_IGNORE_ENV
++#define CONFIG_EXTRA_ENV_SETTINGS					\
++	"bootcmd=fastboot 0\0"						\
++	"bootdelay=-1\0"						\
++	"boot_mode=mmc\0"						\
++	"emmc_boot_ack=1\0"						\
++	"emmc_boot_part=1\0"						\
++	"emmc_dev=0\0"							\
++	"fastboot_dev=mmc\0"						\
++	"fdtaddr=" FDTADDR_STR "\0"					\
++	"fdtsave=save mmc ${mmcdev} ${fdt_addr} ${fdt_file}"		\
++	" ${fdt_size}\0"						\
++	"fdt_addr=" FDTADDR_STR "\0"					\
++	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0"			\
++	"fdt_high=63000000\0"						\
++	"mmcdev=0\0"							\
++	"mmcpart=1\0"
++#else
+ #define CONFIG_EXTRA_ENV_SETTINGS					\
+ 	"append_bootargs=clk_ignore_unused debug\0"			\
+ 	"baseboard=mipi-mb\0"						\
+@@ -112,11 +123,14 @@
+ 	" console=${console} panic=-1 ro\0"				\
+ 	"emmc_boot_ack=1\0"						\
+ 	"emmc_boot_part=1\0"						\
++	"emmc_dev=0\0"							\
++	"fastboot_dev=mmc\0"						\
++	"fdtaddr=" FDTADDR_STR "\0"					\
++	"fdtsave=save mmc ${mmcdev} ${fdt_addr} ${fdt_file}"		\
++	" ${fdt_size}\0"						\
+ 	"fdt_addr=" FDTADDR_STR "\0"					\
+ 	"fdt_file=" CONFIG_DEFAULT_FDT_FILE "\0"			\
+ 	"fdt_high=63000000\0"						\
+-	"fdtsave=save mmc ${mmcdev} ${fdt_addr} ${fdt_file}"		\
+-	" ${fdt_size}\0"						\
+ 	"initrd_addr=-\0"						\
+ 	"initrd_high=63800000\0"					\
+ 	"linux_image=Image-tx8m-1610.bin\0"				\
+@@ -130,13 +144,6 @@
+ 	"mmcpart=1\0"							\
+ 	"panel=MIPI2LVDS\0"						\
+ 	"uuid_rootfs=0cc66cc0-5458-384d-1610-726f6f746673\0"
+-#else
+-#define CONFIG_EXTRA_ENV_SETTINGS					\
+-	"bootcmd=fastboot 0\0"						\
+-	"emmc_boot_ack=1\0"						\
+-	"emmc_boot_part=1\0"						\
+-	"fastboot_dev=mmc\0"						\
+-	"mmcdev=0\0"
+ #endif
+ 
+ /* Link Definitions */
+-- 
+2.7.4
+

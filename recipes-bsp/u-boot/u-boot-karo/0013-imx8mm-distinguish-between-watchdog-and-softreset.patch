@@ -1,7 +1,7 @@
-From 889198b2e8bfe4f2bd0bb7500669d4f5bc115b94 Mon Sep 17 00:00:00 2001
+From 29f236f63e4734bec358e939a68fd40282b2ea74 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 10:36:09 +0100
-Subject: [PATCH 13/23] imx8mm: distinguish between watchdog and softreset
+Subject: [PATCH 13/39] imx8mm: distinguish between watchdog and softreset
 
 On the i.MX processors the WRSR register can tell whether the last
 reset was caused by a watchdog timeout or by triggering a softreset
@@ -13,7 +13,7 @@ reset_cause.
  1 file changed, 21 insertions(+), 20 deletions(-)
 
 diff --git a/arch/arm/mach-imx/cpu.c b/arch/arm/mach-imx/cpu.c
-index aa541fc600ea8fbead725a80db215a79690d2d1f..22baeab8d01213ebeab92d4f29b3c5e53b348632 100644
+index 41c7a09..e04219f 100644
 --- a/arch/arm/mach-imx/cpu.c
 +++ b/arch/arm/mach-imx/cpu.c
 @@ -10,6 +10,7 @@
