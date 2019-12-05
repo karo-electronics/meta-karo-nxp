@@ -32,9 +32,13 @@ SRC_URI_append = "\
 	file://0029-arm-dts-imx6ul-consistently-use-can-12-instead-of-fl.patch \
 	file://0030-arm-dts-imx6ul-remove-obsolete-imx6ul-tx6ul-mainboar.patch \
 	file://0031-arm-dts-imx6ull-add-imx6ull-txul-8013-files-to-Makef.patch \
+	file://0032-arm64-dts-add-tx8m-1620-support-beta-version.patch \
+	file://0033-arm-dts-bugfix-reset-imx6ull-dtsi-to-mainline.patch \
+	file://0034-drm-mxsfb-fix-possible-DEADLOCK-in-mxsfb-irq-handler.patch \
 "
 
 KBUILD_DEFCONFIG_tx8m-1610 = "tx8m-1610_defconfig"
+KBUILD_DEFCONFIG_tx8m-1620 = "tx8m-1610_defconfig"
 KBUILD_DEFCONFIG_tx8m-nd00 = "tx8m-nd00_defconfig"
 KBUILD_DEFCONFIG_mx6ul = "txul_defconfig"
 KBUILD_DEFCONFIG_mx6 = "tx6_defconfig"

@@ -1,0 +1,216 @@
+commit 458322c2d8b2693deca96056b6a2b722c0496a0b
+Author: Lothar Waßmann <LW@KARO-electronics.de>
+Date:   Wed Dec 4 17:32:37 2019 +0100
+
+    drm: mxsfb: fix possible DEADLOCK in mxsfb_irq_handler
+    
+    mxsfb_irq_handler() in drivers/gpu/drm/mxsfb_drv.c calls
+    clk_prepare_enable()/clk_disable_unprepare() which is not allowed to
+    be run from atomic context. This occasionally leads to the deadlock
+    documented below.
+    
+    Fix this by splitting the clk_prepare_enable()/clk_disable_unprepare()
+    calls into clk_prepare()/clk_unprepare() called outside the interrupt
+    handler and clk_enable()/disable() inside the handler.
+    
+    Also remove the obsolete checks for a NULL clock.
+    
+    ================================
+    WARNING: inconsistent lock state
+    4.14.98-06487-g66f065f01475-dirty #5 Not tainted
+    --------------------------------
+    inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W} usage.
+    kworker/0:3/891 [HC1[1]:SC0[0]:HE0:SE1] takes:
+     (prepare_lock){?.+.}, at: [<803f56d4>] clk_prepare_lock+0x50/0xf8
+    {HARDIRQ-ON-W} state was registered at:
+      mutex_trylock+0xf8/0x114
+      clk_prepare_lock+0x10/0xf8
+      __clk_create_clk.part.28+0x60/0x8c
+      __of_clk_get_from_provider.part.29+0xbc/0x110
+      __of_clk_get.part.0+0x58/0x84
+      __of_clk_get_by_name+0xa8/0xec
+      clk_get+0x2c/0x58
+      devm_clk_get+0x40/0x70
+      mxs_phy_probe+0x74/0x454
+      platform_drv_probe+0x50/0xac
+      driver_probe_device+0x210/0x2dc
+      bus_for_each_drv+0x58/0xb8
+      __device_attach+0xd4/0x13c
+      bus_probe_device+0x88/0x90
+      device_add+0x3cc/0x5c4
+      of_platform_device_create_pdata+0x7c/0xb8
+      of_platform_bus_create+0x18c/0x228
+      of_platform_bus_create+0x1d8/0x228
+    irq event stamp: 60
+    hardirqs last  enabled at (59): [<8075b534>] _raw_spin_unlock_irqrestore+0x30/0x44
+    hardirqs last disabled at (60): [<8010c5a0>] __irq_svc+0x60/0x98
+    softirqs last  enabled at (34): [<80101740>] __do_softirq+0x200/0x2c8
+    softirqs last disabled at (19): [<801223cc>] irq_exit+0x13c/0x170
+    
+    other info that might help us debug this:
+     Possible unsafe locking scenario:
+    
+           CPU0
+           ----
+      lock(prepare_lock);
+      <Interrupt>
+        lock(prepare_lock);
+    
+     *** DEADLOCK ***
+    
+    2 locks held by kworker/0:3/891:
+     #0:  ("pm"){+.+.}, at: [<80136de8>] process_one_work+0x1ec/0x4f0
+     #1:  ((&dev->power.work)){+.+.}, at: [<80136de8>] process_one_work+0x1ec/0x4f0
+    
+    stack backtrace:
+    CPU: 0 PID: 891 Comm: kworker/0:3 Not tainted 4.14.98-06487-g66f065f01475-dirty #5
+    Hardware name: Freescale i.MX6 UltraLite (Device Tree)
+    Workqueue: pm pm_runtime_work
+    [<8010e070>] (unwind_backtrace) from [<8010b8ec>] (show_stack+0x10/0x14)
+    [<8010b8ec>] (show_stack) from [<80150f74>] (mark_lock+0x6cc/0x77c)
+    [<80150f74>] (mark_lock) from [<80151a9c>] (__lock_acquire+0x7f8/0x1a10)
+    [<80151a9c>] (__lock_acquire) from [<8015348c>] (lock_acquire+0x6c/0x88)
+    [<8015348c>] (lock_acquire) from [<80757ae0>] (__mutex_lock+0x5c/0x5dc)
+    [<80757ae0>] (__mutex_lock) from [<8075807c>] (mutex_lock_nested+0x1c/0x24)
+    [<8075807c>] (mutex_lock_nested) from [<803f56d4>] (clk_prepare_lock+0x50/0xf8)
+    [<803f56d4>] (clk_prepare_lock) from [<803f73e0>] (clk_prepare+0x14/0x2c)
+    [<803f73e0>] (clk_prepare) from [<80476788>] (mxsfb_irq_handler+0x14/0x84)
+    [<80476788>] (mxsfb_irq_handler) from [<8015f6a4>] (__handle_irq_event_percpu+0x50/0x12c)
+
+diff --git a/drivers/gpu/drm/mxsfb/mxsfb_crtc.c b/drivers/gpu/drm/mxsfb/mxsfb_crtc.c
+index 94a6d16..fc74be0 100644
+--- a/drivers/gpu/drm/mxsfb/mxsfb_crtc.c
++++ b/drivers/gpu/drm/mxsfb/mxsfb_crtc.c
+@@ -228,8 +228,7 @@ static void mxsfb_enable_controller(struct mxsfb_drm_private *mxsfb)
+ {
+ 	u32 reg;
+ 
+-	if (mxsfb->clk_disp_axi)
+-		clk_prepare_enable(mxsfb->clk_disp_axi);
++	clk_prepare_enable(mxsfb->clk_disp_axi);
+ 	clk_prepare_enable(mxsfb->clk);
+ 
+ 	if (mxsfb->devdata->ipversion >= 4) {
+@@ -289,8 +288,7 @@ static void mxsfb_disable_controller(struct mxsfb_drm_private *mxsfb)
+ 	writel(reg, mxsfb->base + LCDC_VDCTRL4);
+ 
+ 	clk_disable_unprepare(mxsfb->clk);
+-	if (mxsfb->clk_disp_axi)
+-		clk_disable_unprepare(mxsfb->clk_disp_axi);
++	clk_disable_unprepare(mxsfb->clk_disp_axi);
+ }
+ 
+ /*
+@@ -449,7 +447,7 @@ void mxsfb_crtc_enable(struct mxsfb_drm_private *mxsfb)
+ 	if (mxsfb->devdata->flags & MXSFB_FLAG_BUSFREQ)
+ 		request_bus_freq(BUS_FREQ_HIGH);
+ 
+-	clk_prepare_enable(mxsfb->clk_axi);
++	clk_enable(mxsfb->clk_axi);
+ 	writel(0, mxsfb->base + LCDC_CTRL);
+ 	mxsfb_crtc_mode_set_nofb(mxsfb);
+ 
+@@ -466,7 +464,7 @@ void mxsfb_crtc_enable(struct mxsfb_drm_private *mxsfb)
+ void mxsfb_crtc_disable(struct mxsfb_drm_private *mxsfb)
+ {
+ 	mxsfb_disable_controller(mxsfb);
+-	clk_disable_unprepare(mxsfb->clk_axi);
++	clk_disable(mxsfb->clk_axi);
+ 
+ 	if (mxsfb->devdata->flags & MXSFB_FLAG_BUSFREQ)
+ 		release_bus_freq(BUS_FREQ_HIGH);
+@@ -497,9 +495,9 @@ void mxsfb_plane_atomic_update(struct mxsfb_drm_private *mxsfb,
+ 
+ 	paddr = mxsfb_get_fb_paddr(mxsfb);
+ 	if (paddr) {
+-		clk_prepare_enable(mxsfb->clk_axi);
++		clk_enable(mxsfb->clk_axi);
+ 		writel(paddr, mxsfb->base + mxsfb->devdata->next_buf);
+-		clk_disable_unprepare(mxsfb->clk_axi);
++		clk_disable(mxsfb->clk_axi);
+ 	}
+ 
+ 	if (!fb || !old_fb)
+diff --git a/drivers/gpu/drm/mxsfb/mxsfb_drv.c b/drivers/gpu/drm/mxsfb/mxsfb_drv.c
+index 24bb09f..66f8beb 100644
+--- a/drivers/gpu/drm/mxsfb/mxsfb_drv.c
++++ b/drivers/gpu/drm/mxsfb/mxsfb_drv.c
+@@ -509,6 +509,10 @@ static int mxsfb_load(struct drm_device *drm, unsigned long flags)
+ 
+ 	drm_mode_config_reset(drm);
+ 
++	ret = clk_prepare(mxsfb->clk_axi);
++	if (ret < 0)
++		return ret;
++
+ 	ret = drm_irq_install(drm, platform_get_irq(pdev, 0));
+ 
+ 	if (ret < 0) {
+@@ -538,7 +542,7 @@ static int mxsfb_load(struct drm_device *drm, unsigned long flags)
+ 	drm_irq_uninstall(drm);
+ err_irq:
+ 	drm_panel_detach(mxsfb->panel);
+-
++	clk_unprepare(mxsfb->clk_axi);
+ 	return ret;
+ }
+ 
+@@ -557,6 +561,7 @@ static void mxsfb_unload(struct drm_device *drm)
+ 	pm_runtime_get_sync(drm->dev);
+ 	drm_irq_uninstall(drm);
+ 	pm_runtime_put_sync(drm->dev);
++	clk_unprepare(mxsfb->clk_axi);
+ 
+ 	list_for_each_safe(pos, tmp, &mxsfb->valid_modes) {
+ 		config = list_entry(pos, struct mode_config, list);
+@@ -581,14 +586,14 @@ static int mxsfb_enable_vblank(struct drm_device *drm, unsigned int crtc)
+ 	struct mxsfb_drm_private *mxsfb = drm->dev_private;
+ 	int ret = 0;
+ 
+-	ret = clk_prepare_enable(mxsfb->clk_axi);
++	ret = clk_enable(mxsfb->clk_axi);
+ 	if (ret)
+ 		return ret;
+ 
+ 	/* Clear and enable VBLANK IRQ */
+ 	writel(CTRL1_CUR_FRAME_DONE_IRQ, mxsfb->base + LCDC_CTRL1 + REG_CLR);
+ 	writel(CTRL1_CUR_FRAME_DONE_IRQ_EN, mxsfb->base + LCDC_CTRL1 + REG_SET);
+-	clk_disable_unprepare(mxsfb->clk_axi);
++	clk_disable(mxsfb->clk_axi);
+ 
+ 	return ret;
+ }
+@@ -597,13 +602,13 @@ static void mxsfb_disable_vblank(struct drm_device *drm, unsigned int crtc)
+ {
+ 	struct mxsfb_drm_private *mxsfb = drm->dev_private;
+ 
+-	if (clk_prepare_enable(mxsfb->clk_axi))
++	if (clk_enable(mxsfb->clk_axi))
+ 		return;
+ 
+ 	/* Disable and clear VBLANK IRQ */
+ 	writel(CTRL1_CUR_FRAME_DONE_IRQ_EN, mxsfb->base + LCDC_CTRL1 + REG_CLR);
+ 	writel(CTRL1_CUR_FRAME_DONE_IRQ, mxsfb->base + LCDC_CTRL1 + REG_CLR);
+-	clk_disable_unprepare(mxsfb->clk_axi);
++	clk_disable(mxsfb->clk_axi);
+ }
+ 
+ static void mxsfb_irq_preinstall(struct drm_device *drm)
+@@ -617,7 +622,7 @@ static irqreturn_t mxsfb_irq_handler(int irq, void *data)
+ 	struct mxsfb_drm_private *mxsfb = drm->dev_private;
+ 	u32 reg;
+ 
+-	clk_prepare_enable(mxsfb->clk_axi);
++	clk_enable(mxsfb->clk_axi);
+ 
+ 	reg = readl(mxsfb->base + LCDC_CTRL1);
+ 
+@@ -626,7 +631,7 @@ static irqreturn_t mxsfb_irq_handler(int irq, void *data)
+ 
+ 	writel(CTRL1_CUR_FRAME_DONE_IRQ, mxsfb->base + LCDC_CTRL1 + REG_CLR);
+ 
+-	clk_disable_unprepare(mxsfb->clk_axi);
++	clk_disable(mxsfb->clk_axi);
+ 
+ 	return IRQ_HANDLED;
+ }

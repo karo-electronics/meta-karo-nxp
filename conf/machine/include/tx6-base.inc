@@ -3,13 +3,9 @@ require conf/machine/include/imx-base.inc
 KBUILD_BUILD_USER := "support"
 KBUILD_BUILD_HOST := "karo-electronics.de"
 
-UBOOT_MAKE_TARGET ??= "u-boot.bin"
-UBOOT_SUFFIX ??= "bin"
-
 UBOOT_ENTRYPOINT_mx6  = "0x10008000"
 UBOOT_ENTRYPOINT_mx6ul = "0x80008000"
 
-# 'cortexa9-neon' 'cortexa9hf-neon'
 DEFAULTTUNE_mx6 ?= "cortexa9hf-neon"
 DEFAULTTUNE_mx6ul ?= "cortexa7hf-neon"
 
@@ -20,8 +16,6 @@ XSERVER = "xserver-xorg \
            xf86-input-evdev \
            ${XSERVER_DRIVER}"
 
-PACKAGE_EXCLUDE_COMPLEMENTARY = ".*"
-
 PREFERRED_PROVIDER_virtual/egl ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles1 ?= "mesa"
 PREFERRED_PROVIDER_virtual/libgles2 ?= "mesa"
@@ -30,26 +24,21 @@ PREFERRED_PROVIDER_virtual/libg2d_mx6 ?= "mesa"
 PREFERRED_PROVIDER_virtual/libg2d_mx6ul ?= ""
 
 PREFERRED_PROVIDER_virtual/kernel ??= "linux-imx"
-PREFERRED_VERSION_linux-imx ?= "4.14.98"
+PREFERRED_VERSION_linux-imx ?= "4.14.98%"
 KERNEL_IMAGETYPE = "uImage"
 KERNEL_FEATURES += "wifi systemd"
 
 #MACHINE_ESSENTIAL_EXTRA_RDEPENDS = " \
 #                 linux-firmware-imx-sdma-imx6q \
 #"
-#MACHINE_ESSENTIAL_EXTRA_RDEPENDS_append_karo-x11 = " \
-#                 linux-firmware-imx-vpu \
-#"
-
-# Ship kernel modules
-MACHINE_EXTRA_RRECOMMENDS = " \
-                          kernel-modules \
+MACHINE_ESSENTIAL_EXTRA_RDEPENDS_append_karo-x11 = " \
+                 linux-firmware-imx-vpu \
 "
 
 SERIAL_CONSOLES = "115200;ttymxc0"
 SERIAL_CONSOLES_mxs = "115200;ttyAMA0"
 
-MACHINE_FEATURES = " \
+MACHINE_FEATURES += " \
                  alsa \
                  rtc \
                  serial \
@@ -59,14 +48,7 @@ MACHINE_FEATURES = " \
                  vfat \
 "
 
-# Add the ability to specify _imx machines
-MACHINEOVERRIDES =. "imx:"
-
-# Default baseboard name
-TXBASE_DEFAULT_mx6 ?= "mb7"
-TXBASE_DEFAULT_mx6ul ?= "evalkit"
-
 # Remove some image types we don't need
-IMAGE_FSTYPES_remove = " sdcard ext4"
+IMAGE_FSTYPES_remove = " sdcard"
 
-TXBASE ?= "${TXBASE_DEFAULT}"
+PREFERRED_VERSION_imx-test = "00.00.00"
