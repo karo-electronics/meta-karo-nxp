@@ -12,7 +12,7 @@ index 67681fa..e76b14f 100644
  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2080a-simu.dtb
  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2088a-qds.dtb
  dtb-$(CONFIG_ARCH_LAYERSCAPE) += fsl-ls2088a-rdb.dtb
-- 
+-
 +
  dtb-$(CONFIG_ARCH_FSL_IMX8QM) += fsl-imx8qm-lpddr4-arm2.dtb \
  				 fsl-imx8qm-lpddr4-arm2-dom0.dtb \
@@ -33,13 +33,13 @@ index 0723705..450cc65 100644
 --- a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610.dts
 +++ b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610.dts
 @@ -6,605 +6,10 @@
- 
+
  /dts-v1/;
- 
+
 -#include "fsl-imx8mm.dtsi"
 +#include "imx8mm-tx8m-16xx.dtsi"
  #include <dt-bindings/input/input.h>
- 
+
  / {
  	model = "Ka-Ro electronics TX8M-1610 (NXP i.MX8MM) Module";
  	compatible = "karo,imx8mm-tx8m", "fsl,imx8mm";
@@ -643,7 +643,7 @@ diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dtsi b/arch/
 new file mode 100644
 index 00000000..a96d514
 --- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dts
 @@ -0,0 +1,218 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
