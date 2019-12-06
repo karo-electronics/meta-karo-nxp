@@ -630,11 +630,29 @@ index 0723705..450cc65 100644
 -		>;
 -	};
  };
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dtsi
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dts b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dts
 new file mode 100644
 index 00000000..a96d514
 --- /dev/null
 +++ b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1620-lvds-mb.dts
+@@ -0,0 +1,12 @@
++// SPDX-License-Identifier: (GPL-2.0 OR MIT)
++/*
++ * Copyright 2019 Markus Bauer <MB@KARO-electronics.de>
++ *
++ */
++
++#include "imx8mm-tx8m-1620.dts"
++#include "imx8mm-tx8m-lvds-mb.dtsi"
++
++/ {
++	model = "Ka-Ro TX8M-1620 module on TX-LVDS Mainboard";
++};
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-lvds-mb.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-lvds-mb.dtsi
+new file mode 100644
+index 00000000..a96d514
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-lvds-mb.dtsi
 @@ -0,0 +1,218 @@
 +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
 +/*
