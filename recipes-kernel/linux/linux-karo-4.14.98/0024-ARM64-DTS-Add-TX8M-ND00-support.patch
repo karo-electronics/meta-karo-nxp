@@ -5,10 +5,10 @@ Date:   Tue Nov 26 13:59:46 2019 +0000
     arm64/dts: Add TX8M-ND00 support, fit CAN into MIPI-MBs
 
 diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-index cc32798..a9949ea 100644
+index e35eb32..d838ab1d 100644
 --- a/arch/arm64/boot/dts/freescale/Makefile
 +++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -132,13 +132,17 @@ dtb-$(CONFIG_ARCH_FSL_IMX8MM) += fsl-imx8mm-evk.dtb \
+@@ -132,7 +132,9 @@ dtb-$(CONFIG_ARCH_FSL_IMX8MM) += fsl-imx8mm-evk.dtb \
  				 fsl-imx8mm-evk-revb.dtb \
  				 fsl-imx8mm-evk-revb-rm67191.dtb \
  				 fsl-imx8mm-ddr4-evk-rm67191.dtb \
@@ -17,15 +17,17 @@ index cc32798..a9949ea 100644
 +				 imx8mm-tx8m-1610.dtb \
 +				 imx8mm-tx8m-1610-mipi-mb.dtb
  dtb-$(CONFIG_ARCH_FSL_IMX8MN) += fsl-imx8mn-ddr4-evk.dtb \
- 				 fsl-imx8mn-ddr4-evk-rpmsg.dtb \
+ 				 fsl-imx8mn-evk.dtb \
+ 				 fsl-imx8mn-evk-rpmsg.dtb \
+@@ -140,7 +142,9 @@ dtb-$(CONFIG_ARCH_FSL_IMX8MN) += fsl-imx8mn-ddr4-evk.dtb \
  				 fsl-imx8mn-ddr4-evk-rm67191.dtb \
  				 fsl-imx8mn-ddr4-evk-ak5558.dtb \
  				 fsl-imx8mn-ddr4-evk-root.dtb \
 -				 fsl-imx8mn-ddr4-evk-inmate.dtb
 +				 fsl-imx8mn-ddr4-evk-inmate.dtb \
 +				 imx8mn-tx8m-nd00.dtb \
-+				 imx8mn-tx8m-nd00-mipi-mb.dtb
-
++				 imx8mn-tx8m-nd00-mipi-mb.dtb \
+ 
  always		:= $(dtb-y)
  subdir-y	:= $(dts-dirs)
 diff --git a/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610-mipi-mb-can.dts b/arch/arm64/boot/dts/freescale/imx8mm-tx8m-1610-mipi-mb-can.dts

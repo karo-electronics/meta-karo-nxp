@@ -1,7 +1,7 @@
-From b2136716ee805de58cbe5129dad7f9333759241d Mon Sep 17 00:00:00 2001
+From be54a2d37f5c46636d607aea17b65c31b094af17 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Fri, 29 Nov 2019 14:14:29 +0100
-Subject: [PATCH 1/2] imx8mn: soc: put env_get_location() in board specific
+Subject: [PATCH 18/24] imx8mn: soc: put env_get_location() in board specific
  code where it belongs
 
 The (weak) default implementation may well be suited for other i.MX8MN
@@ -19,10 +19,10 @@ enable it only for "freescale" by default.
  3 files changed, 58 insertions(+), 58 deletions(-)
 
 diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
-index e3e9ef0..2ef07f3 100644
+index 9330ec1..2ea73ad 100644
 --- a/arch/arm/mach-imx/imx8m/soc.c
 +++ b/arch/arm/mach-imx/imx8m/soc.c
-@@ -945,60 +945,3 @@ void do_error(struct pt_regs *pt_regs, unsigned int esr)
+@@ -939,60 +939,3 @@ void do_error(struct pt_regs *pt_regs, unsigned int esr)
  }
  #endif
  #endif
@@ -58,7 +58,7 @@ index e3e9ef0..2ef07f3 100644
 -		break;
 -#endif
 -	default:
--#ifdef CONFIG_ENV_DEFAULT_NOWHERE
+-#if defined(CONFIG_ENV_DEFAULT_NOWHERE) || defined(CONFIG_ENV_IS_NOWHERE)
 -		env_loc = ENVL_NOWHERE;
 -#endif
 -		break;

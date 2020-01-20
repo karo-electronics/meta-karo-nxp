@@ -1,7 +1,7 @@
-From a3f9a1468b834a224c033cb6aff16cd9e92b7109 Mon Sep 17 00:00:00 2001
+From c935ca1a484dd07905a6ef7da19a0ed3396afbc8 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 14:55:53 +0100
-Subject: [PATCH 07/39] net: define missing Kconfig symbol MII which is
+Subject: [PATCH 06/24] net: define missing Kconfig symbol MII which is
  'select'ed but was never defined
 
 ---

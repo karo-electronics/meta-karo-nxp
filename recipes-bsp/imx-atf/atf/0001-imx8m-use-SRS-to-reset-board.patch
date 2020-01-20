@@ -20,7 +20,7 @@ index 8a8cd957..d115cae3 100644
  #ifdef IMX_WDOG_B_RESET
  	val = (val & 0x00FF) | (7 << 2) | (1 << 0);
  #else
--	val = (val & 0x00FF) | (4 << 2) | (1 << 0);
+-	val = (val & 0x00FF) | (9 << 2) | (1 << 0);
 +	val &= ~(1 << 4);
  #endif
  	mmio_write_16(wdog_base, val);
@@ -42,4 +42,3 @@ index 9f1f1fa5..da892ad4 100644
  #define PLAT_IMX8MM			1
 -- 
 2.11.0
-

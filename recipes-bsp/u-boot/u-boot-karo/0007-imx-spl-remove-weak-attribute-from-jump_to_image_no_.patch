@@ -1,7 +1,7 @@
-From 4aee53ab7eb2a305ae0f5d178e123d2cd2e2bfdf Mon Sep 17 00:00:00 2001
+From eca39764e74d545b7656bef0a454d149b5a1f605 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 15:06:32 +0100
-Subject: [PATCH 08/39] imx: spl: remove 'weak' attribute from
+Subject: [PATCH 07/24] imx: spl: remove 'weak' attribute from
  jump_to_image_no_args()
 
 There is already a 'weak' implementation of this function in

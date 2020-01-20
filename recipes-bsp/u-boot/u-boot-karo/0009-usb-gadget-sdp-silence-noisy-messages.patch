@@ -1,12 +1,12 @@
-From 50ae9ef70f6a15a0116396cb146e89c763b9a22e Mon Sep 17 00:00:00 2001
+From 98acc2cb667660c55fa9dfb623799975af68f3e1 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 15:30:13 +0100
-Subject: [PATCH 10/39] usb: gadget: sdp: silence noisy messages
+Subject: [PATCH 09/24] usb: gadget: sdp: silence noisy messages
 
 ---
  common/spl/spl.c           |  2 +-
- drivers/usb/gadget/f_sdp.c | 20 ++++++++++----------
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/usb/gadget/f_sdp.c | 22 +++++++++++-----------
+ 2 files changed, 12 insertions(+), 12 deletions(-)
 
 diff --git a/common/spl/spl.c b/common/spl/spl.c
 index a45e9d5..4c381cb 100644
@@ -22,7 +22,7 @@ index a45e9d5..4c381cb 100644
  			puts("SPL: Unsupported Boot Device!\n");
  #endif
 diff --git a/drivers/usb/gadget/f_sdp.c b/drivers/usb/gadget/f_sdp.c
-index d87877e..cebaa99 100644
+index d87877e..54b85df 100644
 --- a/drivers/usb/gadget/f_sdp.c
 +++ b/drivers/usb/gadget/f_sdp.c
 @@ -297,8 +297,8 @@ static void sdp_rx_command_complete(struct usb_ep *ep, struct usb_request *req)
@@ -88,6 +88,15 @@ index d87877e..cebaa99 100644
  		status = sdp_jump_imxheader(sdp_ptr(sdp_func->jmp_address));
  
  		/* If imx header fails, try some U-Boot specific headers */
+@@ -777,7 +777,7 @@ static void sdp_handle_in_ep(void)
+ 				panic("Error in search header, failed to jump\n");
+ 			}
+ 
+-			printf("Found header at 0x%08x\n", sdp_func->jmp_address);
++			debug("Found header at 0x%08x\n", sdp_func->jmp_address);
+ 
+ 			header = (struct image_header *)(ulong)(sdp_func->jmp_address);
+ 
 @@ -830,7 +830,7 @@ static void sdp_handle_in_ep(void)
  
  void sdp_handle(int controller_index)

@@ -1,7 +1,7 @@
-From d659f69a523695f31b1ecda207cc9a91942a97b4 Mon Sep 17 00:00:00 2001
+From 5fff64818c0c562a97f3625f413db06b49411e8b Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Thu, 28 Nov 2019 16:13:47 +0100
-Subject: [PATCH 38/39] drivers: ddr: imx8m: silence noisy messages
+Subject: [PATCH 16/24] drivers: ddr: imx8m: silence noisy messages
 
 ---
  drivers/ddr/imx8m/ddr_init.c     |  8 ++++----

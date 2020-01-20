@@ -1,7 +1,7 @@
-From c9797bb64bcf55d526d962d0b8721265a9c486fa Mon Sep 17 00:00:00 2001
+From 464e2c34fb641b6cf68694d989fa94d10edb8cac Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 27 Mar 2019 14:55:59 +0100
-Subject: [PATCH 17/39] fs/fs.c: correctly interpret the '(max)len' parameter
+Subject: [PATCH 15/24] fs/fs.c: correctly interpret the '(max)len' parameter
  to fs_read()
 
 The 'len' parameter passed to fs_read() actually denotes the maximum

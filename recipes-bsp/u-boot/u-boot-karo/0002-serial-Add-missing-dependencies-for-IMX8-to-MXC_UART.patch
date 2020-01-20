@@ -1,7 +1,7 @@
-From d94ef1cd8231207a8c9ab25af4d4f774a42b27bd Mon Sep 17 00:00:00 2001
+From 45f06189fa960aa9d7de5b03bf8435b3268805f4 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 12:31:35 +0100
-Subject: [PATCH 03/39] serial: Add missing dependencies for IMX8 to MXC_UART
+Subject: [PATCH 02/24] serial: Add missing dependencies for IMX8 to MXC_UART
 
 ---
  drivers/serial/Kconfig | 2 +-

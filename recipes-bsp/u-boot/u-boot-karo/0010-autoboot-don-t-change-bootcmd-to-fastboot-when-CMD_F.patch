@@ -1,7 +1,7 @@
-From 7e1a5efeaf97e6aaf0d90d2777dbe3f5343e929b Mon Sep 17 00:00:00 2001
+From 5991262fdcafc75c09ccd20aab9105db1fc453b1 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 16:09:30 +0100
-Subject: [PATCH 11/39] autoboot: don't change bootcmd to 'fastboot' when
+Subject: [PATCH 10/24] autoboot: don't change bootcmd to 'fastboot' when
  CMD_FASTBOOT is not enabled
 
 ---

@@ -1,7 +1,7 @@
-From 29f236f63e4734bec358e939a68fd40282b2ea74 Mon Sep 17 00:00:00 2001
+From f60b97408e4ad83bf0d87f3222c89b9635f31b02 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 10:36:09 +0100
-Subject: [PATCH 13/39] imx8mm: distinguish between watchdog and softreset
+Subject: [PATCH 11/24] imx8mm: distinguish between watchdog and softreset
 
 On the i.MX processors the WRSR register can tell whether the last
 reset was caused by a watchdog timeout or by triggering a softreset
@@ -10,7 +10,8 @@ Utilize this to distinguish a WDOG reset from a SOFTRESET in the
 reset_cause.
 ---
  arch/arm/mach-imx/cpu.c | 41 +++++++++++++++++++++--------------------
- 1 file changed, 21 insertions(+), 20 deletions(-)
+ include/fsl_wdog.h      | 18 +++++++++++-------
+ 2 files changed, 32 insertions(+), 27 deletions(-)
 
 diff --git a/arch/arm/mach-imx/cpu.c b/arch/arm/mach-imx/cpu.c
 index 41c7a09..e04219f 100644
@@ -109,6 +110,40 @@ index 41c7a09..e04219f 100644
  	/* clear the srsr here, its state has been recorded in reset_cause */
  	writel(reset_cause, &src_regs->srsr);
  }
+diff --git a/include/fsl_wdog.h b/include/fsl_wdog.h
+index 683c3f3..4d77830 100644
+--- a/include/fsl_wdog.h
++++ b/include/fsl_wdog.h
+@@ -3,6 +3,7 @@
+  *
+  * SPDX-License-Identifier:	GPL-2.0+
+  */
++#include <linux/bitops.h>
+ 
+ struct watchdog_regs {
+ 	u16	wcr;	/* Control */
+@@ -10,11 +11,14 @@ struct watchdog_regs {
+ 	u16	wrsr;	/* Reset Status */
+ };
+ 
+-#define WCR_WDZST	0x01
+-#define WCR_WDBG	0x02
+-#define WCR_WDE		0x04
+-#define WCR_WDT		0x08
+-#define WCR_SRS		0x10
+-#define WCR_WDA 	0x20
+-#define SET_WCR_WT(x)	(x << 8)
++#define WCR_WDZST	BIT(0)
++#define WCR_WDBG	BIT(1)
++#define WCR_WDE		BIT(2)
++#define WCR_WDT		BIT(3)
++#define WCR_SRS		BIT(4)
++#define WCR_WDA		BIT(5)
++#define SET_WCR_WT(x)	((x) << 8)
+ #define WCR_WT_MSK	SET_WCR_WT(0xFF)
++
++#define WRSR_SFTW	BIT(0)
++#define WRSR_TOUT	BIT(1)
 -- 
 2.7.4
 

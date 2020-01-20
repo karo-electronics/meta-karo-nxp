@@ -1,7 +1,7 @@
-From 9dfc2ff366d79c2f8558a86a79aea1af6e343905 Mon Sep 17 00:00:00 2001
+From 898111f9152f3cf37009bcbbd204d47e38728028 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 14:53:26 +0100
-Subject: [PATCH 04/39] net: Add missing dependencies for IMX8 to FEC_MXC
+Subject: [PATCH 03/24] net: Add missing dependencies for IMX8 to FEC_MXC
 
 ---
  drivers/net/Kconfig | 2 +-

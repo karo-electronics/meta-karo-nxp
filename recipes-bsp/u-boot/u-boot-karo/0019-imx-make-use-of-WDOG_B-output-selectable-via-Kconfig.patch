@@ -1,0 +1,65 @@
+From d17d43804a23f8cfe9f3f901aca4c6b83c09c046 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Thu, 16 Jan 2020 11:41:15 +0100
+Subject: [PATCH 19/24] imx: make use of WDOG_B output selectable via Kconfig
+
+The Freescale/NXP i.MX8M platforms use the WDOG_B output to reset the
+hardware via the PMIC. Other implementations may want to simply do a
+Softreset via the WCR_SRS bit. Add a Kconfig option to allow for this
+differentiation.
+While at it change some borken indentation in the Kconfig file.
+---
+ arch/arm/mach-imx/Kconfig       | 15 +++++++++++----
+ arch/arm/mach-imx/imx8m/Kconfig |  1 +
+ 2 files changed, 12 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/mach-imx/Kconfig b/arch/arm/mach-imx/Kconfig
+index f6d05c1..6a0f852 100644
+--- a/arch/arm/mach-imx/Kconfig
++++ b/arch/arm/mach-imx/Kconfig
+@@ -7,7 +7,7 @@ config IMX_CONFIG
+ config IMX_OPTEE
+ 	bool "Support OP-TEE"
+ 	help
+-	 Enable support for OP-TEE
++	  Enable support for OP-TEE
+ 
+ config ROM_UNIFIED_SECTIONS
+ 	bool
+@@ -23,11 +23,18 @@ config FSL_CAAM_KB
+ 
+ config IMX_SEC_INIT
+ 	bool
+-	help
+-		In most of i.MX board with CAAM this option is used
+-		to init RNG from U-Boot
+ 	select FSL_CAAM_KB
+ 	select SPL_CRYPTO_SUPPORT if SPL
++	help
++	  In most of i.MX board with CAAM this option is used
++	  to init RNG from U-Boot
++
++config IMX_WDOG_B_RESET
++	bool "Use WDOG_B output to reset the CPU via PMIC"
++	help
++	  Select, whether reset_cpu() activates the WDOG_B
++	  output to initiate a HW reset via the PMIC or does a
++	  software reset via the WCR_SRS bit.
+ 
+ config IMX_RDC
+ 	bool "i.MX Resource domain controller driver"
+diff --git a/arch/arm/mach-imx/imx8m/Kconfig b/arch/arm/mach-imx/imx8m/Kconfig
+index e09048a..ae8f775 100644
+--- a/arch/arm/mach-imx/imx8m/Kconfig
++++ b/arch/arm/mach-imx/imx8m/Kconfig
+@@ -2,6 +2,7 @@ if ARCH_IMX8M
+ 
+ config IMX8M
+ 	bool
++	imply IMX_WDOG_B_RESET
+ 	select HAS_CAAM
+ 	select ROM_UNIFIED_SECTIONS
+ 
+-- 
+2.7.4
+

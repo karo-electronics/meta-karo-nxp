@@ -1,7 +1,7 @@
-From 5f9d26482476112347f614ad5cf07de945525822 Mon Sep 17 00:00:00 2001
+From 6ed87c61a66225cec6e306f2250c077fb31e98bf Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 10:40:25 +0100
-Subject: [PATCH 14/39] imx8mm: don't clear the reset status upon reading it
+Subject: [PATCH 12/24] imx8mm: don't clear the reset status upon reading it
 
 The operating system may want to know the last reset cause too. So
 don't clear the SRSR register after reading it.
