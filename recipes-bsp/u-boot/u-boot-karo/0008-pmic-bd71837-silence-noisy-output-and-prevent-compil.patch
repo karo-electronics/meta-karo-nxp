@@ -1,7 +1,7 @@
 From dde7c35e61364427856733a8e2e193fc80b8f1a5 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Tue, 26 Mar 2019 13:58:25 +0100
-Subject: [PATCH 08/24] pmic: bd71837: silence noisy output and prevent
+Subject: [PATCH 08/35] pmic: bd71837: silence noisy output and prevent
  compiler warning
 
 Make the message printed upon driver init a debug message and fix the

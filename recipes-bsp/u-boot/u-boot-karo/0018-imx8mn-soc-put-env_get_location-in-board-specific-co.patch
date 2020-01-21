@@ -1,7 +1,7 @@
 From be54a2d37f5c46636d607aea17b65c31b094af17 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Fri, 29 Nov 2019 14:14:29 +0100
-Subject: [PATCH 18/24] imx8mn: soc: put env_get_location() in board specific
+Subject: [PATCH 18/35] imx8mn: soc: put env_get_location() in board specific
  code where it belongs
 
 The (weak) default implementation may well be suited for other i.MX8MN

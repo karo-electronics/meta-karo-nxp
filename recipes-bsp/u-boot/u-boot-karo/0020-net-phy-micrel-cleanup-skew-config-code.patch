@@ -1,7 +1,7 @@
-From e6b0985b6866f2e045ba22f980dff754953a192c Mon Sep 17 00:00:00 2001
+From cb1a087a675a9e96dd8d6f6d274638c55385cf80 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Thu, 16 Jan 2020 12:20:26 +0100
-Subject: [PATCH 20/24] net: phy: micrel: cleanup skew config code
+Subject: [PATCH 20/35] net: phy: micrel: cleanup skew config code
 
 Convert an array variable of which only one index is used at a time
 into a local integer variable inside the loop where it is used.

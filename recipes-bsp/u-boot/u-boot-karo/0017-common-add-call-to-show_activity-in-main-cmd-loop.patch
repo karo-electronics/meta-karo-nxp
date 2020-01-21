@@ -1,7 +1,7 @@
 From 0217cd3508a4f456876be562dea82805631eb67e Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 27 Mar 2019 14:58:33 +0100
-Subject: [PATCH 17/24] common: add call to show_activity() in main cmd loop
+Subject: [PATCH 17/35] common: add call to show_activity() in main cmd loop
 
 ---
  common/cli_readline.c | 6 ++++++

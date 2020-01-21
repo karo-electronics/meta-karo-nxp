@@ -1,7 +1,7 @@
-From 35f7f54ddac9941d91625434c885ea754afcc517 Mon Sep 17 00:00:00 2001
+From 525757de852823f6a8df90e17bfbafd15f70ce3d Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Thu, 16 Jan 2020 12:22:43 +0100
-Subject: [PATCH 21/24] net: phy: micrel: fix the max value that is used to cap
+Subject: [PATCH 21/35] net: phy: micrel: fix the max value that is used to cap
  the skew register values
 
 The maximum value that may be written to a register depends on the

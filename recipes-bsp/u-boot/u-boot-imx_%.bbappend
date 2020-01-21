@@ -24,5 +24,16 @@ SRC_URI_append = " \
 	file://0021-net-phy-micrel-fix-the-max-value-that-is-used-to-cap.patch \
 	file://0022-net-phy-micrel-support-storing-the-skew-parameters-i.patch \
 	file://0023-env-fix-handling-of-.callbacks-variable.patch \
-	file://0024-Ka-Ro-TX8M-QS8M-Support.patch \
+	file://0024-clk-print-error-messages-with-dev_err-pr_err-rathern.patch \
+	file://0025-pinctrl-print-error-message-with-dev_err-rathern-tha.patch \
+	file://0026-dm-print-device-name-in-dev_printk.patch \
+	file://0027-net-fec-various-cleanups.patch \
+	file://0028-net-fec-make-the-use-of-CONFIG_FEC_MXC_PHYADDR-actua.patch \
+	file://0029-net-fec-don-t-blindly-assign-xcv_type-from-CONFIG_FE.patch \
+	file://0030-net-fec-add-support-for-PHY-reset-via-GPIO.patch \
+	file://0031-imx8mm-clock-fix-setting-for-PHY_REF_CLK-at-25MHz.patch \
+	file://0032-imx8mm-clock-add-a-config-option-to-select-a-125MHz-.patch \
+	file://0033-Ka-Ro-TX8M-QS8M-Support.patch \
+	file://0034-karo-qs8m-change-U-Boot-prompt-to-QS8M.patch \
+	file://0035-net-phy-ksz9031-add-workaround-for-1000baseT-chip-er.patch \
 "

@@ -1,7 +1,7 @@
-From d17d43804a23f8cfe9f3f901aca4c6b83c09c046 Mon Sep 17 00:00:00 2001
+From 1e5db8bd73e077bdb039c0219aae294b59593939 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Thu, 16 Jan 2020 11:41:15 +0100
-Subject: [PATCH 19/24] imx: make use of WDOG_B output selectable via Kconfig
+Subject: [PATCH 19/35] imx: make use of WDOG_B output selectable via Kconfig
 
 The Freescale/NXP i.MX8M platforms use the WDOG_B output to reset the
 hardware via the PMIC. Other implementations may want to simply do a
@@ -11,7 +11,8 @@ While at it change some borken indentation in the Kconfig file.
 ---
  arch/arm/mach-imx/Kconfig       | 15 +++++++++++----
  arch/arm/mach-imx/imx8m/Kconfig |  1 +
- 2 files changed, 12 insertions(+), 4 deletions(-)
+ arch/arm/mach-imx/imx8m/soc.c   |  5 ++++-
+ 3 files changed, 16 insertions(+), 5 deletions(-)
 
 diff --git a/arch/arm/mach-imx/Kconfig b/arch/arm/mach-imx/Kconfig
 index f6d05c1..6a0f852 100644
@@ -60,6 +61,24 @@ index e09048a..ae8f775 100644
  	select HAS_CAAM
  	select ROM_UNIFIED_SECTIONS
  
+diff --git a/arch/arm/mach-imx/imx8m/soc.c b/arch/arm/mach-imx/imx8m/soc.c
+index 2ea73ad..bf7971a 100644
+--- a/arch/arm/mach-imx/imx8m/soc.c
++++ b/arch/arm/mach-imx/imx8m/soc.c
+@@ -790,9 +790,12 @@ void reset_cpu(ulong addr)
+ {
+ 	struct watchdog_regs *wdog = (struct watchdog_regs *)WDOG1_BASE_ADDR;
+ 
++#ifdef CONFIG_IMX_WDOG_B_RESET
+ 	/* Clear WDA to trigger WDOG_B immediately */
+ 	writew((SET_WCR_WT(1) | WCR_WDT | WCR_WDE | WCR_SRS), &wdog->wcr);
+-
++#else
++	clrbits_le16(&wdog->wcr, WCR_SRS);
++#endif
+ 	while (1) {
+ 		/*
+ 		 * spin for 1 second before timeout reset
 -- 
 2.7.4
 

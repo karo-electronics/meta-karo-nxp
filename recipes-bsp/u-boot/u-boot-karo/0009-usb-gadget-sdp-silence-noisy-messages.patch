@@ -1,7 +1,7 @@
 From 98acc2cb667660c55fa9dfb623799975af68f3e1 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 15:30:13 +0100
-Subject: [PATCH 09/24] usb: gadget: sdp: silence noisy messages
+Subject: [PATCH 09/35] usb: gadget: sdp: silence noisy messages
 
 ---
  common/spl/spl.c           |  2 +-

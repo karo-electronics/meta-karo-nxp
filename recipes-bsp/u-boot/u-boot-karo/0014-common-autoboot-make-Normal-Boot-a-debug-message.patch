@@ -1,7 +1,7 @@
 From cfb176852494f6bad30f5860b0ccf99bcd5ef4c0 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 27 Mar 2019 14:55:34 +0100
-Subject: [PATCH 14/24] common: autoboot: make 'Normal Boot' a debug message
+Subject: [PATCH 14/35] common: autoboot: make 'Normal Boot' a debug message
 
 ---
  common/autoboot.c | 2 +-

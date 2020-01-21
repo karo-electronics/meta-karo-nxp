@@ -1,7 +1,7 @@
 From 5324c6b3c58ed55d28ceffb60c7f6f5e71593aaa Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 12:29:51 +0100
-Subject: [PATCH 01/24] Fix alignment of reserved memory section
+Subject: [PATCH 01/35] Fix alignment of reserved memory section
 
 ---
  arch/arm/mach-imx/imx8m/soc.c | 2 +-

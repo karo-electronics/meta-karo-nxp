@@ -1,7 +1,7 @@
 From c6697d5aaaa1870b59b252cb9086136145db0d79 Mon Sep 17 00:00:00 2001
 From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
 Date: Wed, 20 Mar 2019 14:54:11 +0100
-Subject: [PATCH 04/24] net: fec_mxc: add missing FEC_QUIRK_ENET_MAC definition
+Subject: [PATCH 04/35] net: fec_mxc: add missing FEC_QUIRK_ENET_MAC definition
  for imx8m
 
 ---

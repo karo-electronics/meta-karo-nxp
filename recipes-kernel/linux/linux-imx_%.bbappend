@@ -35,10 +35,13 @@ SRC_URI_append = "\
 	file://0032-arm64-dts-add-tx8m-1620-support-beta-version.patch \
 	file://0033-arm-dts-bugfix-reset-imx6ull-dtsi-to-mainline.patch \
 	file://0034-drm-mxsfb-fix-possible-DEADLOCK-in-mxsfb-irq-handler.patch \
+	file://0035-modify-tx8m-1610-and-nd00-defconfig.patch \
+	file://0036-add-qs8m-mq00-on-qsbase2-support.patch \
 "
 
 KBUILD_DEFCONFIG_tx8m-1610 = "tx8m-1610_defconfig"
 KBUILD_DEFCONFIG_tx8m-1620 = "tx8m-1610_defconfig"
+KBUILD_DEFCONFIG_qs8m-mq00 = "tx8m-1610_defconfig"
 KBUILD_DEFCONFIG_tx8m-nd00 = "tx8m-nd00_defconfig"
 KBUILD_DEFCONFIG_mx6ul = "txul_defconfig"
 KBUILD_DEFCONFIG_mx6 = "tx6_defconfig"
