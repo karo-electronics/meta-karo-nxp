@@ -39,3 +39,7 @@ PREFERRED_VERSION_linux-imx ?= "4.14.98%"
 IMAGE_FSTYPES_remove = "sdcard"
 
 DL_DIR ?= "${BSPDIR}/downloads/"
+
+PREFERRED_PROVIDER_ptpd = "ptpd"
+# Use correct VPU
+PREFERRED_PROVIDER_virtual/imxvpu = "imx-vpu-hantro"
