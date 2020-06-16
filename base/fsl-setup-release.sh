@@ -26,7 +26,7 @@
 # Copyright (C) 2019 Oliver Wendt <OW@KARO-electronics.de>
 #
 
-. sources/meta-fsl-bsp-release/imx/tools/setup-utils.sh
+. sources/meta-imx/tools/setup-utils.sh
 
 CWD=`pwd`
 BASENAME="karo-nxp-release.sh"
@@ -56,7 +56,9 @@ test_builddir () {
     fi
 }
 
-clean_up() {
+clean_up()
+{
+
     unset CWD BUILD_DIR FSLDISTRO
     unset fsl_setup_help fsl_setup_error fsl_setup_flag
     unset usage clean_up
@@ -68,17 +70,15 @@ clean_up() {
 OLD_OPTIND=$OPTIND
 unset FSLDISTRO
 
-while getopts b:h: fsl_setup_flag; do
-    case ${fsl_setup_flag} in
-        b)
-	    BUILD_DIR="$OPTARG"
-            echo "Build directory is: " $BUILD_DIR
+while getopts "k:r:t:b:e:gh" fsl_setup_flag
+do
+    case $fsl_setup_flag in
+        b) BUILD_DIR="$OPTARG";
+           echo -e "\n Build directory is " $BUILD_DIR
            ;;
-        h)
-	    fsl_setup_help='true'
+        h) fsl_setup_help='true';
            ;;
-        ?)
-	    fsl_setup_error='true'
+        \?) fsl_setup_error='true';
            ;;
     esac
 done
@@ -131,10 +131,7 @@ case $MACHINE in
 esac
 
 # copy new EULA into community so setup uses latest i.MX EULA
-cp sources/meta-fsl-bsp-release/imx/EULA.txt sources/meta-freescale/EULA
-
-# Backup CWD value as it's going to be unset by upcoming external scripts calls
-CURRENT_CWD=$CWD
+cp sources/meta-imx/EULA.txt sources/meta-freescale/EULA
 
 # Set up the basic yocto environment
 if [ -z "$DISTRO" ]; then
@@ -148,18 +145,13 @@ fi
 
 TCWD=$(pwd)
 # Point to the current directory since the last command changed the directory to $BUILD_DIR
-set_builddir_current () {
-    if [[ $BUILD_DIR == $CWD ]]; then
-	BUILD_DIR=.
-    elif [[ $CWD/$BUILD_DIR == $TCWD ]]; then
-	BUILD_DIR=.
-    else
-	BUILD_DIR=$TCWD
-    fi
-}
-[ ! $CWD == $TCWD ] && set_builddir_current
+BUILD_DIR=.
 
-test_builddir
+if [ ! -e $BUILD_DIR/conf/local.conf ]; then
+    echo -e "\n ERROR - No build directory is set yet. Run the 'setup-environment' script before running this script to create " $BUILD_DIR
+    echo -e "\n"
+    return 1
+fi
 
 # On the first script run, backup the local.conf file
 # Consecutive runs, it restores the backup and changes are appended on this one.
@@ -177,23 +169,32 @@ else
 fi
 
 
-META_FSL_BSP_RELEASE="${CWD}/sources/meta-fsl-bsp-release/imx/meta-bsp"
+META_FSL_BSP_RELEASE="${CWD}/sources/meta-imx/meta-bsp"
 
 echo "" >> $BUILD_DIR/conf/bblayers.conf
 echo "# i.MX Yocto Project Release layers" >> $BUILD_DIR/conf/bblayers.conf
-hook_in_layer meta-fsl-bsp-release/imx/meta-bsp
-hook_in_layer meta-fsl-bsp-release/imx/meta-sdk
+hook_in_layer meta-imx/meta-bsp
+hook_in_layer meta-imx/meta-sdk
+hook_in_layer meta-imx/meta-ml
 
 echo "" >> $BUILD_DIR/conf/bblayers.conf
-echo "BBLAYERS += \" \${BSPDIR}/sources/meta-browser \"" >> $BUILD_DIR/conf/bblayers.conf
-echo "BBLAYERS += \" \${BSPDIR}/sources/meta-openembedded/meta-gnome \"" >> $BUILD_DIR/conf/bblayers.conf
-echo "BBLAYERS += \" \${BSPDIR}/sources/meta-openembedded/meta-networking \"" >> $BUILD_DIR/conf/bblayers.conf
-echo "BBLAYERS += \" \${BSPDIR}/sources/meta-openembedded/meta-python \"" >> $BUILD_DIR/conf/bblayers.conf
-echo "BBLAYERS += \" \${BSPDIR}/sources/meta-openembedded/meta-filesystems \"" >> $BUILD_DIR/conf/bblayers.conf
+echo "BBLAYERS += \"\${BSPDIR}/sources/meta-browser\"" >> $BUILD_DIR/conf/bblayers.conf
+echo "BBLAYERS += \"\${BSPDIR}/sources/meta-rust\"" >> $BUILD_DIR/conf/bblayers.conf
+echo "BBLAYERS += \"\${BSPDIR}/sources/meta-openembedded/meta-gnome\"" >> $BUILD_DIR/conf/bblayers.conf
+echo "BBLAYERS += \"\${BSPDIR}/sources/meta-openembedded/meta-networking\"" >> $BUILD_DIR/conf/bblayers.conf
+echo "BBLAYERS += \"\${BSPDIR}/sources/meta-openembedded/meta-filesystems\"" >> $BUILD_DIR/conf/bblayers.conf
 
-echo "BBLAYERS += \" \${BSPDIR}/sources/meta-qt5 \"" >> $BUILD_DIR/conf/bblayers.conf
+echo "BBLAYERS += \"\${BSPDIR}/sources/meta-qt5\"" >> $BUILD_DIR/conf/bblayers.conf
 
 echo "BBLAYERS += \" \${BSPDIR}/sources/meta-karo-nxp \"" >> $BUILD_DIR/conf/bblayers.conf
+
+if [ -d ../sources/meta-ivi ]; then
+    echo -e "\n## Genivi layers" >> $BUILD_DIR/conf/bblayers.conf
+    echo "BBLAYERS += \"\${BSPDIR}/sources/meta-gplv2\"" >> $BUILD_DIR/conf/bblayers.conf
+    echo "BBLAYERS += \"\${BSPDIR}/sources/meta-ivi/meta-ivi\"" >> $BUILD_DIR/conf/bblayers.conf
+    echo "BBLAYERS += \"\${BSPDIR}/sources/meta-ivi/meta-ivi-bsp\"" >> $BUILD_DIR/conf/bblayers.conf
+    echo "BBLAYERS += \"\${BSPDIR}/sources/meta-ivi/meta-ivi-test\"" >> $BUILD_DIR/conf/bblayers.conf
+fi
 
 echo BSPDIR=$BSPDIR
 echo BUILD_DIR=$BUILD_DIR

@@ -4,7 +4,7 @@ KBUILD_BUILD_USER := "support"
 KBUILD_BUILD_HOST := "karo-electronics.de"
 
 require conf/machine/include/imx-base.inc
-require conf/machine/include/arm/arch-arm64.inc
+require conf/machine/include/tune-cortexa53.inc
 
 MACHINE_FEATURES += " wifi"
 
@@ -33,7 +33,7 @@ UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = ""
 
 # Kernel Configs
-PREFERRED_VERSION_linux-imx ?= "4.14.98%"
+PREFERRED_VERSION_linux-imx ?= "5.4"
 
 # Remove some image types we don't need
 IMAGE_FSTYPES_remove = "sdcard"
