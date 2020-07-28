@@ -1,12 +1,10 @@
-MACHINEOVERRIDES =. "mx8:mx8m:mx8mm:tx8m:"
+MACHINEOVERRIDES =. "mx8:mx8m:tx8m:"
 
 KBUILD_BUILD_USER := "support"
 KBUILD_BUILD_HOST := "karo-electronics.de"
 
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa53.inc
-
-MACHINE_FEATURES += " wifi"
 
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
@@ -32,12 +30,12 @@ UBOOT_MAKE_TARGET = ""
 
 # Kernel Configs
 PREFERRED_VERSION_linux-imx ?= "5.4"
+PREFERRED_VERSION_u-boot-imx ?= "2018.03"
 
 # Remove some image types we don't need
-IMAGE_FSTYPES_remove = "sdcard"
-
-DL_DIR ?= "${BSPDIR}/downloads/"
+IMAGE_FSTYPES_remove = "sdcard.bz2"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
+
 # Use correct VPU
 PREFERRED_PROVIDER_virtual/imxvpu = "imx-vpu-hantro"
