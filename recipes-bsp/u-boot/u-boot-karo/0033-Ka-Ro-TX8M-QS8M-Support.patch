@@ -1,80 +1,11 @@
-From 3152516a578f459501acb912da97c3844067e05d Mon Sep 17 00:00:00 2001
-From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
-Date: Fri, 17 Jan 2020 14:25:55 +0100
-Subject: [PATCH 33/35] Ka-Ro TX8M/QS8M Support
+commit 252b1f010be0bd814d4be79dffba950ef80e9f9e
+Author: Markus Bauer <mb@karo-electronics.de>
+Date:   Tue Jul 28 14:21:08 2020 +0000
 
----
- arch/arm/dts/Makefile                     |    6 +-
- arch/arm/dts/imx8mm-qs8m-mq00.dts         |   33 +
- arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi |   12 +
- arch/arm/dts/imx8mm-tx8m-1610.dts         |   13 +
- arch/arm/dts/imx8mm-tx8m-1620-u-boot.dtsi |   12 +
- arch/arm/dts/imx8mm-tx8m-1620.dts         |   30 +
- arch/arm/dts/imx8mm-tx8m.dtsi             |  595 +++++
- arch/arm/dts/imx8mn-tx8m-nd00-u-boot.dtsi |   12 +
- arch/arm/dts/imx8mn-tx8m-nd00.dts         |  595 +++++
- arch/arm/mach-imx/imx8m/Kconfig           |    5 +
- arch/arm/mach-imx/spl.c                   |    9 +-
- board/karo/common/Makefile                |    7 +
- board/karo/common/env.c                   |  134 +
- board/karo/common/fdt.c                   |   57 +
- board/karo/common/karo.h                  |    9 +
- board/karo/tx8m/Kconfig                   |   70 +
- board/karo/tx8m/Makefile                  |   15 +
- board/karo/tx8m/ddr3l_timing.c            | 4065 +++++++++++++++++++++++++++++
- board/karo/tx8m/spl.c                     |  428 +++
- board/karo/tx8m/tx8mm.c                   |  944 +++++++
- board/karo/tx8m/tx8mn.c                   |  917 +++++++
- cmd/Kconfig                               |    6 +
- configs/qs8m-mq00_defconfig               |  112 +
- configs/qs8m-mq00_mfg_defconfig           |  116 +
- configs/qs8m-mq00_noenv_defconfig         |  108 +
- configs/tx8m-1610_defconfig               |  110 +
- configs/tx8m-1610_mfg_defconfig           |  113 +
- configs/tx8m-1610_noenv_defconfig         |  105 +
- configs/tx8m-1620_defconfig               |  111 +
- configs/tx8m-1620_mfg_defconfig           |  114 +
- configs/tx8m-1620_noenv_defconfig         |  106 +
- configs/tx8m-nd00_defconfig               |  111 +
- configs/tx8m-nd00_mfg_defconfig           |  114 +
- configs/tx8m-nd00_noenv_defconfig         |  106 +
- drivers/video/sec_mipi_dsim.c             |   15 +-
- include/configs/tx8m.h                    |  231 ++
- 37 files changed, 9538 insertions(+), 8 deletions(-)
- create mode 100644 arch/arm/dts/imx8mm-qs8m-mq00.dts
- create mode 100644 arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi
- create mode 100644 arch/arm/dts/imx8mm-tx8m-1610.dts
- create mode 100644 arch/arm/dts/imx8mm-tx8m-1620-u-boot.dtsi
- create mode 100644 arch/arm/dts/imx8mm-tx8m-1620.dts
- create mode 100644 arch/arm/dts/imx8mm-tx8m.dtsi
- create mode 100644 arch/arm/dts/imx8mn-tx8m-nd00-u-boot.dtsi
- create mode 100644 arch/arm/dts/imx8mn-tx8m-nd00.dts
- create mode 100644 board/karo/common/Makefile
- create mode 100644 board/karo/common/env.c
- create mode 100644 board/karo/common/fdt.c
- create mode 100644 board/karo/common/karo.h
- create mode 100644 board/karo/tx8m/Kconfig
- create mode 100644 board/karo/tx8m/Makefile
- create mode 100644 board/karo/tx8m/ddr3l_timing.c
- create mode 100644 board/karo/tx8m/spl.c
- create mode 100644 board/karo/tx8m/tx8mm.c
- create mode 100644 board/karo/tx8m/tx8mn.c
- create mode 100644 configs/qs8m-mq00_defconfig
- create mode 100644 configs/qs8m-mq00_mfg_defconfig
- create mode 100644 configs/qs8m-mq00_noenv_defconfig
- create mode 100644 configs/tx8m-1610_defconfig
- create mode 100644 configs/tx8m-1610_mfg_defconfig
- create mode 100644 configs/tx8m-1610_noenv_defconfig
- create mode 100644 configs/tx8m-1620_defconfig
- create mode 100644 configs/tx8m-1620_mfg_defconfig
- create mode 100644 configs/tx8m-1620_noenv_defconfig
- create mode 100644 configs/tx8m-nd00_defconfig
- create mode 100644 configs/tx8m-nd00_mfg_defconfig
- create mode 100644 configs/tx8m-nd00_noenv_defconfig
- create mode 100644 include/configs/tx8m.h
+    Ka-Ro TX8M/QS8M Support
 
 diff --git a/arch/arm/dts/Makefile b/arch/arm/dts/Makefile
-index 0ebe40d..15264c2 100644
+index f9583618a3..1660c1aae7 100644
 --- a/arch/arm/dts/Makefile
 +++ b/arch/arm/dts/Makefile
 @@ -470,7 +470,11 @@ dtb-$(CONFIG_ARCH_IMX8M) += fsl-imx8mq-evk.dtb \
@@ -89,10 +20,10 @@ index 0ebe40d..15264c2 100644
 +		imx8mn-tx8m-nd00.dtb
  
  dtb-$(CONFIG_ARCH_IMX8) += fsl-imx8dx-17x17-val.dtb \
- 		fsl-imx8qm-ddr4-arm2.dtb \
+ 		fsl-imx8dx-mek.dtb \
 diff --git a/arch/arm/dts/imx8mm-qs8m-mq00.dts b/arch/arm/dts/imx8mm-qs8m-mq00.dts
 new file mode 100644
-index 0000000..2380daa
+index 0000000000..2380daa0cb
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-qs8m-mq00.dts
 @@ -0,0 +1,33 @@
@@ -131,7 +62,7 @@ index 0000000..2380daa
 +};
 diff --git a/arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi b/arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi
 new file mode 100644
-index 0000000..a8fb490
+index 0000000000..a8fb490747
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-tx8m-1610-u-boot.dtsi
 @@ -0,0 +1,12 @@
@@ -149,7 +80,7 @@ index 0000000..a8fb490
 +};
 diff --git a/arch/arm/dts/imx8mm-tx8m-1610.dts b/arch/arm/dts/imx8mm-tx8m-1610.dts
 new file mode 100644
-index 0000000..d7e7019
+index 0000000000..d7e701999d
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-tx8m-1610.dts
 @@ -0,0 +1,13 @@
@@ -168,7 +99,7 @@ index 0000000..d7e7019
 +};
 diff --git a/arch/arm/dts/imx8mm-tx8m-1620-u-boot.dtsi b/arch/arm/dts/imx8mm-tx8m-1620-u-boot.dtsi
 new file mode 100644
-index 0000000..a8fb490
+index 0000000000..a8fb490747
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-tx8m-1620-u-boot.dtsi
 @@ -0,0 +1,12 @@
@@ -186,7 +117,7 @@ index 0000000..a8fb490
 +};
 diff --git a/arch/arm/dts/imx8mm-tx8m-1620.dts b/arch/arm/dts/imx8mm-tx8m-1620.dts
 new file mode 100644
-index 0000000..a366c80
+index 0000000000..a366c80945
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-tx8m-1620.dts
 @@ -0,0 +1,30 @@
@@ -222,7 +153,7 @@ index 0000000..a366c80
 +};
 diff --git a/arch/arm/dts/imx8mm-tx8m.dtsi b/arch/arm/dts/imx8mm-tx8m.dtsi
 new file mode 100644
-index 0000000..c9f2bd6
+index 0000000000..c9f2bd6910
 --- /dev/null
 +++ b/arch/arm/dts/imx8mm-tx8m.dtsi
 @@ -0,0 +1,595 @@
@@ -823,7 +754,7 @@ index 0000000..c9f2bd6
 +};
 diff --git a/arch/arm/dts/imx8mn-tx8m-nd00-u-boot.dtsi b/arch/arm/dts/imx8mn-tx8m-nd00-u-boot.dtsi
 new file mode 100644
-index 0000000..a8fb490
+index 0000000000..a8fb490747
 --- /dev/null
 +++ b/arch/arm/dts/imx8mn-tx8m-nd00-u-boot.dtsi
 @@ -0,0 +1,12 @@
@@ -841,7 +772,7 @@ index 0000000..a8fb490
 +};
 diff --git a/arch/arm/dts/imx8mn-tx8m-nd00.dts b/arch/arm/dts/imx8mn-tx8m-nd00.dts
 new file mode 100644
-index 0000000..29ac862
+index 0000000000..29ac862bfe
 --- /dev/null
 +++ b/arch/arm/dts/imx8mn-tx8m-nd00.dts
 @@ -0,0 +1,595 @@
@@ -1441,7 +1372,7 @@ index 0000000..29ac862
 +	};
 +};
 diff --git a/arch/arm/mach-imx/imx8m/Kconfig b/arch/arm/mach-imx/imx8m/Kconfig
-index ae8f775..8afd905 100644
+index ae8f77582f..8afd905a83 100644
 --- a/arch/arm/mach-imx/imx8m/Kconfig
 +++ b/arch/arm/mach-imx/imx8m/Kconfig
 @@ -85,6 +85,10 @@ config TARGET_IMX8MN_DDR4_EVK
@@ -1463,7 +1394,7 @@ index ae8f775..8afd905 100644
  
  endif
 diff --git a/arch/arm/mach-imx/spl.c b/arch/arm/mach-imx/spl.c
-index e6a6b39..df4ef78 100644
+index e6a6b39a84..df4ef7882e 100644
 --- a/arch/arm/mach-imx/spl.c
 +++ b/arch/arm/mach-imx/spl.c
 @@ -118,18 +118,19 @@ u32 spl_boot_device(void)
@@ -1492,7 +1423,7 @@ index e6a6b39..df4ef78 100644
  		return BOOT_DEVICE_MMC1;
 diff --git a/board/karo/common/Makefile b/board/karo/common/Makefile
 new file mode 100644
-index 0000000..de2c1be
+index 0000000000..de2c1be803
 --- /dev/null
 +++ b/board/karo/common/Makefile
 @@ -0,0 +1,7 @@
@@ -1505,7 +1436,7 @@ index 0000000..de2c1be
 +obj-y += env.o fdt.o
 diff --git a/board/karo/common/env.c b/board/karo/common/env.c
 new file mode 100644
-index 0000000..e554165
+index 0000000000..e5541659a8
 --- /dev/null
 +++ b/board/karo/common/env.c
 @@ -0,0 +1,134 @@
@@ -1645,7 +1576,7 @@ index 0000000..e554165
 +U_BOOT_ENV_CALLBACK(baseboard, karo_env_baseboard);
 diff --git a/board/karo/common/fdt.c b/board/karo/common/fdt.c
 new file mode 100644
-index 0000000..a769276
+index 0000000000..a769276e36
 --- /dev/null
 +++ b/board/karo/common/fdt.c
 @@ -0,0 +1,57 @@
@@ -1708,7 +1639,7 @@ index 0000000..a769276
 +}
 diff --git a/board/karo/common/karo.h b/board/karo/common/karo.h
 new file mode 100644
-index 0000000..cb97f4d
+index 0000000000..cb97f4d53e
 --- /dev/null
 +++ b/board/karo/common/karo.h
 @@ -0,0 +1,9 @@
@@ -1723,7 +1654,7 @@ index 0000000..cb97f4d
 +int karo_load_fdt(const char *fdt_file);
 diff --git a/board/karo/tx8m/Kconfig b/board/karo/tx8m/Kconfig
 new file mode 100644
-index 0000000..67cda00
+index 0000000000..67cda00ef9
 --- /dev/null
 +++ b/board/karo/tx8m/Kconfig
 @@ -0,0 +1,70 @@
@@ -1799,7 +1730,7 @@ index 0000000..67cda00
 +endif
 diff --git a/board/karo/tx8m/Makefile b/board/karo/tx8m/Makefile
 new file mode 100644
-index 0000000..1cac452
+index 0000000000..1cac452e05
 --- /dev/null
 +++ b/board/karo/tx8m/Makefile
 @@ -0,0 +1,15 @@
@@ -1820,7 +1751,7 @@ index 0000000..1cac452
 +endif
 diff --git a/board/karo/tx8m/ddr3l_timing.c b/board/karo/tx8m/ddr3l_timing.c
 new file mode 100644
-index 0000000..3a14990
+index 0000000000..3a14990694
 --- /dev/null
 +++ b/board/karo/tx8m/ddr3l_timing.c
 @@ -0,0 +1,4065 @@
@@ -5891,7 +5822,7 @@ index 0000000..3a14990
 +};
 diff --git a/board/karo/tx8m/spl.c b/board/karo/tx8m/spl.c
 new file mode 100644
-index 0000000..0d98dca
+index 0000000000..0d98dcaaca
 --- /dev/null
 +++ b/board/karo/tx8m/spl.c
 @@ -0,0 +1,428 @@
@@ -6325,7 +6256,7 @@ index 0000000..0d98dca
 +}
 diff --git a/board/karo/tx8m/tx8mm.c b/board/karo/tx8m/tx8mm.c
 new file mode 100644
-index 0000000..b4850cc
+index 0000000000..b4850ccf53
 --- /dev/null
 +++ b/board/karo/tx8m/tx8mm.c
 @@ -0,0 +1,944 @@
@@ -7275,7 +7206,7 @@ index 0000000..b4850cc
 +#endif /* OF_BOARD_SETUP */
 diff --git a/board/karo/tx8m/tx8mn.c b/board/karo/tx8m/tx8mn.c
 new file mode 100644
-index 0000000..b0a0eab
+index 0000000000..b0a0eabdf5
 --- /dev/null
 +++ b/board/karo/tx8m/tx8mn.c
 @@ -0,0 +1,917 @@
@@ -8197,7 +8128,7 @@ index 0000000..b0a0eab
 +}
 +#endif /* OF_BOARD_SETUP */
 diff --git a/cmd/Kconfig b/cmd/Kconfig
-index 16748e1..dcaa9cc 100644
+index 16748e1f8b..dcaa9cc60a 100644
 --- a/cmd/Kconfig
 +++ b/cmd/Kconfig
 @@ -425,6 +425,12 @@ config CMD_ENV_FLAGS
@@ -8215,7 +8146,7 @@ index 16748e1..dcaa9cc 100644
  menu "Memory commands"
 diff --git a/configs/qs8m-mq00_defconfig b/configs/qs8m-mq00_defconfig
 new file mode 100644
-index 0000000..95683db
+index 0000000000..95683dbf5a
 --- /dev/null
 +++ b/configs/qs8m-mq00_defconfig
 @@ -0,0 +1,112 @@
@@ -8333,7 +8264,7 @@ index 0000000..95683db
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/qs8m-mq00_mfg_defconfig b/configs/qs8m-mq00_mfg_defconfig
 new file mode 100644
-index 0000000..e62a3c8
+index 0000000000..e62a3c8e2f
 --- /dev/null
 +++ b/configs/qs8m-mq00_mfg_defconfig
 @@ -0,0 +1,116 @@
@@ -8455,7 +8386,7 @@ index 0000000..e62a3c8
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/qs8m-mq00_noenv_defconfig b/configs/qs8m-mq00_noenv_defconfig
 new file mode 100644
-index 0000000..72fa43b
+index 0000000000..72fa43b465
 --- /dev/null
 +++ b/configs/qs8m-mq00_noenv_defconfig
 @@ -0,0 +1,108 @@
@@ -8569,7 +8500,7 @@ index 0000000..72fa43b
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-1610_defconfig b/configs/tx8m-1610_defconfig
 new file mode 100644
-index 0000000..78042a8
+index 0000000000..78042a8827
 --- /dev/null
 +++ b/configs/tx8m-1610_defconfig
 @@ -0,0 +1,110 @@
@@ -8685,7 +8616,7 @@ index 0000000..78042a8
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-1610_mfg_defconfig b/configs/tx8m-1610_mfg_defconfig
 new file mode 100644
-index 0000000..9aa3b6a
+index 0000000000..9aa3b6a7d1
 --- /dev/null
 +++ b/configs/tx8m-1610_mfg_defconfig
 @@ -0,0 +1,113 @@
@@ -8804,7 +8735,7 @@ index 0000000..9aa3b6a
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-1610_noenv_defconfig b/configs/tx8m-1610_noenv_defconfig
 new file mode 100644
-index 0000000..a6ff099
+index 0000000000..a6ff09965d
 --- /dev/null
 +++ b/configs/tx8m-1610_noenv_defconfig
 @@ -0,0 +1,105 @@
@@ -8915,7 +8846,7 @@ index 0000000..a6ff099
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-1620_defconfig b/configs/tx8m-1620_defconfig
 new file mode 100644
-index 0000000..cfe4cdb
+index 0000000000..cfe4cdb7cb
 --- /dev/null
 +++ b/configs/tx8m-1620_defconfig
 @@ -0,0 +1,111 @@
@@ -9032,7 +8963,7 @@ index 0000000..cfe4cdb
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-1620_mfg_defconfig b/configs/tx8m-1620_mfg_defconfig
 new file mode 100644
-index 0000000..9aa6ab9
+index 0000000000..9aa6ab9f44
 --- /dev/null
 +++ b/configs/tx8m-1620_mfg_defconfig
 @@ -0,0 +1,114 @@
@@ -9152,7 +9083,7 @@ index 0000000..9aa6ab9
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-1620_noenv_defconfig b/configs/tx8m-1620_noenv_defconfig
 new file mode 100644
-index 0000000..5963233
+index 0000000000..59632336bd
 --- /dev/null
 +++ b/configs/tx8m-1620_noenv_defconfig
 @@ -0,0 +1,106 @@
@@ -9264,7 +9195,7 @@ index 0000000..5963233
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-nd00_defconfig b/configs/tx8m-nd00_defconfig
 new file mode 100644
-index 0000000..50a96ea
+index 0000000000..50a96ea9a7
 --- /dev/null
 +++ b/configs/tx8m-nd00_defconfig
 @@ -0,0 +1,111 @@
@@ -9381,7 +9312,7 @@ index 0000000..50a96ea
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-nd00_mfg_defconfig b/configs/tx8m-nd00_mfg_defconfig
 new file mode 100644
-index 0000000..91e82da
+index 0000000000..91e82da856
 --- /dev/null
 +++ b/configs/tx8m-nd00_mfg_defconfig
 @@ -0,0 +1,114 @@
@@ -9501,7 +9432,7 @@ index 0000000..91e82da
 +# CONFIG_EFI_LOADER is not set
 diff --git a/configs/tx8m-nd00_noenv_defconfig b/configs/tx8m-nd00_noenv_defconfig
 new file mode 100644
-index 0000000..76d46ca
+index 0000000000..76d46ca693
 --- /dev/null
 +++ b/configs/tx8m-nd00_noenv_defconfig
 @@ -0,0 +1,106 @@
@@ -9612,7 +9543,7 @@ index 0000000..76d46ca
 +CONFIG_OF_LIBFDT_OVERLAY=y
 +# CONFIG_EFI_LOADER is not set
 diff --git a/drivers/video/sec_mipi_dsim.c b/drivers/video/sec_mipi_dsim.c
-index a56414f..08429e7 100644
+index a56414f0cb..08429e7ecc 100644
 --- a/drivers/video/sec_mipi_dsim.c
 +++ b/drivers/video/sec_mipi_dsim.c
 @@ -449,6 +449,12 @@ static int sec_mipi_dsim_config_pll(struct sec_mipi_dsim *dsim)
@@ -9653,7 +9584,7 @@ index a56414f..08429e7 100644
  	msync |= MSYNC_SET_MAINVSA(vmode->vsync_len) |
 diff --git a/include/configs/tx8m.h b/include/configs/tx8m.h
 new file mode 100644
-index 0000000..61d8240
+index 0000000000..61d824095b
 --- /dev/null
 +++ b/include/configs/tx8m.h
 @@ -0,0 +1,231 @@
