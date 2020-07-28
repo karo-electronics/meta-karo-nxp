@@ -30,7 +30,6 @@ UBOOT_MAKE_TARGET = ""
 
 # Kernel Configs
 PREFERRED_VERSION_linux-imx ?= "5.4"
-PREFERRED_VERSION_u-boot-imx ?= "2018.03"
 
 # Remove some image types we don't need
 IMAGE_FSTYPES_remove = "sdcard.bz2"
