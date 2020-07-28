@@ -21,15 +21,17 @@
 #
 # Added changes to support
 #
-# Ka-Ro TX8M COM in a Yocto Project Build Environment
+# Ka-Ro i.MX8 COMs inside the NXP Yocto Project Build Environment
 #
 # Copyright (C) 2019 Oliver Wendt <OW@KARO-electronics.de>
+# Copyright (C) 2020 Lothar Waßmann <LW@KARO-electronics.de>
+# Copyright (C) 2020 Markus Bauer <MB@KARO-electronics.de>
 #
 
 . sources/meta-imx/tools/setup-utils.sh
 
 CWD=`pwd`
-BASENAME="karo-nxp-release.sh"
+BASENAME="karo-setup-release.sh"
 PROGNAME="setup-environment"
 
 exit_message () {
@@ -70,16 +72,18 @@ clean_up()
 OLD_OPTIND=$OPTIND
 unset FSLDISTRO
 
-while getopts "k:r:t:b:e:gh" fsl_setup_flag
-do
-    case $fsl_setup_flag in
-        b) BUILD_DIR="$OPTARG";
-           echo -e "\n Build directory is " $BUILD_DIR
-           ;;
-        h) fsl_setup_help='true';
-           ;;
-        \?) fsl_setup_error='true';
-           ;;
+while getopts b:h: fsl_setup_flag; do
+    case ${fsl_setup_flag} in
+	b)
+	    BUILD_DIR="$OPTARG"
+	    echo "Build directory is: " $BUILD_DIR
+	   ;;
+	h)
+	    fsl_setup_help='true'
+	   ;;
+	?)
+	    fsl_setup_error='true'
+	   ;;
     esac
 done
 shift $((OPTIND-1))
@@ -99,6 +103,7 @@ if [ -z "$DISTRO" ]; then
     if [ -z "$FSLDISTRO" ]; then
         FSLDISTRO='fsl-imx-xwayland'
     fi
+    DISTRO="$FSLDISTRO"
 else
     FSLDISTRO="$DISTRO"
 fi
@@ -147,7 +152,7 @@ TCWD=$(pwd)
 # Point to the current directory since the last command changed the directory to $BUILD_DIR
 BUILD_DIR=.
 
-if [ ! -e $BUILD_DIR/conf/local.conf ]; then
+if [ ! -e $BUILD_DIR/conf/< ]; then
     echo -e "\n ERROR - No build directory is set yet. Run the 'setup-environment' script before running this script to create " $BUILD_DIR
     echo -e "\n"
     return 1
@@ -160,6 +165,9 @@ if [ ! -e $BUILD_DIR/conf/local.conf.org ]; then
 else
     cp $BUILD_DIR/conf/local.conf.org $BUILD_DIR/conf/local.conf
 fi
+
+# Share the same sstate for all builds
+echo "SSTATE_DIR ?= \"\${BSPDIR}/sstate-cache\"" >> $BUILD_DIR/conf/local.conf
 
 
 if [ ! -e $BUILD_DIR/conf/bblayers.conf.org ]; then
@@ -186,7 +194,7 @@ echo "BBLAYERS += \"\${BSPDIR}/sources/meta-openembedded/meta-filesystems\"" >> 
 
 echo "BBLAYERS += \"\${BSPDIR}/sources/meta-qt5\"" >> $BUILD_DIR/conf/bblayers.conf
 
-echo "BBLAYERS += \" \${BSPDIR}/sources/meta-karo-nxp \"" >> $BUILD_DIR/conf/bblayers.conf
+echo "BBLAYERS += \"\${BSPDIR}/sources/meta-karo-nxp \"" >> $BUILD_DIR/conf/bblayers.conf
 
 if [ -d ../sources/meta-ivi ]; then
     echo -e "\n## Genivi layers" >> $BUILD_DIR/conf/bblayers.conf
