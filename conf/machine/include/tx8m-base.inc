@@ -54,3 +54,5 @@ MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "firmware-imx-sdma"
 # Blacklist evbug kernel module
 KERNEL_MODULE_PROBECONF += "evbug"
 module_conf_evbug = "blacklist evbug"
+
+FILESYSTEM_PERMS_TABLES = "files/fs-perms-karo.txt"
