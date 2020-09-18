@@ -1,0 +1,44 @@
+Index: imx8mm-mkimage/iMX8M/soc.mak
+===================================================================
+--- imx8mm-mkimage.orig/iMX8M/soc.mak
++++ imx8mm-mkimage/iMX8M/soc.mak
+@@ -134,8 +134,7 @@ clean:
+ 	@rm -vf $(MKIMG) u-boot-atf.bin u-boot-atf-tee.bin u-boot-spl-ddr.bin u-boot.itb u-boot.its u-boot-ddr3l.itb u-boot-ddr3l.its u-boot-spl-ddr3l.bin u-boot-ddr4.itb u-boot-ddr4.its u-boot-spl-ddr4.bin u-boot-ddr4-evk.itb u-boot-ivt.itb u-boot-ddr4-evk.its $(OUTIMG)
+ 
+ dtbs ?= evk.dtb
+-u-boot.itb: $(dtbs) u-boot-nodtb.bin tee.bin bl31.bin
+-	./$(PAD_IMAGE) tee.bin
++u-boot.itb: $(dtbs) u-boot-nodtb.bin bl31.bin
+ 	./$(PAD_IMAGE) bl31.bin
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs) > u-boot.its
+@@ -143,8 +142,7 @@ u-boot.itb: $(dtbs) u-boot-nodtb.bin tee
+ 	@rm -vf u-boot.its
+ 
+ dtbs_ddr3l ?= valddr3l.dtb
+-u-boot-ddr3l.itb: $(dtbs_ddr3l) u-boot-nodtb.bin tee.bin bl31.bin
+-	./$(PAD_IMAGE) tee.bin
++u-boot-ddr3l.itb: $(dtbs_ddr3l) u-boot-nodtb.bin bl31.bin
+ 	./$(PAD_IMAGE) bl31.bin
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_ddr3l)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_ddr3l) > u-boot-ddr3l.its
+@@ -152,8 +150,7 @@ u-boot-ddr3l.itb: $(dtbs_ddr3l) u-boot-n
+ 	@rm -f u-boot.its
+ 
+ dtbs_ddr4 ?= valddr4.dtb
+-u-boot-ddr4.itb: $(dtbs_ddr4) u-boot-nodtb.bin tee.bin bl31.bin
+-	./$(PAD_IMAGE) tee.bin
++u-boot-ddr4.itb: $(dtbs_ddr4) u-boot-nodtb.bin bl31.bin
+ 	./$(PAD_IMAGE) bl31.bin
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_ddr4)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_ddr4) > u-boot-ddr4.its
+@@ -161,8 +158,7 @@ u-boot-ddr4.itb: $(dtbs_ddr4) u-boot-nod
+ 	@rm -f u-boot.its
+ 
+ dtbs_ddr4_evk ?= evkddr4.dtb
+-u-boot-ddr4-evk.itb: $(dtbs_ddr4_evk) u-boot-nodtb.bin tee.bin bl31.bin
+-	./$(PAD_IMAGE) tee.bin
++u-boot-ddr4-evk.itb: $(dtbs_ddr4_evk) u-boot-nodtb.bin bl31.bin
+ 	./$(PAD_IMAGE) bl31.bin
+ 	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_ddr4_evk)
+ 	DEK_BLOB_LOAD_ADDR=$(DEK_BLOB_LOAD_ADDR) TEE_LOAD_ADDR=$(TEE_LOAD_ADDR) ATF_LOAD_ADDR=$(ATF_LOAD_ADDR) ./mkimage_fit_atf.sh $(dtbs_ddr4_evk) > u-boot-ddr4-evk.its
