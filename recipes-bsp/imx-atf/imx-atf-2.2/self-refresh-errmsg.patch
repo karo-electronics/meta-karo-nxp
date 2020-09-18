@@ -1,0 +1,13 @@
+Index: imx-atf-zeus/plat/imx/imx8m/ddr/ddr4_dvfs.c
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/ddr/ddr4_dvfs.c
++++ imx-atf-zeus/plat/imx/imx8m/ddr/ddr4_dvfs.c
+@@ -188,7 +188,7 @@ void ddr4_swffc(struct dram_info *dram_i
+ 	 * controller is not in self-refresh mode.
+ 	 */
+ 	if ((mmio_read_32(DDRC_STAT(0)) & 0x3) == 0x3)
+-		printf("C: Error DRAM should not in Self Refresh\n");
++		ERROR("DRAM should not be in Self Refresh Mode\n");
+ 
+ 	/*
+ 	 * 13. Assert PWRCTL.selfref_sw for the DWC_ddr_umctl2 core to enter

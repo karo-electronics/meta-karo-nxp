@@ -1,0 +1,112 @@
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mm/include/platform_def.h
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mm/include/platform_def.h
++++ imx-atf-zeus/plat/imx/imx8m/imx8mm/include/platform_def.h
+@@ -51,7 +51,7 @@
+ 
+ #define HAB_RVT_BASE			U(0x00000900) /* HAB_RVT for i.MX8MM */
+ 
+-#define IMX_BOOT_UART_BASE		U(0x30890000)
++#define IMX_BOOT_UART_BASE		U(0x30860000)
+ #define IMX_BOOT_UART_CLK_IN_HZ		24000000 /* Select 24MHz oscillator */
+ 
+ #define PLAT_CRASH_UART_BASE		IMX_BOOT_UART_BASE
+@@ -145,3 +145,8 @@
+ 
+ #define COUNTER_FREQUENCY		8000000 /* 8MHz */
+ 
++#if DEBUG
++#define DEBUG_CONSOLE			1
++#else
++#define DEBUG_CONSOLE			0
++#endif
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mn/include/platform_def.h
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mn/include/platform_def.h
++++ imx-atf-zeus/plat/imx/imx8m/imx8mn/include/platform_def.h
+@@ -51,7 +51,7 @@
+ 
+ #define HAB_RVT_BASE			U(0x00000900) /* HAB_RVT for i.MX8MM */
+ 
+-#define IMX_BOOT_UART_BASE		U(0x30890000)
++#define IMX_BOOT_UART_BASE		U(0x30860000)
+ #define IMX_BOOT_UART_CLK_IN_HZ		24000000 /* Select 24MHz oscillator */
+ 
+ #define PLAT_CRASH_UART_BASE		IMX_BOOT_UART_BASE
+@@ -143,3 +143,8 @@
+ 
+ #define COUNTER_FREQUENCY		8000000 /* 8MHz */
+ 
++#if DEBUG
++#define DEBUG_CONSOLE			1
++#else
++#define DEBUG_CONSOLE			0
++#endif
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mp/include/platform_def.h
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mp/include/platform_def.h
++++ imx-atf-zeus/plat/imx/imx8m/imx8mp/include/platform_def.h
+@@ -145,4 +145,9 @@
+ 
+ #define COUNTER_FREQUENCY		8000000 /* 8MHz */
+ 
++#if DEBUG
++#define DEBUG_CONSOLE			1
++#else
++#define DEBUG_CONSOLE			0
++#endif
+ #define IMX_WDOG_B_RESET
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
++++ imx-atf-zeus/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
+@@ -148,8 +148,12 @@ void bl31_early_platform_setup2(u_regist
+ 	console_imx_uart_register(IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ,
+ 		IMX_CONSOLE_BAUDRATE, &console);
+ 	/* This console is only used for boot stage */
++#if DEBUG
++	console_set_scope(&console.console,
++			  CONSOLE_FLAG_BOOT | CONSOLE_FLAG_RUNTIME);
++#else
+ 	console_set_scope(&console.console, CONSOLE_FLAG_BOOT);
+-
++#endif
+ 	/*
+ 	 * tell BL3-1 where the non-secure software image is located
+ 	 * and the entry state information.
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
++++ imx-atf-zeus/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
+@@ -153,8 +153,12 @@ void bl31_early_platform_setup2(u_regist
+ 	console_imx_uart_register(IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ,
+ 		IMX_CONSOLE_BAUDRATE, &console);
+ 	/* This console is only used for boot stage */
++#if DEBUG
++	console_set_scope(&console.console,
++			  CONSOLE_FLAG_BOOT | CONSOLE_FLAG_RUNTIME);
++#else
+ 	console_set_scope(&console.console, CONSOLE_FLAG_BOOT);
+-
++#endif
+ 	/*
+ 	 * tell BL3-1 where the non-secure software image is located
+ 	 * and the entry state information.
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
++++ imx-atf-zeus/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
+@@ -152,8 +152,12 @@ void bl31_early_platform_setup2(u_regist
+ 	console_imx_uart_register(IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ,
+ 		IMX_CONSOLE_BAUDRATE, &console);
+ 	/* This console is only used for boot stage */
++#if DEBUG
++	console_set_scope(&console.console,
++			  CONSOLE_FLAG_BOOT | CONSOLE_FLAG_RUNTIME);
++#else
+ 	console_set_scope(&console.console, CONSOLE_FLAG_BOOT);
+-
++#endif
+ 	/*
+ 	 * tell BL3-1 where the non-secure software image is located
+ 	 * and the entry state information.

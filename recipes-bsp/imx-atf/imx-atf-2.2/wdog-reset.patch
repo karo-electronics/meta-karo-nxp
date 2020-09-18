@@ -1,0 +1,42 @@
+Index: imx-atf-zeus/plat/imx/imx8m/imx8m_psci_common.c
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8m_psci_common.c
++++ imx-atf-zeus/plat/imx/imx8m/imx8m_psci_common.c
+@@ -176,16 +176,13 @@ void __dead2 imx_system_reset(void)
+ 	/* WDOG_B reset */
+ 	val = mmio_read_16(wdog_base);
+ #ifdef IMX_WDOG_B_RESET
+-	val = (val & 0x001F) | WDOG_WCR_WDZST | WDOG_WCR_WDE |
+-		WDOG_WCR_WDT | WDOG_WCR_SRS | BIT(8);
++	val = (val & 0x001F) | WDOG_WCR_WDE | WDOG_WCR_WDT;
+ #else
+-	val = (val & 0x00FF) | WDOG_WCR_WDZST | WDOG_WCR_WDE |
+-		WDOG_WCR_WDA;
++	/* Assert WDOG_SRS (low) for SOFTRESET */
++	val = (val & ~WDOG_WCR_SRS) | WDOG_WCR_SRE;
+ #endif
+ 	mmio_write_16(wdog_base, val);
+ 
+-	mmio_write_16(wdog_base + WDOG_WSR, 0x5555);
+-	mmio_write_16(wdog_base + WDOG_WSR, 0xaaaa);
+ 	while (1)
+ 		;
+ }
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mm/include/platform_def.h
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mm/include/platform_def.h
++++ imx-atf-zeus/plat/imx/imx8m/imx8mm/include/platform_def.h
+@@ -145,4 +145,3 @@
+ 
+ #define COUNTER_FREQUENCY		8000000 /* 8MHz */
+ 
+-#define IMX_WDOG_B_RESET
+Index: imx-atf-zeus/plat/imx/imx8m/imx8mn/include/platform_def.h
+===================================================================
+--- imx-atf-zeus.orig/plat/imx/imx8m/imx8mn/include/platform_def.h
++++ imx-atf-zeus/plat/imx/imx8m/imx8mn/include/platform_def.h
+@@ -143,4 +143,3 @@
+ 
+ #define COUNTER_FREQUENCY		8000000 /* 8MHz */
+ 
+-#define IMX_WDOG_B_RESET
