@@ -1,0 +1,125 @@
+From 15ecd57a1e9b82019effba254c52ad767900cad6 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Lothar=20Wa=C3=9Fmann?= <LW@KARO-electronics.de>
+Date: Thu, 3 Sep 2020 14:09:50 +0200
+Subject: [PATCH] Revert "MLK-23131-2 soc: imx: busfreq-imx8mq: Correct dram
+ pll clock for rate update"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This reverts commit 7e99bce2f683e2cae439aa52aea885d6cc81d9ab.
+The 'dram_pll' clock in the original code was the CORRECT one!
+The patch tries to get a new 'dram_pll_div' clock that does not
+actually exist and furthermore forgets to implement the error check
+for this clock that is done for all other clocks.
+Together this leads to a kernel crash:
+[    9.912064][   T12] Unable to handle kernel paging request at virtual address fffffffffffffffe
+[    9.920704][   T12] Mem abort info:
+[    9.924215][   T12]   ESR = 0x96000004
+[    9.927977][   T12]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    9.933989][   T12]   SET = 0, FnV = 0
+[    9.937748][   T12]   EA = 0, S1PTW = 0
+[    9.941590][   T12] Data abort info:
+[    9.945170][   T12]   ISV = 0, ISS = 0x00000004
+[    9.949707][   T12]   CM = 0, WnR = 0
+[    9.953377][   T12] swapper pgtable: 4k pages, 48-bit VAs, pgdp=00000000410de000
+[    9.960778][   T12] [fffffffffffffffe] pgd=0000000000000000
+[    9.966360][   T12] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+[    9.972627][   T12] Modules linked in:
+[    9.976381][   T12] CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.4.24 #1
+[    9.983255][   T12] Hardware name: Ka-Ro electronics QS8M-ND00 (NXP i.MX8MN) Module on QSBASE2 baseboard (DT)
+[    9.993180][   T12] Workqueue: events reduce_bus_freq_handler
+[    9.998362][    T1] cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
+[    9.998929][   T12] pstate: 60000005 (nZCv daif -PAN -UAO)
+[   10.006261][   T40] platform regulatory.0: Direct firmware load for regulatory.db failed with error -2
+[   10.011630][   T12] pc : clk_get_rate+0xc/0x28
+[   10.011633][   T12] lr : reduce_bus_freq+0xe8/0x3e8
+[   10.011638][   T12] sp : ffff800010efbd50
+[   10.020947][    T1] clk: Not disabling unused clocks
+[   10.025376][   T12] x29: ffff800010efbd50 x28: ffff800010d56000
+[   10.025384][   T12] x27: ffff800010073cf8 x26: ffff0000060a3138
+[   10.030270][   T40] platform regulatory.0: Falling back to sysfs fallback for: regulatory.db
+[   10.034261][   T12] x25: 0000000000000000 x24: ffff800010eb65f0
+[   10.034269][   T12] x23: ffff00001f789400 x22: 0000000000000000
+[   10.039369][    T1] ALSA device list:
+[   10.045235][   T12] x21: ffff00001f785980 x20: ffff800010eb6000
+[   10.045239][   T12] x19: ffff800010eb6520 x18: 0000000000000000
+[   10.051256][    T1]   No soundcards found.
+[   10.059686][   T12] x17: 00000000c85add6e x16: 00000000e24a0db8
+[   10.059693][   T12] x15: ffff000006054ad0 x14: 28fc2f2b1f3b4e7d
+[   10.103486][   T12] x13: 000108af0ceee30c x12: 0000000000000001
+L..<9..))9497][ ))T12] x))2C())0).7)..[   10.118739][   T12] x7 : 0000000009896800 x6 : 000000000971907c
+[   10.124746][   T12] x5 : 000000002faf0800 x4 : 0000000000000000
+[   10.130753][   T12] x3 : ffff00000609de00 x2 : 0000000000000000
+[   10.136759][   T12] x1 : ffff00000609de00 x0 : fffffffffffffffe
+[   10.142768][   T12] Call trace:
+[   10.145911][   T12]  clk_get_rate+0xc/0x28
+[   10.150009][   T12]  reduce_bus_freq+0xe8/0x3e8
+[   10.154540][   T12]  reduce_bus_freq_handler+0x40/0x58
+[   10.159682][   T12]  process_one_work+0x198/0x300
+[   10.164387][   T12]  worker_thread+0x48/0x420
+[   10.168747][   T12]  kthread+0xf8/0x128
+[   10.172585][   T12]  ret_from_fork+0x10/0x18
+[   10.176860][   T12] Code: d503201f b40000e0 a9bf7bfd 910003fd (f9400000)
+[   10.183650][   T12] ---[ end trace ce128222ebfc4a80 ]---
+[   10.188962][   T12] Kernel panic - not syncing: Fatal exception
+[   10.194884][   T12] SMP: stopping secondary CPUs
+[   10.199504][   T12] Kernel Offset: disabled
+[   10.203687][   T12] CPU features: 0x0002,2000200c
+[   10.208390][   T12] Memory Limit: none
+
+Signed-off-by: Lothar Waßmann <LW@KARO-electronics.de>
+---
+ drivers/soc/imx/busfreq-imx8mq.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/soc/imx/busfreq-imx8mq.c b/drivers/soc/imx/busfreq-imx8mq.c
+index 5e36962285ef..acd49fd78d0d 100644
+--- a/drivers/soc/imx/busfreq-imx8mq.c
++++ b/drivers/soc/imx/busfreq-imx8mq.c
+@@ -61,7 +61,6 @@ static int low_bus_mode_fsp_index;
+ static bool bypass_support = true;
+ 
+ static struct clk *dram_pll_clk;
+-static struct clk *dram_pll;
+ static struct clk *sys1_pll_800m;
+ static struct clk *sys1_pll_400m;
+ static struct clk *sys1_pll_100m;
+@@ -136,7 +135,7 @@ static void reduce_bus_freq(void)
+ 				 * to update the clock tree info in kernel side.
+ 				 */
+ 				clk_set_rate(dram_apb_pre_div, 160000000);
+-				clk_get_rate(dram_pll);
++				clk_get_rate(dram_pll_clk);
+ 			}
+ 			/* change the NOC rate */
+ 			if (of_machine_is_compatible("fsl,imx8mq"))
+@@ -181,7 +180,7 @@ static void reduce_bus_freq(void)
+ 				 * to update the clock tree info in kernel side.
+ 				 */
+ 				clk_set_rate(dram_apb_pre_div, 160000000);
+-				clk_get_rate(dram_pll);
++				clk_get_rate(dram_pll_clk);
+ 			}
+ 
+ 			/* change the NOC rate */
+@@ -283,7 +282,7 @@ static int set_high_bus_freq(int high_bus_freq)
+ 		update_bus_freq(HIGH_FREQ_3200MTS);
+ 
+ 		clk_set_rate(dram_apb_pre_div, 200000000);
+-		clk_get_rate(dram_pll);
++		clk_get_rate(dram_pll_clk);
+ 	}
+ 
+ 	clk_set_rate(noc_div, origin_noc_rate);
+@@ -509,7 +508,6 @@ static int imx8mq_init_busfreq_clk(struct platform_device *pdev)
+ 
+ static int imx8mm_init_busfreq_clk(struct platform_device *pdev)
+ {
+-	dram_pll = devm_clk_get(&pdev->dev, "dram_pll_div");
+ 	dram_pll_clk = devm_clk_get(&pdev->dev, "dram_pll");
+ 	dram_alt_src = devm_clk_get(&pdev->dev, "dram_alt_src");
+ 	dram_alt_root = devm_clk_get(&pdev->dev, "dram_alt_root");
+-- 
+2.11.0
+
