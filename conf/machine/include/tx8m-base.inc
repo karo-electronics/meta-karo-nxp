@@ -10,17 +10,13 @@ require conf/machine/include/tune-cortexa53.inc
 
 MACHINE_FEATURES += "emmc"
 
-#PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
-#PREFERRED_PROVIDER_virtual/kernel_imx = "linux-karo"
-#PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
-
 VIRTUAL-RUNTIME_dev_manager ??= "udev"
 VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
 
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
 
-UBOOT_CONFIG ??= "default mfg noenv"
+UBOOT_CONFIG ??= "default"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
 
@@ -40,6 +36,8 @@ UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = ""
 
 PREFERRED_VERSION_linux-karo ?= "5.4"
+
+IMAGE_FSTYPES_append = " ext4"
 
 # Remove some image types we don't need
 IMAGE_FSTYPES_remove = "sdcard.bz2"
