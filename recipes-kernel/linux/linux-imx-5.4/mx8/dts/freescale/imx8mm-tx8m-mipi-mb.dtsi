@@ -8,6 +8,23 @@
 #include <dt-bindings/pwm/pwm.h>
 
 / {
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		rpmsg_reserved: rpmsg@0xb8000000 {
+			no-map;
+			reg = <0 0xb8000000 0 0x400000>;
+		};
+	};
+
+	pcie0_refclk: pcie0-refclk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <100000000>;
+	};
+
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
@@ -207,9 +224,15 @@
 &pcie0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie_reset>;
-	hard-wired;
 	reset-gpio = <&gpio2 19 GPIO_ACTIVE_LOW>;
-	status = "okay";
+	clocks = <&clk IMX8MM_CLK_PCIE1_ROOT>,
+		 <&clk IMX8MM_CLK_PCIE1_AUX>,
+		 <&clk IMX8MM_CLK_PCIE1_PHY>,
+		 <&pcie0_refclk>;
+	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
+	ext_osc = <0>;
+	reserved-region = <&rpmsg_reserved>;
+	status = "disabled";
 };
 
 &pwm1 {
