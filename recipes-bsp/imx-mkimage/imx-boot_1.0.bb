@@ -94,6 +94,7 @@ REV_OPTION ?= ""
 REV_OPTION_mx8qxpc0 = "REV=C0"
 
 compile_mx8m() {
+    local t="$1"
     bbnote 8MQ/8MM boot binary build
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING}"
@@ -112,30 +113,28 @@ maintain a custom recipe."
     ln -svf "${STAGING_DIR_NATIVE}${bindir}/mkimage"            "${BOOT_STAGING}/mkimage_uboot"
     install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME}" "${BOOT_STAGING}/bl31.bin"
 
-    for t in ${UBOOT_CONFIG};do
-        UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-        BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+    BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
 
-    	install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
-                                                             "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
-	install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/u-boot-nodtb.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
-                                                             "${BOOT_STAGING}/u-boot-nodtb.${UBOOT_SUFFIX}"
-        install -v "${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}" "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
-    done
+    install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
+                                                            "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
+    install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/u-boot-nodtb.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
+                                                            "${BOOT_STAGING}/u-boot-nodtb.${UBOOT_SUFFIX}"
+    install -v "${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}" "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
 }
 
 compile_mx8() {
+    local t="$1"
     bbnote 8QM boot binary build
 
-    for t in ${UBOOT_CONFIG};do
-        UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-        BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-        install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                 "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
-        if [ -e "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" ];then
-            install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
-                                                             "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
-        fi
-    done
+    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+    BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+    install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                 "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
+    if [ -e "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" ];then
+        install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
+                                                            "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
+    fi
+
     install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
     install -v "${DEPLOY_DIR_IMAGE}/imx8qm_m4_0_TCM_power_mode_switch_m40.bin" \
@@ -146,6 +145,7 @@ compile_mx8() {
 }
 
 compile_mx8x() {
+    local t="$1"
     bbnote 8QX boot binary build
 
     install -v ${DEPLOY_DIR_IMAGE}/${M4_DEFAULT_IMAGE}               ${BOOT_STAGING}/m4_image.bin
@@ -153,16 +153,14 @@ compile_mx8x() {
     install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
     install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
 
-    for t in ${UBOOT_CONFIG};do
-        UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-        BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+    BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
 
-        install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                 ${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}
-        if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t} ];then
-            install -v ${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t} \
-                                                             ${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}
-        fi
-    done
+    install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                 ${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t} ];then
+        install -v ${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t} \
+                                                            ${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}
+    fi
 }
 
 do_compile() {
@@ -173,7 +171,7 @@ do_compile() {
         install -v "${DEPLOY_DIR_IMAGE}/tee.bin" "${BOOT_STAGING}"
     fi
     for type in ${UBOOT_CONFIG};do
-        compile_${SOC_FAMILY}
+        compile_${SOC_FAMILY} ${type}
         BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${type}"
 
         # mkimage for i.MX8
