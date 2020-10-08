@@ -16,6 +16,8 @@ VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
 
+KARO_BOARD_PMIC ??= "bd71847"
+
 UBOOT_CONFIG ??= "noenv mfg default"
 
 SPL_BINARY = "spl/u-boot-spl.bin"

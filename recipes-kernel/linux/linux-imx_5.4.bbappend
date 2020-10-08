@@ -39,6 +39,11 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81.dts;subdir=git/arch/arm64/boot \
 "
+python() {
+    if d.getVar('KARO_BOARD_PMIC'):
+        d.appendVar('SRC_URI', " file://${KARO_BOARD_PMIC}.cfg")
+}
+
 SRC_URI_append_mx8mm = " \
 	file://mx8mm_defconfig;subdir=git/arch/arm64/configs \
 "
@@ -60,7 +65,7 @@ do_preconfigure_prepend () {
         bbfatal "KBUILD_DEFCONFIG is not set"
     fi
     install -v ${S}/${DEFCONFIG_PATH}/${KBUILD_DEFCONFIG} ${WORKDIR}/defconfig
-    for cfg in $(ls -1 -d ${WORKDIR}/* | grep -e ".*.cfg$");do
+    for cfg in $(ls -d ${WORKDIR}/* | grep "\\.cfg$");do
         bbnote "Merging ${cfg} into ${WORKDIR}/defconfig"
         cat ${cfg} >> ${WORKDIR}/defconfig
     done
