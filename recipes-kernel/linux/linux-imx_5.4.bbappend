@@ -40,18 +40,18 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mp-qsxp-ml81.dts;subdir=git/arch/arm64/boot \
 "
 SRC_URI_append_mx8mm = " \
-	file://tx8mm_defconfig;subdir=git/arch/arm64/configs \
+	file://mx8mm_defconfig;subdir=git/arch/arm64/configs \
 "
 SRC_URI_append_mx8mn = " \
-	file://tx8mn_defconfig;subdir=git/arch/arm64/configs \
+	file://mx8mn_defconfig;subdir=git/arch/arm64/configs \
 "
 SRC_URI_append_mx8mp = " \
-	file://tx8mp_defconfig;subdir=git/arch/arm64/configs \
+	file://mx8mp_defconfig;subdir=git/arch/arm64/configs \
 "
 
-KBUILD_DEFCONFIG_mx8mm = "tx8mm_defconfig"
-KBUILD_DEFCONFIG_mx8mn = "tx8mn_defconfig"
-KBUILD_DEFCONFIG_mx8mp = "tx8mp_defconfig"
+KBUILD_DEFCONFIG_mx8mm = "mx8mm_defconfig"
+KBUILD_DEFCONFIG_mx8mn = "mx8mn_defconfig"
+KBUILD_DEFCONFIG_mx8mp = "mx8mp_defconfig"
 
 DEFCONFIG_PATH_mx8 = "arch/${ARCH}/configs"
 
