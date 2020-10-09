@@ -26,11 +26,11 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
-SRCBRANCH = "imx_v2020.04_5.4.24_2.1.0"
+SRCBRANCH = "karo-tx8m"
 
 # We use the revision in order to avoid having to fetch it from the
 # repo during parse
-SRCREV = "4b11317921d32156ca10aad80e9cd5ae879e035f"
+SRCREV = "603345d2dff014fce1fd3ee4fadb3c7aa6a52811"
 
 S = "${WORKDIR}/git"
 
