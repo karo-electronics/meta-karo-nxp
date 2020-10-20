@@ -23,10 +23,10 @@ UBOOT_CONFIG ??= "noenv mfg default"
 SPL_BINARY = "spl/u-boot-spl.bin"
 
 # Set DDR FIRMWARE
-DDR_FIRMWARE_NAME = "ddr3_imem_1d.bin ddr3_dmem_1d.bin"
+DDR_FIRMWARE_NAME ?= "ddr3_imem_1d.bin ddr3_dmem_1d.bin"
 
 # Set imx-mkimage boot target
-IMXBOOT_TARGETS = "flash_tx8m"
+IMXBOOT_TARGETS ?= "flash_tx8m"
 
 # Set Serial console
 SERIAL_CONSOLES = "115200;ttymxc0"
