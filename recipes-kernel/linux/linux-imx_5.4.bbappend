@@ -9,6 +9,7 @@ SRC_URI_append = " \
 	file://0004-Revert-MLK-23131-2-soc-imx-busfreq-imx8mq-Correct-dr.patch \
 	file://0005-pca9450-bugfix.patch \
 	file://0006-add-imx219-driver-support.patch \
+	file://0007-stmmac-dont-log-error-message-when-eprobe-defer.patch \
 	${@bb.utils.contains('DISTRO_FEATURES','systemd','file://systemd.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','wifi','file://wifi.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','imx219','file://imx219.cfg','',d)} \
