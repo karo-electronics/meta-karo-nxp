@@ -1,4 +1,4 @@
-# Ka-Ro specific patch set for NXP's linux-imx 5.4.24
+# Ka-Ro specific patch set for NXP's linux-imx 5.4.47
 PROVIDES += "linux"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
@@ -8,18 +8,24 @@ SRC_URI_append = " \
 	file://0003-Add-RaspberryPi-7inch-touchscreen-display-support-dr.patch \
 	file://0004-Revert-MLK-23131-2-soc-imx-busfreq-imx8mq-Correct-dr.patch \
 	file://0005-pca9450-bugfix.patch \
+	file://0006-add-imx219-driver-support.patch \
 	${@bb.utils.contains('DISTRO_FEATURES','systemd','file://systemd.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','wifi','file://wifi.cfg','',d)} \
+	${@bb.utils.contains('DISTRO_FEATURES','imx219','file://imx219.cfg','',d)} \
 "
 
 SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8m-qs8m-dsi83.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8m-qs8m-raspi-display.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-cam.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-dsi83-cam.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-dsi83.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-raspi-display-cam.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-raspi-display.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-qs8m-mq00.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qs8m-mq00.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qs8m-raspi-camera.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610-mipi-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610-tx4etml0500.dts;subdir=git/arch/arm64/boot \
@@ -36,9 +42,16 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mn-tx8m-mipi-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-nd00-mipi-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-nd00.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-basler.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-dsi83.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-ml-kit.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81.dts;subdir=git/arch/arm64/boot \
 "
+
 python() {
     if d.getVar('KARO_BOARD_PMIC'):
         d.appendVar('SRC_URI', " file://${KARO_BOARD_PMIC}.cfg")

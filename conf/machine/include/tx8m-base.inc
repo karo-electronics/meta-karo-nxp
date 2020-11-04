@@ -10,9 +10,6 @@ require conf/machine/include/tune-cortexa53.inc
 
 MACHINE_FEATURES += "emmc"
 
-VIRTUAL-RUNTIME_dev_manager ??= "udev"
-VIRTUAL-RUNTIME_init_manager ?= "${@bb.utils.contains('DISTRO_FEATURES',"systemd","systemd","sysvinit",d)}"
-
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
 
@@ -29,7 +26,7 @@ DDR_FIRMWARE_NAME ?= "ddr3_imem_1d.bin ddr3_dmem_1d.bin"
 IMXBOOT_TARGETS ?= "flash_tx8m"
 
 # Set Serial console
-SERIAL_CONSOLES = "115200;ttymxc0"
+SERIAL_CONSOLES = "115200;ttymxc0 115200;ttymxc1 115200;ttymxc2"
 
 IMAGE_BOOTLOADER = "imx-boot"
 
