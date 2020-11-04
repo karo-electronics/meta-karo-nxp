@@ -30,7 +30,7 @@ SRCBRANCH = "karo-tx8m"
 
 # We use the revision in order to avoid having to fetch it from the
 # repo during parse
-SRCREV = "603345d2dff014fce1fd3ee4fadb3c7aa6a52811"
+SRCREV = "f267461901f7b1437f569416e5d22305a6763ad3"
 
 S = "${WORKDIR}/git"
 
