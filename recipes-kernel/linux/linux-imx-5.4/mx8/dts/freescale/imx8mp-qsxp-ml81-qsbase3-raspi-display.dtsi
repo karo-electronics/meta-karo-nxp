@@ -54,6 +54,10 @@
 	};
 };
 
+&mix_gpu_ml {
+	status = "okay";
+};
+
 &vpu_g1 {
 	status = "okay";
 };

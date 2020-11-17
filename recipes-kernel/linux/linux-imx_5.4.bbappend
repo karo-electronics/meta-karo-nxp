@@ -8,11 +8,15 @@ SRC_URI_append = " \
 	file://0003-Add-RaspberryPi-7inch-touchscreen-display-support-dr.patch \
 	file://0004-Revert-MLK-23131-2-soc-imx-busfreq-imx8mq-Correct-dr.patch \
 	file://0005-pca9450-bugfix.patch \
-	file://0006-add-imx219-driver-support.patch \
 	file://0007-stmmac-dont-log-error-message-when-eprobe-defer.patch \
 	${@bb.utils.contains('DISTRO_FEATURES','systemd','file://systemd.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','wifi','file://wifi.cfg','',d)} \
+	${@bb.utils.contains('DISTRO_FEATURES','bluetooth','file://bluetooth.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','imx219','file://imx219.cfg','',d)} \
+"
+
+SRC_URI_append_qs8m = " \
+	file://0006-add-imx219-driver-support.patch \
 "
 
 SRC_URI_append_mx8 = " \
@@ -47,6 +51,7 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-dsi83.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-ml-kit.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dtsi;subdir=git/arch/arm64/boot \

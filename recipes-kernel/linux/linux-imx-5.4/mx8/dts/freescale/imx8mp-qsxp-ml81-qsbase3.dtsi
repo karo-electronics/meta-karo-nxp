@@ -80,28 +80,11 @@
 	};
 };
 
-&mipi_csi_0 {
-	#address-cells = <1>;
-	#size-cells = <0>;
-	clocks = <&clk IMX8MP_CLK_MEDIA_CAM1_PIX>,
-			 <&clk IMX8MP_CLK_MEDIA_AXI>,
-			 <&clk IMX8MP_CLK_MEDIA_APB>;
-	clock-names = "mipi_clk", "axi_root", "apb_root";
-	assigned-clocks = <&clk IMX8MP_CLK_MEDIA_CAM1_PIX>,
-			  <&clk IMX8MP_CLK_MEDIA_AXI>,
-			  <&clk IMX8MP_CLK_MEDIA_APB>;
-	assigned-clock-parents = <&clk IMX8MP_SYS_PLL2_1000M>,
-				 <&clk IMX8MP_SYS_PLL2_500M>,
-				 <&clk IMX8MP_SYS_PLL1_800M>;
-	assigned-clock-rates = <500000000>, <500000000>, <200000000>;
-	status = "disabled";
-};
-
 &pcie {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
 	bus-range = <0x00 0xff>;
-	disable-gpio = <&gpio4 24 GPIO_ACTIVE_LOW>;
+	disable-gpio = <&gpio2 13 GPIO_ACTIVE_LOW>;
 	reset-gpio = <&gpio1 15 GPIO_ACTIVE_LOW>;
 	ext_osc = <1>;
 	clocks = <&clk IMX8MP_CLK_HSIO_AXI_DIV>,
@@ -202,7 +185,8 @@
 
 	pinctrl_pcie: pciegrp {
 		fsl,pins = <
-			MX8MP_IOMUXC_SAI2_TXFS__GPIO4_IO24		0x41
+			MX8MP_IOMUXC_SD2_DATA0__GPIO2_IO15		0x61 /* open drain, pull up */
+			MX8MP_IOMUXC_SD2_CLK__GPIO2_IO13		0x41
 			MX8MP_IOMUXC_GPIO1_IO15__GPIO1_IO15		0x41
 		>;
 	};

@@ -53,3 +53,23 @@ KERNEL_MODULE_PROBECONF += "evbug"
 module_conf_evbug = "blacklist evbug"
 
 FILESYSTEM_PERMS_TABLES = "files/fs-perms-karo.txt"
+
+PREFERRED_VERSION_isp-imx                 = "4.2.2.4+basler"
+PREFERRED_VERSION_basler-camera           = "4.2.2.4+basler"
+PREFERRED_VERSION_kernel-module-isp-vvcam = "4.2.2.4+basler"
+
+IMX_GPU_VERSION            ?= "6.4.3.p0.0"
+IMX_GPU_VERSION_SUFFIX      = "aarch64"
+
+PREFERRED_VERSION_imx-gpu-viv               = "${IMX_GPU_VERSION}-${IMX_GPU_VERSION_SUFFIX}"
+PREFERRED_VERSION_kernel-module-imx-gpu-viv = "${IMX_GPU_VERSION}"
+PREFERRED_VERSION_imx-gpu-g2d               = "${IMX_GPU_VERSION}"
+
+# Set the preffered provider for opencl-headers
+PREFERRED_PROVIDER_opencl-headers_imx = "imx-gpu-viv"
+
+PREFERRED_VERSION_gstreamer1.0-plugins-base = "1.16.2.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad  = "1.16.2.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good = "1.16.2.imx"
+PREFERRED_VERSION_gstreamer1.0              = "1.16.2.imx"
+PREFERRED_VERSION_gstreamer1.0-libav        = "1.16.2"

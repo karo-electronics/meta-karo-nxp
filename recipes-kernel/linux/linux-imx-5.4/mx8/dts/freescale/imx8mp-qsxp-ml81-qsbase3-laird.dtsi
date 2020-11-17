@@ -16,3 +16,7 @@
 &pcie_phy {
 	status = "okay";
 };
+
+&uart1 { /* BT */
+	status = "okay";
+};

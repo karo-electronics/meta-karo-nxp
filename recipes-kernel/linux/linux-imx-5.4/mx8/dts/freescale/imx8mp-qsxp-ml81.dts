@@ -190,6 +190,14 @@
 	status = "okay";
 };
 
+/* overwrite freescale cma setting since it's not allocatable on qsxp */
+&resmem {
+	linux,cma {
+		size = <0 0x1e000000>;
+		/delete-property/ alloc-ranges;
+	};
+};
+
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1 &pinctrl_uart1_rtscts>;
