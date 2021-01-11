@@ -73,17 +73,3 @@
 &ml_vipsi {
 	status = "okay";
 };
-
-&iomuxc {
-	pinctrl_csi0_pwn: csi0_pwn_grp {
-		fsl,pins = <
-			MX8MP_IOMUXC_SD2_DATA2__GPIO2_IO17		0x19
-		>;
-	};
-
-	pinctrl_csi0_rst: csi0_rst_grp {
-		fsl,pins = <
-			MX8MP_IOMUXC_SAI2_TXFS__GPIO4_IO24		0x19
-		>;
-	};
-};
