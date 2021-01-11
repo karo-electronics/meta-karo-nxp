@@ -42,6 +42,7 @@
 &csi1_bridge {
 	fsl,mipi-mode;
 	status = "okay";
+	
 	port {
 		csi1_ep: endpoint {
 			remote-endpoint = <&csi1_mipi_ep>;
