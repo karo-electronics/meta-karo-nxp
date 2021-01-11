@@ -32,7 +32,6 @@
 		regulator-max-microvolt = <5000000>;
 		gpio = <&gpio2 12 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
-		regulator-always-on;
 	};
 };
 
@@ -110,13 +109,12 @@
 };
 
 &usb3_phy1 {
-	fsl,phy-tx-preemp-amp-tune = <2>;
+	vbus-supply = <&reg_usbh_vbus>;
 	status = "okay";
 };
 
 &usb_dwc3_1 {
 	dr_mode = "host";
-	vbus-supply = <&reg_usbh_vbus>;
 	status = "okay";
 };
 
