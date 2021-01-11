@@ -33,13 +33,13 @@
 
 		display-timings {
 			lvds {
-				clock-frequency = <62500000>;
+				clock-frequency = <72000000>;
 				hactive = <1280>;
 				vactive = <800>;
-				hback-porch = <6>;
-				hfront-porch = <5>;
-				vback-porch = <2>;
-				vfront-porch = <3>;
+				hback-porch = <80>;
+				hfront-porch = <80>;
+				vback-porch = <12>;
+				vfront-porch = <11>;
 				hsync-len = <2>;
 				vsync-len = <1>;
 				hsync-active = <0>;
@@ -57,10 +57,6 @@
 	};
 };
 
-&i2c3 {
-	status = "disabled";
-};
-
 &lcdif1 {
         status = "okay";
 };
@@ -74,6 +70,10 @@
 			attach-bridge;
 		};
 	};
+};
+
+&mix_gpu_ml {
+	status = "okay";
 };
 
 &vpu_g1 {
