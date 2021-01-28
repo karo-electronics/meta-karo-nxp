@@ -1,22 +1,16 @@
-# Ka-Ro specific patch set for NXP's linux-imx 5.4.47
+# Ka-Ro specific patch set for NXP's linux-imx 5.4.70
 PROVIDES += "linux"
+
+KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
+
+SRCREV = "4f2631b022d843c1f2a5d34eae2fd98927a1a6c7"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
 SRC_URI_append = " \
-	file://0001-TI-SN65DSI83-bridge-driver-support.patch \
-	file://0002-Little-fixes-for-imx-drm-drivers.patch \
-	file://0003-Add-RaspberryPi-7inch-touchscreen-display-support-dr.patch \
-	file://0004-Revert-MLK-23131-2-soc-imx-busfreq-imx8mq-Correct-dr.patch \
-	file://0005-pca9450-bugfix.patch \
-	file://0007-stmmac-dont-log-error-message-when-eprobe-defer.patch \
 	${@bb.utils.contains('DISTRO_FEATURES','systemd','file://systemd.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','wifi','file://wifi.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','bluetooth','file://bluetooth.cfg','',d)} \
 	${@bb.utils.contains('DISTRO_FEATURES','imx219','file://imx219.cfg','',d)} \
-"
-
-SRC_URI_append_qs8m = " \
-	file://0006-add-imx219-driver-support.patch \
 "
 
 SRC_URI_append_mx8 = " \
