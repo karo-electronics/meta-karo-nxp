@@ -7,10 +7,7 @@ SRCREV = "4f2631b022d843c1f2a5d34eae2fd98927a1a6c7"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
 SRC_URI_append = " \
-	${@bb.utils.contains('DISTRO_FEATURES','systemd','file://systemd.cfg','',d)} \
-	${@bb.utils.contains('DISTRO_FEATURES','wifi','file://wifi.cfg','',d)} \
-	${@bb.utils.contains('DISTRO_FEATURES','bluetooth','file://bluetooth.cfg','',d)} \
-	${@bb.utils.contains('DISTRO_FEATURES','imx219','file://imx219.cfg','',d)} \
+	${@' file://cfg/'.join("${KERNEL_FEATURES}".split(" "))} \
 "
 
 SRC_URI_append_mx8 = " \
@@ -58,10 +55,17 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/arch/arm64/boot \
 "
 
-python() {
-    if d.getVar('KARO_BOARD_PMIC'):
-        d.appendVar('SRC_URI', " file://${KARO_BOARD_PMIC}.cfg")
-}
+KARO_BOARD_PMIC ??= ""
+
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' systemd.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','wifi',' wifi.cfg','',d)}"
+KERNEL_FEATURES_append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_PMIC') != '' else ''}"
 
 SRC_URI_append_mx8mm = " \
 	file://mx8mm_defconfig;subdir=git/arch/arm64/configs \
@@ -84,8 +88,8 @@ do_preconfigure_prepend () {
         bbfatal "KBUILD_DEFCONFIG is not set"
     fi
     install -v ${S}/${DEFCONFIG_PATH}/${KBUILD_DEFCONFIG} ${WORKDIR}/defconfig
-    for cfg in $(ls -d ${WORKDIR}/* | grep "\\.cfg$");do
+    for cfg in ${KERNEL_FEATURES};do
         bbnote "Merging ${cfg} into ${WORKDIR}/defconfig"
-        cat ${cfg} >> ${WORKDIR}/defconfig
+        cat ${WORKDIR}/cfg/${cfg} >> ${WORKDIR}/defconfig
     done
 }
