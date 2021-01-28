@@ -8,12 +8,6 @@ HOMEPAGE = "http://www.denx.de/wiki/U-Boot/WebHome"
 SECTION = "bootloaders"
 DEPENDS += "flex-native bison-native dtc-native"
 
-LICENSE = "GPLv2+"
-LIC_FILES_CHKSUM = "file://Licenses/README;md5=30503fd321432fc713238f582193b78e"
-PE = "1"
-
-S = "${WORKDIR}/git"
-
 require recipes-bsp/u-boot/u-boot.inc
 inherit fsl-u-boot-localversion
 
@@ -23,6 +17,7 @@ PROVIDES += "u-boot"
 
 LICENSE = "GPLv2+"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
+PE = "1"
 
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
