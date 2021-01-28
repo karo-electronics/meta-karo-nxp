@@ -33,17 +33,17 @@
 };
 
 &isi_0 {
-	status = "disabled";
 	dma-coherent;
 	bsl,dma-invalidate;
 	fsl,chain_buf;
+	status = "disabled";
 };
 
 &isi_1 {
-	status = "disabled";
 	dma-coherent;
 	bsl,dma-invalidate;
 	fsl,chain_buf;
+	status = "disabled";
 };
 
 &isp_0 {

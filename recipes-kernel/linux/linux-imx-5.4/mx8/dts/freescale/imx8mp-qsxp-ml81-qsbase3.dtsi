@@ -44,8 +44,9 @@
 };
 
 &eqos {
-	pinctrl-names = "default";
+	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&pinctrl_eqos>;
+	pinctrl-1 = <&pinctrl_eqos_sleep>;
 	phy-mode = "rgmii-id";
 	phy-handle = <&ethphy0>;
 	status = "okay";
@@ -155,7 +156,7 @@
 		>;
 	};
 
-	pinctrl_fec_sleep: fec-sleep-grp {
+	pinctrl_eqos_sleep: eqos-sleep-grp {
 		fsl,pins = <
 			    MX8MP_IOMUXC_GPIO1_IO00__GPIO1_IO00		0x120
 			    MX8MP_IOMUXC_ENET_MDC__GPIO1_IO16		0x120

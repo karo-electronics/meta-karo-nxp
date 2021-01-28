@@ -21,14 +21,14 @@
 };
 
 &lcdif {
-        status = "okay";
+	status = "okay";
 };
 
 &mipi_dsi {
 	status = "okay";
 
 	panel@0 {
-		compatible = "rpi,tc358762";
+		compatible = "raspberrypi,tc358762";
 		reg = <0>;
 		dsi-lanes = <1>;
 		video-mode = <2>;

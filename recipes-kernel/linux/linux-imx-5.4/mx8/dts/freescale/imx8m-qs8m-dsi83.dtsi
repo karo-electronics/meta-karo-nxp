@@ -47,13 +47,13 @@
 };
 
 &lcdif {
-        status = "okay";
+	status = "okay";
 };
 
 &mipi_dsi {
 	status = "okay";
 
-        port@1 {
+	port@1 {
 		mipi_dsi_out: endpoint {
 			remote-endpoint = <&dsi_lvds_bridge_in>;
 			attach-bridge;

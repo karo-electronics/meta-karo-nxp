@@ -42,7 +42,7 @@
 &csi1_bridge {
 	fsl,mipi-mode;
 	status = "okay";
-	
+
 	port {
 		csi1_ep: endpoint {
 			remote-endpoint = <&csi1_mipi_ep>;
@@ -71,14 +71,14 @@
 				link-frequencies = /bits/ 64 <456000000>;
 			};
 		};
-        };
+	};
 };
 
 &mipi_csi_1 {
 	#address-cells = <1>;
 	#size-cells = <0>;
 	status = "okay";
-	
+
 	port {
 		mipi1_sensor_ep: endpoint@1 {
 			remote-endpoint = <&imx219_0>;

@@ -31,9 +31,8 @@
 	};
 
 	clocks {
-		audio_clk: clock@6 {
+		audio_clk: audio-clk {
 			compatible = "fixed-clock";
-			reg = <6>;
 			#clock-cells = <0>;
 			clock-frequency = <26000000>;
 		};

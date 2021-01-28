@@ -37,7 +37,7 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
 	};
-	
+
 	thermal-zones {
 		cpu-thermal {
 			cooling-maps {
