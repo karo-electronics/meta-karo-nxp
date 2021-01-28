@@ -7,11 +7,6 @@
 #include "imx8mp-qsxp-ml81.dts"
 
 / {
-	aliases {
-		ethernet0 = &eqos;
-		/delete-property/ ethernet1;
-	};
-
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;

@@ -53,6 +53,13 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mp-qsxp-ml81.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-karo.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-mb7.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-lvds-mb.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-mb7.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-ml81-mb7.dts;subdir=git/arch/arm64/boot \
 "
 
 KARO_BOARD_PMIC ??= ""

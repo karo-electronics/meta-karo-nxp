@@ -6,13 +6,14 @@
 
 /dts-v1/;
 
-#include "imx8mp.dtsi"
+#include "imx8mp-karo.dtsi"
 
 / {
 	model = "Ka-Ro electronics QSXP-ML81 (NXP i.MX8MP) module";
 	compatible = "karo,imx8mp-qsxm", "fsl,imx8mp";
 
 	aliases {
+		/delete-property/ ethernet1;
 		i2c0 = &i2c1;
 		i2c1 = &i2c2;
 		i2c2 = &i2c3;
@@ -188,14 +189,6 @@
 	sda-gpios = <&gpio5 21 GPIO_ACTIVE_HIGH>;
 	scl-gpios = <&gpio5 20 GPIO_ACTIVE_HIGH>;
 	status = "okay";
-};
-
-/* overwrite freescale cma setting since it's not allocatable on qsxp */
-&resmem {
-	linux,cma {
-		size = <0 0x1e000000>;
-		/delete-property/ alloc-ranges;
-	};
 };
 
 &uart1 {

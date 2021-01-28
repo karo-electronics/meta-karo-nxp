@@ -13,8 +13,6 @@
 	compatible = "karo,imx8mp-tx8m", "fsl,imx8mp";
 
 	aliases {
-		ethernet0 = &eqos;
-		/delete-property/ ethernet1;
 		i2c0 = &i2c1;
 		i2c1 = &i2c2;
 		i2c2 = &i2c3;
@@ -26,18 +24,6 @@
 		serial2 = &uart4;
 		usb-host = &usb_dwc3_1;
 		usbotg = &usb_dwc3_0;
-	};
-
-	leds {
-		compatible = "gpio-leds";
-
-		stk5led {
-			label = "Heartbeat";
-			pinctrl-names = "default";
-			pinctrl-0 = <&pinctrl_gpio4_hog>;
-			gpios = <&gpio4 1 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "heartbeat";
-		};
 	};
 
 	chosen {
@@ -52,7 +38,7 @@
 
 	reg_3v3: regulator-3v3 {
 		compatible = "regulator-fixed";
-		regulator-name = "3V3";
+		regulator-name = "3v3";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
 		vin-supply = <&buck4_reg>;
@@ -63,17 +49,17 @@
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_reg_3v3_etn>;
-		regulator-name = "3V3-ETN";
+		regulator-name = "3v3-etn";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
+		vin-supply = <&reg_3v3>;
 		gpios = <&gpio1 23 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
-		vin-supply = <&reg_3v3>;
 	};
 
 	reg_nvcc_dram: regulator-nvcc-dram {
 		compatible = "regulator-fixed";
-		regulator-name = "NVCC-DRAM";
+		regulator-name = "nvcc-dram";
 		regulator-min-microvolt = <1100000>;
 		regulator-max-microvolt = <1100000>;
 		vin-supply = <&buck6_reg>;
@@ -83,7 +69,7 @@
 
 	reg_nvcc_nand: regulator-nvcc-nand {
 		compatible = "regulator-fixed";
-		regulator-name = "NVCC-NAND";
+		regulator-name = "nvcc-nand";
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <1800000>;
 		vin-supply = <&buck5_reg>;
@@ -93,7 +79,7 @@
 	reg_snvs_1v8: regulator-snvs-1v8 {
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
-		regulator-name = "SNVS-1V8";
+		regulator-name = "snvs-1v8";
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <1800000>;
 		vin-supply = <&ldo1_reg>;
@@ -102,7 +88,7 @@
 
 	reg_vdda_1v8: regulator-vdda-1v8 {
 		compatible = "regulator-fixed";
-		regulator-name = "VDDA-1V8";
+		regulator-name = "vdda-1v8";
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <1800000>;
 		vin-supply = <&ldo3_reg>;
@@ -111,7 +97,7 @@
 
 	reg_vdd_soc: regulator-vdd-soc {
 		compatible = "regulator-fixed";
-		regulator-name = "VDD-SOC";
+		regulator-name = "vdd-soc";
 		regulator-min-microvolt = <800000>;
 		regulator-max-microvolt = <800000>;
 		vin-supply = <&buck1_reg>;
@@ -122,7 +108,7 @@
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_usb1_vbus>;
-		regulator-name = "USB1-VBUS";
+		regulator-name = "usb1-vbus";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		gpios = <&gpio1 12 GPIO_ACTIVE_HIGH>;
@@ -133,7 +119,7 @@
 		compatible = "regulator-fixed";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_usb2_vbus>;
-		regulator-name = "USB2-VBUS";
+		regulator-name = "usb2-vbus";
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
@@ -158,8 +144,8 @@
 	assigned-clock-rates = <0>, <100000000>, <50000000>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy0>;
-	snps,reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
-	snps,reset-delay-us = <20000 100 20>;
+	phy-supply = <&reg_3v3_etn>;
+	snps,reset-gpio = <&gpio4 22 GPIO_ACTIVE_LOW>;
 	mdio_rst_after_resume;
 	status = "okay";
 
@@ -359,6 +345,7 @@
 	dr_mode = "peripheral";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb1_oc>;
+	oc-active-low;
 	hnp-disable;
 	srp-disable;
 	adp-disable;
@@ -369,6 +356,7 @@
 	dr_mode = "host";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb2_oc>;
+	oc-active-low;
 	hnp-disable;
 	srp-disable;
 	adp-disable;
@@ -406,12 +394,6 @@
 };
 
 &iomuxc {
-	pinctrl_gpio4_hog: gpio4-hog {
-		fsl,pins = <
-			    MX8MP_IOMUXC_SAI1_RXC__GPIO4_IO01		0x90
-		>;
-	};
-
 	pinctrl_etnphy_int_b: etnphy-int-bgrp {
 		fsl,pins = <
 			    MX8MP_IOMUXC_SAI2_RXFS__GPIO4_IO21		0x90
@@ -558,7 +540,7 @@
 
 	pinctrl_usb1_oc: usb1-ocgrp {
 		fsl,pins = <
-			MX8MP_IOMUXC_GPIO1_IO13__USB1_OTG_OC		0x140
+			MX8MP_IOMUXC_GPIO1_IO13__USB1_OC		0x140
 		>;
 	};
 
@@ -570,7 +552,7 @@
 
 	pinctrl_usb2_oc: usb2-ocgrp {
 		fsl,pins = <
-			MX8MP_IOMUXC_GPIO1_IO15__USB2_OTG_OC		0x140
+			MX8MP_IOMUXC_GPIO1_IO15__USB2_OC		0x140
 		>;
 	};
 

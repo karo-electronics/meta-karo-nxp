@@ -1,0 +1,35 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright (C) 2021 Lothar Waßmann <LW@KARO-electronics.de>
+ */
+
+/ {
+	backlight0 {
+		pwms = <&pwm1 0 500000>;
+		turn-on-delay-ms = <35>;
+		power-supply = <&reg_lcd1_pwr>;
+	};
+
+	backlight1 {
+		pwms = <&pwm2 0 500000>;
+		turn-on-delay-ms = <35>;
+		power-supply = <&reg_lcd1_pwr>;
+	};
+
+	lvds0-panel {
+		compatible = "edt,et057090dhu";
+		pixelclk-active = <0>;
+	};
+
+	lvds1-panel {
+		compatible = "edt,et057090dhu";
+		pixelclk-active = <0>;
+	};
+};
+
+&i2c2 {
+	rtc@6f {
+		compatible = "microchip,mcp7940x";
+		reg = <0x6f>;
+	};
+};
