@@ -5,24 +5,9 @@
 
 /dts-v1/;
 
-//#include <dt-bindings/gpio/gpio.h>
 #include "imx8mp-tx8p-ml81.dts"
 #include "imx8mp-tx8p-mb7.dtsi"
 
 / {
 	model = "Ka-Ro electronics TX8P-ML81 (NXP i.MX8MP) module on MB7 mainboard";
-
-	reg_lcd1_pwr: regulator-lcd1-pwr {
-		compatible = "regulator-fixed";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_lcd1_pwr>;
-	};
-};
-
-&iomuxc {
-	pinctrl_lcd1_pwr: lcd1-pwr-pins {
-		fsl,pinx = <
-			 MX8MP_IOMUXC_I2C4_SCL__GPIO5_IO20		0xc6
-		>;
-	};
 };

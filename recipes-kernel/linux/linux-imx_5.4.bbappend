@@ -1,9 +1,9 @@
-# Ka-Ro specific patch set for NXP's linux-imx 5.4.70
+# Ka-Ro specific kernel source for NXP's linux-imx 5.4.70
 PROVIDES += "linux"
 
 KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 
-SRCREV = "2552f3e2c62477fba480a1b1a9286afed8bc132f"
+SRCREV = "9cef430330a522e70379250d8de4defc29383d1a"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
 SRC_URI_append = " \
@@ -24,7 +24,7 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-raspi-camera.dtsi;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-ml-kit.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-basler.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-basler.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610-mipi-mb.dts;subdir=git/arch/arm64/boot \
@@ -42,10 +42,11 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mn-tx8m-mipi-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-nd00-mipi-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-nd00.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-basler.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-basler.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-dsi83.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dtsi;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-ml-kit.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dts;subdir=git/arch/arm64/boot \
@@ -65,10 +66,12 @@ SRC_URI_append_mx8 = " \
 KARO_BOARD_PMIC ??= ""
 
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','basler',' basler.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' systemd.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','wifi',' wifi.cfg','',d)}"
@@ -82,6 +85,10 @@ SRC_URI_append_mx8mn = " \
 "
 SRC_URI_append_mx8mp = " \
 	file://mx8mp_defconfig;subdir=git/arch/arm64/configs \
+"
+
+SRC_URI_append_qs8m = " \
+	file://0001-mx6s-capture-add-rggb8-video-format.patch \
 "
 
 KBUILD_DEFCONFIG_mx8mm = "mx8mm_defconfig"

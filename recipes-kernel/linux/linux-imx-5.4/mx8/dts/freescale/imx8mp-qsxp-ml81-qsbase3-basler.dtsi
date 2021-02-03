@@ -8,7 +8,7 @@
 	status = "okay";
 };
 
-&dewarp {
+&dewarp_0 {
 	status = "okay";
 };
 
