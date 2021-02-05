@@ -3,7 +3,7 @@ PROVIDES += "linux"
 
 KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 
-SRCREV = "9cef430330a522e70379250d8de4defc29383d1a"
+SRCREV = "7cfc546ed00236fde84f2809e0c66f18cf1afbdc"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
 SRC_URI_append = " \
