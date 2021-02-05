@@ -146,6 +146,7 @@
 	phy-handle = <&ethphy0>;
 	phy-supply = <&reg_3v3_etn>;
 	snps,reset-gpio = <&gpio4 22 GPIO_ACTIVE_LOW>;
+	snps,reset-delays-us = <0 100 25000>;
 	mdio_rst_after_resume;
 	status = "okay";
 
