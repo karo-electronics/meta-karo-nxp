@@ -54,12 +54,8 @@
 	};
 };
 
-&iomuxc {
-	pinctrl_lvds: lvdsgrp {
-		fsl,pins = <
-			MX8MM_IOMUXC_I2C4_SCL_GPIO5_IO20		0x146
-		>;
-	};
+&lcdif {
+	status = "okay";
 };
 
 &mipi_dsi {
@@ -70,5 +66,13 @@
 			remote-endpoint = <&dsi_lvds_bridge_in>;
 			attach-bridge;
 		};
+	};
+};
+
+&iomuxc {
+	pinctrl_lvds: lvdsgrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C4_SCL_GPIO5_IO20		0x146
+		>;
 	};
 };

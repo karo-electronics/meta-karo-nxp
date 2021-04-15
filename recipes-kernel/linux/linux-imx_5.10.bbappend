@@ -1,11 +1,12 @@
-# Ka-Ro specific kernel source for NXP's linux-imx 5.4.70
+# Ka-Ro specific kernel source for NXP's linux-imx 5.10
 PROVIDES += "linux"
 
-KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
+#KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
+KERNEL_SRC = "git:///home/mb/development/repos/karo-tx-linux;protocol=file"
+SRCBRANCH = "imx_5.10.9_1.0.0"
+SRCREV = "9512d3fdb4b00b7b575e7349b3cfcdc3b20a7306"
 
-SRCREV = "7cfc546ed00236fde84f2809e0c66f18cf1afbdc"
-
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:"
 SRC_URI_append = " \
 	${@' file://cfg/'.join("${KERNEL_FEATURES}".split(" "))} \
 "
@@ -31,6 +32,7 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mm-tx8m-1610-tx4etml0500.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1620-lvds-mb.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-tx8m-1620-mb7.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1620.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-lvds-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-mipi-mb.dtsi;subdir=git/arch/arm64/boot \
@@ -90,6 +92,9 @@ SRC_URI_append_mx8mp = " \
 SRC_URI_append_qs8m = " \
 	file://0001-mx6s-capture-add-rggb8-video-format.patch \
 "
+
+# remove any defconfig added via SRC_URI
+SRC_URI_remove = "file://defconfig"
 
 KBUILD_DEFCONFIG_mx8mm = "mx8mm_defconfig"
 KBUILD_DEFCONFIG_mx8mn = "mx8mn_defconfig"

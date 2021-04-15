@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
 /*
- * Copyright 2019 Markus Bauer <MB@KARO-electronics.de>
- *
+ * Copyright (C) 2021 Markus Bauer <MBKARO-electronics.de>
  */
 
-#include <dt-bindings/interrupt-controller/irq.h>
-#include <dt-bindings/pwm/pwm.h>
+/dts-v1/;
+
+#include "imx8mm-tx8m-1620.dts"
 
 / {
+	model = "Ka-Ro electronics TX8M-1620 (NXP i.MX8MM) LVDS module on TX-Mainboard 7";
+
 	backlight: backlight {
 		compatible = "pwm-backlight";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_lcd_en>;
 		pwms = <&pwm1 0 500000>;
 		turn-on-delay-ms = <35>;
-		enable-gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 		power-supply = <&reg_3v3>;
 		brightness-levels = < 0	 1  2  3  4  5	6  7  8	 9
 				     10 11 12 13 14 15 16 17 18 19
@@ -31,7 +30,7 @@
 	};
 
 	clocks {
-		audio_clk: audio-clk {
+		audio_clk: audio-clock {
 			compatible = "fixed-clock";
 			#clock-cells = <0>;
 			clock-frequency = <26000000>;
@@ -50,15 +49,9 @@
 		};
 	};
 
-	mcp_clock: mcp-clock {
-		compatible = "fixed-clock";
-		#clock-cells = <0>;
-		clock-frequency = <16000000>;
-	};
-
 	reg_2v5: regulator-2v5 {
 		compatible = "regulator-fixed";
-		regulator-name = "2V5";
+		regulator-name = "2v5";
 		regulator-min-microvolt = <2500000>;
 		regulator-max-microvolt = <2500000>;
 		regulator-always-on;
@@ -92,27 +85,31 @@
 	};
 };
 
-&ecspi2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_ecspi2>;
-	spi-max-frequency = <25000000>;
-	cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
-	status = "disabled";
-
-	can0: can@0 {
-		compatible = "microchip,mcp2515";
-		reg = <0>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_can0>;
-		clocks = <&mcp_clock>;
-		interrupt-parent = <&gpio3>;
-		interrupts = <11 IRQ_TYPE_LEVEL_LOW>;
-		spi-max-frequency = <10000000>;
-	};
-};
-
 &gpu {
 	status = "okay";
+};
+
+&dsi_lvds_bridge {
+	ti,lvds-format = <1>;
+	enable-gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
+
+	display-timings {
+		lvds {
+			clock-frequency = <25200000>;
+			hactive = <640>;
+			vactive = <480>;
+			hback-porch = <114>;
+			hsync-len = <30>;
+			hfront-porch = <16>;
+			vback-porch = <32>;
+			vsync-len = <3>;
+			vfront-porch = <10>;
+			hsync-active = <0>;
+			vsync-active = <0>;
+			de-active = <1>;
+			pixelclk-active = <1>;
+		};
+	};
 };
 
 &i2c2 {
@@ -125,33 +122,26 @@
 		clocks = <&audio_clk>;
 	};
 
+	polytouch: edt-ft5x06@38 {
+		compatible = "edt,edt-ft5x06";
+		reg = <0x38>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_edt_ft5x06>;
+		interrupt-parent = <&gpio5>;
+		interrupts = <18 IRQ_TYPE_EDGE_FALLING>;
+		reset-gpios = <&gpio5 19 GPIO_ACTIVE_LOW>;
+		wake-gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
+		wakeup-source;
+	};
+
 	mcp7940x@6f {
 		compatible = "microchip,mcp7940x";
 		reg = <0x6f>;
 	};
 };
 
-&iomuxc {
-	pinctrl_can0: can0grp {
-		fsl,pins = <
-			MX8MM_IOMUXC_NAND_CLE_GPIO3_IO5		0x156
-			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x156
-		>;
-
-	};
-
-	pinctrl_ecspi2: ecspi2grp {
-		fsl,pins = <
-			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0x156
-			MX8MM_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI	0x156
-			MX8MM_IOMUXC_ECSPI2_MISO_ECSPI2_MISO	0x156
-		>;
-
-	};
-};
-
-&lcdif {
-	status = "okay";
+&i2c3 {
+	status = "disabled";
 };
 
 &pwm1 {
@@ -203,13 +193,21 @@
 		>;
 	};
 
+	pinctrl_edt_ft5x06: edt-ft5x06grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C3_SCL_GPIO5_IO18		0x90 /* Interrupt */
+			MX8MM_IOMUXC_I2C3_SDA_GPIO5_IO19		0x1b0b0 /* Reset */
+			MX8MM_IOMUXC_GPIO1_IO00_GPIO1_IO0		0x1b0b0 /* Wake */
+		>;
+	};
+
 	pinctrl_stk5led: stk5ledgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO02_GPIO1_IO2		0x06
 		>;
 	};
 
-	pinctrl_lcd_en: lcd-engrp {
+	pinctrl_lvds: lvdsgrp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO04_GPIO1_IO4		0x146
 		>;
