@@ -1,10 +1,7 @@
 # Ka-Ro specific kernel source for NXP's linux-imx 5.10
-PROVIDES += "linux"
-
-#KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
-KERNEL_SRC = "git:///home/mb/development/repos/karo-tx-linux;protocol=file"
+KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 SRCBRANCH = "imx_5.10.9_1.0.0"
-SRCREV = "9512d3fdb4b00b7b575e7349b3cfcdc3b20a7306"
+SRCREV = "cc2a91cf79e11c7729bc487fe980b1fd20d793c1"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:"
 SRC_URI_append = " \
@@ -14,19 +11,23 @@ SRC_URI_append = " \
 SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8m-qs8m-dsi83.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8m-qs8m-raspi-display.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8m-qs8m-tc358867.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-cam.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-dsi83-cam.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-dsi83.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-raspi-display-cam.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-raspi-display.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2-tc358867.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-raspi-display.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-laird.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-raspi-camera.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-basler.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-basler.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-dsi83.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-laird.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-raspi-display.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-tc358867.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610-mipi-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610-tx4etml0500.dts;subdir=git/arch/arm64/boot \
@@ -39,11 +40,13 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mm-tx8m.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-qs8m-nd00-qsbase2-dsi83.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-qs8m-nd00-qsbase2-raspi-display.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mn-qs8m-nd00-qsbase2-tc358867.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-qs8m-nd00-qsbase2.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-qs8m-nd00.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-mipi-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-nd00-mipi-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-nd00.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-karo.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-basler.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-basler.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-dsi83.dts;subdir=git/arch/arm64/boot \
@@ -51,18 +54,15 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-tc358867.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-karo.dtsi;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-tx8p-mb7.dtsi;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-tx8p-lvds-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-tx8p-mb7.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-tx8p-ml81-mb7.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/arch/arm64/boot \
 "
 
 KARO_BOARD_PMIC ??= ""
@@ -73,6 +73,7 @@ KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' 
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','tc358867',' tc358867.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' systemd.cfg','',d)}"
@@ -101,6 +102,11 @@ KBUILD_DEFCONFIG_mx8mn = "mx8mn_defconfig"
 KBUILD_DEFCONFIG_mx8mp = "mx8mp_defconfig"
 
 DEFCONFIG_PATH_mx8 = "arch/${ARCH}/configs"
+
+# with these two tasks overwritten files in kernel-source are resetted,
+# so we delete them to keep our changes made by yocto
+deltask kernel_checkout
+deltask validate_branches
 
 do_preconfigure_prepend () {
     if [ -z "${KBUILD_DEFCONFIG}" ];then
