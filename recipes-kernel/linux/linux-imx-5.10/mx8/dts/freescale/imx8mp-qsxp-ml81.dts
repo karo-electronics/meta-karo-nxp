@@ -3,14 +3,14 @@
  * Copyright (C) 2020 Lothar Waßmann <LW@KARO-electronics.de>
  *
  */
-
+ 
 /dts-v1/;
 
 #include "imx8mp-karo.dtsi"
 
 / {
 	model = "Ka-Ro electronics QSXP-ML81 (NXP i.MX8MP) module";
-	compatible = "karo,imx8mp-qsxm", "fsl,imx8mp";
+	compatible = "karo,imx8mp-qsxp", "fsl,imx8mp";
 
 	aliases {
 		/delete-property/ ethernet1;

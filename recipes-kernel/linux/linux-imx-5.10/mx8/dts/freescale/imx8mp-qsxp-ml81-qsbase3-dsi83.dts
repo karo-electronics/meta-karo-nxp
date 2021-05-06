@@ -3,20 +3,14 @@
  * Copyright (C) 2020 Markus Bauer <mb@karo-electronics.de>
  *
  */
+
 /dts-v1/;
 
+#include "imx8mp-qsxp-ml81.dts"
 #include "imx8mp-qsxp-ml81-qsbase3.dtsi"
 
 / {
 	model = "Ka-Ro electronics QSXP-ML81 (NXP i.MX8MP) module on QSBASE3 baseboard with DSI83 MIPI2LVDS converter";
-};
-
-&gpu_3d {
-	status = "okay";
-};
-
-&gpu_2d {
-	status = "okay";
 };
 
 &i2c2 {
@@ -70,20 +64,4 @@
 			attach-bridge;
 		};
 	};
-};
-
-&mix_gpu_ml {
-	status = "okay";
-};
-
-&vpu_g1 {
-	status = "okay";
-};
-
-&vpu_g2 {
-	status = "okay";
-};
-
-&vpu_vc8000e {
-	status = "okay";
 };

@@ -69,7 +69,3 @@
 		};
 	};
 };
-
-&ml_vipsi {
-	status = "okay";
-};

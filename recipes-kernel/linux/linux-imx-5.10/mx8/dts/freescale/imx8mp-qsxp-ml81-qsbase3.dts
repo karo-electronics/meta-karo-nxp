@@ -6,6 +6,7 @@
 
 /dts-v1/;
 
+#include "imx8mp-qsxp-ml81.dts"
 #include "imx8mp-qsxp-ml81-qsbase3.dtsi"
 
 / {

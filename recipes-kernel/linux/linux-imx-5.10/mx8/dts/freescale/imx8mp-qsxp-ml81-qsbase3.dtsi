@@ -4,8 +4,6 @@
  *
  */
 
-#include "imx8mp-qsxp-ml81.dts"
-
 / {
 	reserved-memory {
 		#address-cells = <2>;
@@ -28,14 +26,6 @@
 		gpio = <&gpio2 12 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 	};
-};
-
-&clk {
-	init-on-array = <IMX8MP_CLK_HSIO_ROOT>;
-};
-
-&dsp {
-	status = "okay";
 };
 
 &eqos {
@@ -75,29 +65,44 @@
 	};
 };
 
+&gpu_3d {
+	status = "okay";
+};
+
+&gpu_2d {
+	status = "okay";
+};
+
+&mix_gpu_ml {
+	status = "okay";
+};
+
+&ml_vipsi {
+	status = "okay";
+};
+
 &pcie {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
-	bus-range = <0x00 0xff>;
 	disable-gpio = <&gpio2 13 GPIO_ACTIVE_LOW>;
 	reset-gpio = <&gpio1 15 GPIO_ACTIVE_LOW>;
 	ext_osc = <1>;
-	clocks = <&clk IMX8MP_CLK_HSIO_AXI_DIV>,
+	clocks = <&clk IMX8MP_CLK_HSIO_ROOT>,
 		 <&clk IMX8MP_CLK_PCIE_AUX>,
-		 <&clk IMX8MP_CLK_PCIE_PHY>,
+		 <&clk IMX8MP_CLK_HSIO_AXI>,
 		 <&clk IMX8MP_CLK_PCIE_ROOT>;
 	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
-	assigned-clocks = <&clk IMX8MP_CLK_HSIO_AXI_SRC>,
+	assigned-clocks = <&clk IMX8MP_CLK_HSIO_AXI>,
 			  <&clk IMX8MP_CLK_PCIE_AUX>;
+	assigned-clock-rates = <500000000>, <10000000>;
 	assigned-clock-parents = <&clk IMX8MP_SYS_PLL2_500M>,
 				 <&clk IMX8MP_SYS_PLL2_50M>;
-	reserved-region = <&rpmsg_reserved>;
-	status = "disabled";
+	status = "okay";
 };
 
 &pcie_phy {
 	ext_osc = <1>;
-	status = "disabled";
+	status = "okay";
 };
 
 &usb3_1 {
@@ -116,6 +121,18 @@
 
 &usdhc2 {
 	status = "disabled";
+};
+
+&vpu_g1 {
+	status = "okay";
+};
+
+&vpu_g2 {
+	status = "okay";
+};
+
+&vpu_vc8000e {
+	status = "okay";
 };
 
 &iomuxc {
