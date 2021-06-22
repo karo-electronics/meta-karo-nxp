@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
 /*
- * Copyright 2019 Markus Bauer <MB@KARO-electronics.de>
+ * Copyright 2021 Markus Bauer <MB@KARO-electronics.de>
  *
  */
 
@@ -8,6 +8,23 @@
 #include <dt-bindings/pwm/pwm.h>
 
 / {
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		rpmsg_reserved: rpmsg@0xb8000000 {
+			no-map;
+			reg = <0 0xb8000000 0 0x400000>;
+		};
+	};
+
+	pcie0_refclk: pcie0-refclk {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <100000000>;
+	};
+
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
@@ -131,23 +148,18 @@
 	};
 };
 
-&iomuxc {
-	pinctrl_can0: can0grp {
-		fsl,pins = <
-			MX8MM_IOMUXC_NAND_CLE_GPIO3_IO5		0x156
-			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x156
-		>;
-
-	};
-
-	pinctrl_ecspi2: ecspi2grp {
-		fsl,pins = <
-			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0x156
-			MX8MM_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI	0x156
-			MX8MM_IOMUXC_ECSPI2_MISO_ECSPI2_MISO	0x156
-		>;
-
-	};
+&pcie0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_pcie_reset>;
+	reset-gpio = <&gpio2 19 GPIO_ACTIVE_LOW>;
+	clocks = <&clk IMX8MM_CLK_PCIE1_ROOT>,
+		 <&clk IMX8MM_CLK_PCIE1_AUX>,
+		 <&clk IMX8MM_CLK_PCIE1_PHY>,
+		 <&pcie0_refclk>;
+	clock-names = "pcie", "pcie_aux", "pcie_phy", "pcie_bus";
+	ext_osc = <0>;
+	reserved-region = <&rpmsg_reserved>;
+	status = "disabled";
 };
 
 &pwm1 {
@@ -184,6 +196,29 @@
 };
 
 &iomuxc {
+	pinctrl_can0: can0grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_NAND_CLE_GPIO3_IO5		0x156
+			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x156
+		>;
+
+	};
+
+	pinctrl_ecspi2: ecspi2grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK	0x156
+			MX8MM_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI	0x156
+			MX8MM_IOMUXC_ECSPI2_MISO_ECSPI2_MISO	0x156
+		>;
+
+	};
+
+	pinctrl_pcie_reset: pcie-resetgrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD2_RESET_B_GPIO2_IO19		0x06
+		>;
+	};
+
 	pinctrl_pwm1: pwm1grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_GPIO1_IO01_PWM1_OUT		0x06
