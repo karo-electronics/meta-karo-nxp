@@ -1,8 +1,8 @@
-Index: imx8mm-mkimage/iMX8M/soc.mak
-===================================================================
---- imx8mm-mkimage.orig/iMX8M/soc.mak
-+++ imx8mm-mkimage/iMX8M/soc.mak
-@@ -137,7 +137,7 @@ dtbs = evk.dtb
+diff --git a/iMX8M/soc.mak b/iMX8M/soc.mak
+index 30ecefd..ec7ffc1 100644
+--- a/iMX8M/soc.mak
++++ b/iMX8M/soc.mak
+@@ -141,7 +141,7 @@ dtbs = evk.dtb
  $(dtbs):
  	./$(DTB_PREPROC) $(PLAT)-evk.dtb $(dtbs)
  
@@ -11,7 +11,7 @@ Index: imx8mm-mkimage/iMX8M/soc.mak
  	./$(PAD_IMAGE) tee.bin
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs)
-@@ -149,7 +149,7 @@ dtbs_ddr3l = valddr3l.dtb
+@@ -153,7 +153,7 @@ dtbs_ddr3l = valddr3l.dtb
  $(dtbs_ddr3l):
  	./$(DTB_PREPROC) $(PLAT)-ddr3l-$(VAL_BOARD).dtb $(dtbs_ddr3l)
  
@@ -20,7 +20,7 @@ Index: imx8mm-mkimage/iMX8M/soc.mak
  	./$(PAD_IMAGE) tee.bin
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_ddr3l)
-@@ -161,7 +161,7 @@ dtbs_ddr4 = valddr4.dtb
+@@ -177,7 +177,7 @@ dtbs_ddr4 = valddr4.dtb
  $(dtbs_ddr4):
  	./$(DTB_PREPROC) $(PLAT)-ddr4-$(VAL_BOARD).dtb $(dtbs_ddr4)
  
@@ -29,7 +29,7 @@ Index: imx8mm-mkimage/iMX8M/soc.mak
  	./$(PAD_IMAGE) tee.bin
  	./$(PAD_IMAGE) bl31.bin
  	./$(PAD_IMAGE) u-boot-nodtb.bin $(dtbs_ddr4)
-@@ -173,7 +173,7 @@ dtbs_ddr4_evk = evkddr4.dtb
+@@ -189,7 +189,7 @@ dtbs_ddr4_evk = evkddr4.dtb
  $(dtbs_ddr4_evk):
  	./$(DTB_PREPROC) $(PLAT)-ddr4-evk.dtb $(dtbs_ddr4_evk)
  
