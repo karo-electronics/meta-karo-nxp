@@ -21,15 +21,15 @@ PE = "1"
 
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
-SRCBRANCH = "karo-tx8m"
+SRCBRANCH = "lf_v2020.04-karo"
 
 # We use the revision in order to avoid having to fetch it from the
 # repo during parse
-SRCREV = "6a5c2fadef62982088a169f1451fdbfa8c0b52f2"
+SRCREV = "e0e51dac66d6e44778ae4295b73365c22274893c"
 
 S = "${WORKDIR}/git"
 
-LOCALVERSION ?= "-5.4.24-2.1.0"
+LOCALVERSION ?= "-5.10.9-1.0.0"
 
 BOOT_TOOLS_mx8m = "imx-boot-tools"
 
