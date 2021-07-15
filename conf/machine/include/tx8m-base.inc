@@ -3,6 +3,9 @@ KBUILD_BUILD_HOST := "karo-electronics.de"
 
 MACHINEOVERRIDES =. "mx8:mx8m:tx8m:"
 
+BUILD_REPRODUCIBLE_BINARIES ?= "0"
+INHERIT_remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARIES') == '0' else ''}"
+
 require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa53.inc
 
