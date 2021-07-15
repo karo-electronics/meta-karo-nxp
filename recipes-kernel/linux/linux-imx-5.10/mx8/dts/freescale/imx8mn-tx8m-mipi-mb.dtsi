@@ -62,7 +62,7 @@
 		regulator-min-microvolt = <2500000>;
 		regulator-max-microvolt = <2500000>;
 		regulator-always-on;
-		power-supply = <&reg_3v3>;
+		vin-supply = <&reg_3v3>;
 	};
 
 	sound {

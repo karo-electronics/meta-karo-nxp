@@ -60,7 +60,7 @@
 		regulator-min-microvolt = <2500000>;
 		regulator-max-microvolt = <2500000>;
 		regulator-always-on;
-		power-supply = <&reg_3v3>;
+		vin-supply = <&reg_3v3>;
 	};
 
 	sound {
@@ -199,8 +199,10 @@
 	pinctrl-0 = <&pinctrl_usdhc2>;
 	pinctrl-1 = <&pinctrl_usdhc2_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc2_200mhz>;
+	voltage-ranges = <3300 3300>;
 	/delete-property/ cd-gpios;
 	no-mmc;
+	status = "okay";
 };
 
 &vpu_g1 {

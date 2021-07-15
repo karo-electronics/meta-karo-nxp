@@ -30,10 +30,7 @@
 
 		ethphy0: ethernet-phy@3 {
 			reg = <3>;
-			pinctrl-names = "default";
-			pinctrl-0 = <&pinctrl_etnphy_int_b>;
-			interrupt-parent = <&gpio1>;
-			interrupts = <10 IRQ_TYPE_EDGE_FALLING>;
+			micrel,force-master;
 			rxd0-skew-ps = <(420 + 104)>;
 			rxd1-skew-ps = <(420 + 98)>;
 			rxd2-skew-ps = <(420 + 98)>;

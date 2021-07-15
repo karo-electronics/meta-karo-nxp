@@ -6,11 +6,8 @@
 / {
 	backlight: backlight {
 		compatible = "pwm-backlight";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_lcd_en>;
 		pwms = <&pwm1 0 500000>;
 		turn-on-delay-ms = <35>;
-		enable-gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 		power-supply = <&reg_3v3>;
 		brightness-levels = < 0	 1  2  3  4  5	6  7  8	 9
 				     10 11 12 13 14 15 16 17 18 19
@@ -26,20 +23,23 @@
 		default-brightness-level = <50>;
 	};
 
-	audio_clk: audio-clock {
-		compatible = "fixed-clock";
-		#clock-cells = <0>;
-		clock-frequency = <26000000>;
+	clocks {
+		audio_clk: audio-clk {
+			compatible = "fixed-clock";
+			#clock-cells = <0>;
+			clock-frequency = <26000000>;
+		};
 	};
 
-	lvds0_panel {
-		compatible = "edt,et057090dhu";
-		backlight = <&backlight>;
+	leds {
+		compatible = "gpio-leds";
 
-		port {
-			panel_lvds_in: endpoint {
-				remote-endpoint = <&lvds_out>;
-			};
+		stk5led {
+			label = "Heartbeat";
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_stk5led>;
+			gpios = <&gpio1 2 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
 		};
 	};
 
@@ -79,11 +79,7 @@
 	};
 };
 
-&gpu_3d {
-	status = "okay";
-};
-
-&gpu_2d {
+&gpu {
 	status = "okay";
 };
 
@@ -97,51 +93,10 @@
 		clocks = <&audio_clk>;
 	};
 
-	polytouch: edt-ft5x06@38 {
-		compatible = "edt,edt-ft5x06";
-		reg = <0x38>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_edt_ft5x06>;
-		interrupt-parent = <&gpio5>;
-		interrupts = <18 IRQ_TYPE_EDGE_FALLING>;
-		reset-gpios = <&gpio5 19 GPIO_ACTIVE_LOW>;
-		wake-gpios = <&gpio1 0 GPIO_ACTIVE_HIGH>;
-		wakeup-source;
+	mcp7940x@6f {
+		compatible = "microchip,mcp7940x";
+		reg = <0x6f>;
 	};
-};
-
-&i2c3 {
-	status = "disabled";
-};
-
-&lcdif2 {
-	status = "okay";
-};
-
-&ldb {
-	status = "okay";
-
-	lvds-channel@0 {
-		fsl,data-mapping = "jeida";
-		fsl,data-width = <24>;
-		status = "okay";
-
-		port@1 {
-			reg = <1>;
-
-			lvds_out: endpoint {
-				remote-endpoint = <&panel_lvds_in>;
-			};
-		};
-	};
-};
-
-&ldb_phy {
-	status = "okay";
-};
-
-&mix_gpu_ml {
-	status = "okay";
 };
 
 &pwm1 {
@@ -159,8 +114,6 @@
 
 &usdhc2 {
 	pinctrl-0 = <&pinctrl_usdhc2>;
-	pinctrl-1 = <&pinctrl_usdhc2_100mhz>;
-	pinctrl-2 = <&pinctrl_usdhc2_200mhz>;
 	voltage-ranges = <3300 3300>;
 	/delete-property/ cd-gpios;
 	no-mmc;
@@ -175,49 +128,29 @@
 	status = "okay";
 };
 
-&vpu_vc8000e {
+&vpu_h1 {
 	status = "okay";
 };
 
 &iomuxc {
 	pinctrl_pwm1: pwm1grp {
 		fsl,pins = <
-			MX8MP_IOMUXC_GPIO1_IO01__PWM1_OUT		0x06
+			MX8MM_IOMUXC_GPIO1_IO01_PWM1_OUT		0x06
 		>;
 	};
 
 	pinctrl_sai2: sai2grp {
 		fsl,pins = <
-			MX8MP_IOMUXC_SAI2_RXD0__AUDIOMIX_SAI2_RX_DATA00	0xd6
-			MX8MP_IOMUXC_SAI2_TXD0__AUDIOMIX_SAI2_TX_DATA00	0xd6
-			MX8MP_IOMUXC_SAI2_TXC__AUDIOMIX_SAI2_TX_BCLK	0xd6
-			MX8MP_IOMUXC_SAI2_TXFS__AUDIOMIX_SAI2_TX_SYNC	0xd6
+			MX8MM_IOMUXC_SAI2_RXD0_SAI2_RX_DATA0		0xd6
+			MX8MM_IOMUXC_SAI2_TXD0_SAI2_TX_DATA0		0xd6
+			MX8MM_IOMUXC_SAI2_TXC_SAI2_TX_BCLK		0xd6
+			MX8MM_IOMUXC_SAI2_TXFS_SAI2_TX_SYNC		0xd6
 		>;
 	};
 
-	pinctrl_edt_ft5x06: edt-ft5x06grp {
+	pinctrl_stk5led: stk5ledgrp {
 		fsl,pins = <
-			MX8MP_IOMUXC_I2C3_SCL__GPIO5_IO18		0x1b0b0 /* Interrupt */
-			MX8MP_IOMUXC_I2C3_SDA__GPIO5_IO19		0x1b0b0 /* Reset */
-			MX8MP_IOMUXC_GPIO1_IO00__GPIO1_IO00		0x1b0b0 /* Wake */
-		>;
-	};
-
-	pinctrl_lcd_en: lcd-engrp {
-		fsl,pins = <
-			MX8MP_IOMUXC_GPIO1_IO04__GPIO1_IO04		0x146
-		>;
-	};
-
-	pinctrl_lvds: lvdsgrp {
-		fsl,pins = <
-			MX8MP_IOMUXC_I2C4_SCL__GPIO5_IO20		0x146
-		>;
-	};
-
-	pinctrl_wdog: wdoggrp {
-		fsl,pins = <
-			MX8MP_IOMUXC_GPIO1_IO02__WDOG1_WDOG_B		0x140
+			MX8MM_IOMUXC_GPIO1_IO02_GPIO1_IO2		0x06
 		>;
 	};
 };

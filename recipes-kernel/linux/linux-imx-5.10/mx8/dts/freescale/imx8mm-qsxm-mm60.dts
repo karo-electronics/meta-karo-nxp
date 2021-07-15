@@ -47,7 +47,7 @@
 		compatible = "w1-gpio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_owire>;
-		gpios = <&gpio3 25 GPIO_ACTIVE_HIGH>;
+		gpios = <&gpio3 25 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 		linux,open-drain;
 	};
 
@@ -56,14 +56,7 @@
 		regulator-name = "3V3";
 		regulator-min-microvolt = <3300000>;
 		regulator-max-microvolt = <3300000>;
-		regulator-always-on;
-	};
-
-	reg_vdd_core: regulator-vdd-core {
-		compatible = "regulator-fixed";
-		regulator-name = "VDD-CORE";
-		regulator-min-microvolt = <900000>;
-		regulator-max-microvolt = <900000>;
+		vin-supply = <&buck4_reg>;
 		regulator-always-on;
 	};
 
@@ -82,7 +75,8 @@
 };
 
 &A53_0 {
-	arm-supply = <&reg_vdd_core>;
+	cpu-supply = <&buck2_reg>;
+	arm-supply = <&buck2_reg>;
 };
 
 &i2c1 {
@@ -90,22 +84,22 @@
 	pinctrl-0 = <&pinctrl_i2c1>;
 	pinctrl-1 = <&pinctrl_i2c1_gpio>;
 	clock-frequency = <400000>;
-	scl-gpios = <&gpio5 14 GPIO_ACTIVE_HIGH>;
-	sda-gpios = <&gpio5 15 GPIO_ACTIVE_HIGH>;
+	scl-gpios = <&gpio5 14 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	sda-gpios = <&gpio5 15 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 
-	pmic: pmic@25 {
+	pmic@25 {
 		reg = <0x25>;
 		compatible = "nxp,pca9450b";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pmic>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
 		status = "okay";
 
 		regulators {
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			buck1_reg: regulator@0 {
-				reg = <0>;
-				regulator-compatible = "buck1";
+			buck1_reg: BUCK1 {
+				regulator-name = "BUCK1";
 				regulator-min-microvolt = <600000>;
 				regulator-max-microvolt = <2187500>;
 				regulator-boot-on;
@@ -113,9 +107,19 @@
 				regulator-ramp-delay = <3125>;
 			};
 
-			buck2_reg: regulator@1 {
-				reg = <1>;
-				regulator-compatible = "buck2";
+			buck2_reg: BUCK2 {
+				regulator-name = "BUCK2";
+				regulator-min-microvolt = <600000>;
+				regulator-max-microvolt = <2187500>;
+				regulator-boot-on;
+				regulator-always-on;
+				regulator-ramp-delay = <3125>;
+				nxp,dvs-run-voltage = <950000>;
+				nxp,dvs-standby-voltage = <850000>;
+			};
+
+			buck3_reg: BUCK3 {
+				regulator-name = "BUCK3";
 				regulator-min-microvolt = <600000>;
 				regulator-max-microvolt = <2187500>;
 				regulator-boot-on;
@@ -123,63 +127,48 @@
 				regulator-ramp-delay = <3125>;
 			};
 
-			buck3_reg: regulator@2 {
-				reg = <2>;
-				regulator-compatible = "buck3";
-				regulator-min-microvolt = <600000>;
-				regulator-max-microvolt = <2187500>;
-				regulator-boot-on;
-				regulator-always-on;
-			};
-
-			buck4_reg: regulator@3 {
-				reg = <3>;
-				regulator-compatible = "buck4";
+			buck4_reg: BUCK4 {
+				regulator-name = "BUCK4";
 				regulator-min-microvolt = <600000>;
 				regulator-max-microvolt = <3400000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
 
-			ldo1_reg: regulator@6 {
-				reg = <6>;
-				regulator-compatible = "ldo1";
+			ldo1_reg: LDO1 {
+				regulator-name = "LDO1";
 				regulator-min-microvolt = <1600000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
 
-			ldo2_reg: regulator@7 {
-				reg = <7>;
-				regulator-compatible = "ldo2";
+			ldo2_reg: LDO2 {
+				regulator-name = "LDO2";
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <1150000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
 
-			ldo3_reg: regulator@8 {
-				reg = <8>;
-				regulator-compatible = "ldo3";
+			ldo3_reg: LDO3 {
+				regulator-name = "LDO3";
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
 
-			ldo4_reg: regulator@9 {
-				reg = <9>;
-				regulator-compatible = "ldo4";
+			ldo4_reg: LDO4 {
+				regulator-name = "LDO4";
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <3300000>;
 				regulator-boot-on;
 				regulator-always-on;
 			};
 
-			ldo5_reg: regulator@10 {
-				reg = <10>;
-				regulator-compatible = "ldo5";
+			ldo5_reg: LDO5 {
+				regulator-name = "LDO5";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
 			};
@@ -189,22 +178,31 @@
 
 &i2c2 {
 	clock-frequency = <400000>;
-	pinctrl-names = "default";
+	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c2>;
+	pinctrl-1 = <&pinctrl_i2c2_gpio>;
+	sda-gpios = <&gpio5 17 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	scl-gpios = <&gpio5 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 };
 
 &i2c3 {
 	clock-frequency = <400000>;
-	pinctrl-names = "default";
+	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c3>;
+	pinctrl-1 = <&pinctrl_i2c3_gpio>;
+	sda-gpios = <&gpio5 19 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	scl-gpios = <&gpio5 18 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 };
 
 &i2c4 {
 	clock-frequency = <400000>;
-	pinctrl-names = "default";
+	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c4>;
+	pinctrl-1 = <&pinctrl_i2c4_gpio>;
+	sda-gpios = <&gpio5 21 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	scl-gpios = <&gpio5 20 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	status = "okay";
 };
 
@@ -242,6 +240,7 @@
 &usdhc1 { /* eMMC */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc1>;
+	voltage-ranges = <3300 3300>;
 	bus-width = <8>;
 	non-removable;
 	status = "okay";
@@ -252,6 +251,7 @@
 	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
 	pinctrl-1 = <&pinctrl_usdhc2_100mhz &pinctrl_usdhc2_cd>;
 	pinctrl-2 = <&pinctrl_usdhc2_200mhz &pinctrl_usdhc2_cd>;
+	voltage-ranges = <3300 3300>;
 	bus-width = <4>;
 	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
 	no-1-8-v;
@@ -286,6 +286,13 @@
 		>;
 	};
 
+	pinctrl_i2c2_gpio: i2c2-gpiogrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C2_SCL_GPIO5_IO16		0x400001c2
+			MX8MM_IOMUXC_I2C2_SDA_GPIO5_IO17		0x400001c2
+		>;
+	};
+
 	pinctrl_i2c3: i2c3grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C3_SCL_I2C3_SCL			0x400001c2
@@ -293,10 +300,24 @@
 		>;
 	};
 
+	pinctrl_i2c3_gpio: i2c3-gpiogrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C3_SCL_GPIO5_IO18		0x400001c2
+			MX8MM_IOMUXC_I2C3_SDA_GPIO5_IO19		0x400001c2
+		>;
+	};
+
 	pinctrl_i2c4: i2c4grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_I2C4_SCL_I2C4_SCL			0x400001c2
 			MX8MM_IOMUXC_I2C4_SDA_I2C4_SDA			0x400001c2
+		>;
+	};
+
+	pinctrl_i2c4_gpio: i2c4-gpiogrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_I2C4_SCL_GPIO5_IO20		0x400001c2
+			MX8MM_IOMUXC_I2C4_SDA_GPIO5_IO21		0x400001c2
 		>;
 	};
 

@@ -22,8 +22,6 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mm-qs8m-mq00-qsbase2.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-mq00.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qs8m-raspi-camera.dtsi;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-basler.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-basler.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-dsi83.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-laird.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3-raspi-display.dts;subdir=git/arch/arm64/boot \
@@ -31,7 +29,6 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mm-qsxm-mm60-qsbase3.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-qsxm-mm60.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610-mipi-mb.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mm-tx8m-1610-tx4etml0500.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1610.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1620-lvds-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1620-mb7.dts;subdir=git/arch/arm64/boot \
@@ -49,8 +46,6 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mn-tx8m-nd00-mipi-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-tx8m-nd00.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-karo.dtsi;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-basler.dts;subdir=git/arch/arm64/boot \
-	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-basler.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-dsi83.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dtsi;subdir=git/arch/arm64/boot \
@@ -106,7 +101,7 @@ KBUILD_DEFCONFIG_mx8mp = "mx8mp_defconfig"
 
 DEFCONFIG_PATH_mx8 = "arch/${ARCH}/configs"
 
-# with these two tasks overwritten files in kernel-source are resetted,
+# with these two tasks overwritten files in kernel-source are reset,
 # so we delete them to keep our changes made by yocto
 deltask kernel_checkout
 deltask validate_branches
