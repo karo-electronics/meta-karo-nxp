@@ -7,6 +7,7 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:
 SRC_URI_append = " \
 	${@' file://cfg/'.join("${KERNEL_FEATURES}".split(" "))} \
 "
+SRC_URI_remove = "file://defconfig"
 
 SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8m-qs8m-dsi83.dtsi;subdir=git/arch/arm64/boot \
@@ -37,6 +38,7 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mm-tx8m-1620.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-lvds-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-mipi-mb.dtsi;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-tx8m-mb7.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-qs8m-nd00-qsbase2-dsi83.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mn-qs8m-nd00-qsbase2-raspi-display.dts;subdir=git/arch/arm64/boot \
@@ -68,9 +70,9 @@ SRC_URI_append_mx8 = " \
 KARO_BOARD_PMIC ??= ""
 
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','basler',' basler.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg','',d)}"
+KERNEL_FEATURES_append_mx8 = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' mx8-cam.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','tc358867',' tc358867.cfg','',d)}"
@@ -78,6 +80,7 @@ KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.c
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' systemd.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','wifi',' wifi.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','pcie',' pcie.cfg','',d)}"
 KERNEL_FEATURES_append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_PMIC') != '' else ''}"
 
 SRC_URI_append_mx8mm = " \
