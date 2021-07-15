@@ -115,6 +115,7 @@ do_preconfigure_prepend () {
     install -v ${S}/${DEFCONFIG_PATH}/${KBUILD_DEFCONFIG} ${WORKDIR}/defconfig
     for cfg in ${KERNEL_FEATURES};do
         bbnote "Merging ${cfg} into ${WORKDIR}/defconfig"
+        sed -i "$(sed -n '/CONFIG_/{s:^\(# \)\?:/:;s:[= ].*$:/d:;p}' ${WORKDIR}/cfg/${cfg})" ${WORKDIR}/defconfig
         cat ${WORKDIR}/cfg/${cfg} >> ${WORKDIR}/defconfig
     done
 }
