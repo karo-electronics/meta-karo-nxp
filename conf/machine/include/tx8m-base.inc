@@ -10,6 +10,7 @@ require conf/machine/include/imx-base.inc
 require conf/machine/include/tune-cortexa53.inc
 
 MACHINE_FEATURES += "emmc"
+MACHINE_FEATURES_remove = "nxp8987"
 
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
