@@ -622,7 +622,7 @@ CONFIG_LOSETUP=y
 # CONFIG_LSPCI is not set
 CONFIG_LSUSB=y
 #
-# mdev config fragment
+# CONFIG_MDEV is not set
 #
 # CONFIG_MESG is not set
 # CONFIG_FEATURE_MESG_ENABLE_ONLY_GROUP is not set

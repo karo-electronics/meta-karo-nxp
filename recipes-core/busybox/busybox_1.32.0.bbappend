@@ -3,15 +3,10 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/files:${THISDIR}/p
 SRC_URI_remove = " \
                  file://ftpget.cfg \
                  file://login-utilities.cfg \
-                 file://mdev.cfg \
                  file://resize.cfg \
-                 ${@ bb.utils.contains('VIRTUAL-RUNTIME_dev_manager','busybox-mdev','','file://mdev.cfg',d)} \
                  file://sha1sum.cfg \
 "
 SRC_URI_append = " \
-                 file://mdev \
-                 file://rtcsymlink.sh \
-                 ${@ bb.utils.contains('VIRTUAL-RUNTIME_dev_manager','busybox-mdev','','file://no-mdev.cfg',d)} \
                  ${@ bb.utils.contains('DISTRO_FEATURES','pam','file://pam.cfg','',d)} \
 		 ${@ bb.utils.contains('DISTRO_FEATURES','busybox-crond','','file://no-crond.cfg',d)} \
 "
@@ -23,7 +18,6 @@ FILES_${PN} += "${sysconfdir}/network/run"
 #ALTERNATIVE_PRIORITY = "201"
 
 #BUSYBOX_SPLIT_SUID = "0"
-RDEPENDS_busybox-mdev += "bash"
 
 #PROVIDES += "${PN}-inetd"
 #PACKAGES =+ "${PN}-inetd"
@@ -50,18 +44,6 @@ do_install_append_${PN}-inetd() {
 }
 
 do_install_append () {
-    if ${@ bb.utils.contains('VIRTUAL-RUNTIME_dev_manager','busybox-mdev','true','false',d)};then
-        echo "Using busybox-mdev as device manager"
-    elif ${@ bb.utils.contains('VIRTUAL-RUNTIME_dev_manager','udev','true','false',d)};then
-        echo "Using ${@ d.getVar('VIRTUAL-RUNTIME_dev_manager')} as device manager"
-    else
-        echo "ERROR: VIRTUAL-RUNTIME_dev_manager is not set!" >&2
-        exit 1
-    fi
-    if grep "CONFIG_FEATURE_MDEV_CONF=y" ${B}/.config; then
-        install -v -m 0755 ${WORKDIR}/rtcsymlink.sh ${D}${sysconfdir}/mdev
-    fi
-
     install -d -m 0755 ${D}${sysconfdir}/network
     ln -snvf /run/network ${D}${sysconfdir}/network/run
 
