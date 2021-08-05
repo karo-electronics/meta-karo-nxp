@@ -13,7 +13,6 @@
 	compatible = "karo,imx8mp-qsxp", "fsl,imx8mp";
 
 	aliases {
-		/delete-property/ ethernet1;
 		i2c0 = &i2c1;
 		i2c1 = &i2c2;
 		i2c2 = &i2c3;
@@ -118,16 +117,7 @@
 	status = "okay";
 };
 
-&usb_dwc3_1 {
-	dr_mode = "host";
-	status = "okay";
-};
-
 &usb3_phy0 {
-	status = "okay";
-};
-
-&usb3_phy1 {
 	status = "okay";
 };
 

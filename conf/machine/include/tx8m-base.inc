@@ -62,7 +62,7 @@ PREFERRED_VERSION_isp-imx                 = "4.2.2.8+basler"
 PREFERRED_VERSION_basler-camera           = "4.2.2.8+basler"
 PREFERRED_VERSION_kernel-module-isp-vvcam = "4.2.2.8+basler"
 
-IMX_GPU_VERSION            ?= "6.4.3.p1.2"
+IMX_GPU_VERSION            ?= "6.4.3.p2.0"
 IMX_GPU_VERSION_SUFFIX      = "aarch64"
 
 PREFERRED_VERSION_imx-gpu-viv               = "${IMX_GPU_VERSION}-${IMX_GPU_VERSION_SUFFIX}"

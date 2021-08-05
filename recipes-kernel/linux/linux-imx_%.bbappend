@@ -1,12 +1,13 @@
 # Ka-Ro specific kernel source for NXP's linux-imx 5.10
 KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
-SRCBRANCH = "imx_5.10.9_1.0.0"
-SRCREV = "7f1c87a753d89b53f71ce176c25bf08d37c9aae4"
+SRCBRANCH = "lf-5.10.y"
+SRCREV = "86704bb13b98e3f0447c2e944205ae951bab6bb5"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:"
 SRC_URI_append = " \
 	${@' file://cfg/'.join("${KERNEL_FEATURES}".split(" "))} \
 "
+
 SRC_URI_remove = "file://defconfig"
 
 SRC_URI_append_mx8 = " \
@@ -66,8 +67,7 @@ KARO_BOARD_PMIC ??= ""
 
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg','',d)}"
-KERNEL_FEATURES_append_mx8 = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' mx8-cam.cfg','',d)}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg mx8-cam.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','tc358867',' tc358867.cfg','',d)}"
@@ -105,6 +105,8 @@ DEFCONFIG_PATH_mx8 = "arch/${ARCH}/configs"
 # so we delete them to keep our changes made by yocto
 deltask kernel_checkout
 deltask validate_branches
+deltask copy_defconfig
+deltask merge_delta_config
 
 do_preconfigure_prepend () {
     if [ -z "${KBUILD_DEFCONFIG}" ];then

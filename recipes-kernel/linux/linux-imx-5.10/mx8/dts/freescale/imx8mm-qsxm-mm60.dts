@@ -90,7 +90,7 @@
 
 	pmic@25 {
 		reg = <0x25>;
-		compatible = "nxp,pca9450b";
+		compatible = "nxp,pca9450a";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_pmic>;
 		interrupt-parent = <&gpio1>;

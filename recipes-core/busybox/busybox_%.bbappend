@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/files:${THISDIR}/patches:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:${THISDIR}/files:${THISDIR}/patches:"
 
 SRC_URI_remove = " \
                  file://ftpget.cfg \
