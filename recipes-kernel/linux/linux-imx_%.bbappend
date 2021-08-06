@@ -1,7 +1,7 @@
 # Ka-Ro specific kernel source for NXP's linux-imx 5.10
 KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 SRCBRANCH = "lf-5.10.y"
-SRCREV = "86704bb13b98e3f0447c2e944205ae951bab6bb5"
+SRCREV = "99a35ce3153923a0146b33311311b8abb69a7e3e"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:"
 SRC_URI_append = " \
