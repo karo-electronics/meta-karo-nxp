@@ -11,17 +11,6 @@
 / {
 	model = "Ka-Ro electronics QSXM-MM60 (NXP i.MX8MM) module on QSBASE3 baseboard";
 
-	reserved-memory {
-		#address-cells = <2>;
-		#size-cells = <2>;
-		ranges;
-
-		rpmsg_reserved: rpmsg@b8000000 {
-			no-map;
-			reg = <0 0xb8000000 0 0x400000>;
-		};
-	};
-
 	pcie0_refclk: pcie0-refclk {
 		compatible = "fixed-clock";
 		#clock-cells = <0>;
@@ -44,7 +33,7 @@
 	pinctrl-1 = <&pinctrl_fec1_b_sleep>;
 	phy-mode = "rgmii";
 	phy-handle = <&ethphy0>;
-	phy-supply = <&reg_3v3>;
+	phy-supply = <&reg_vdd_3v3>;
 	phy-reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
 	phy-reset-duration = <25>;
 	phy-reset-post-delay = <100>;
@@ -91,10 +80,15 @@
 	status = "disabled";
 };
 
+&usbotg1 {
+	disable-over-current;
+};
+
 &usbotg2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbh_vbus>;
 	dr_mode = "host";
+	disable-over-current;
 	vbus-supply = <&reg_usbh_vbus>;
 	status = "okay";
 };
