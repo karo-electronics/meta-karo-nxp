@@ -92,6 +92,8 @@ SRC_URI_append_qs8m = " \
 	file://0001-mx6s-capture-add-rggb8-video-format.patch \
 "
 
+KERNEL_FEATURES_append_tx8m-1620 = " no-suspend.cfg"
+
 # remove any defconfig added via SRC_URI
 SRC_URI_remove = "file://defconfig"
 
