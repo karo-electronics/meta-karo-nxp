@@ -2,4 +2,3 @@ FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-${PV}:${THISDIR}/${PN}-${PV}/patche
 SRC_URI_append = " \
 	file://karo.bmp;subdir=git/tools/logos \
 "
-#file://tx8mp-fdtaddr-bugfix.patch
