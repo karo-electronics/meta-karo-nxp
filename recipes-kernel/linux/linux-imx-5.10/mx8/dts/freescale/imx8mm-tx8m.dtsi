@@ -58,6 +58,7 @@
 &usbotg1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbotg_vbus &pinctrl_usbotg_oc>;
+	power-active-high;
 	over-current-active-low;
 };
 
@@ -65,6 +66,7 @@
 	dr_mode = "host";
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usbh_vbus &pinctrl_usbh_oc>;
+	power-active-high;
 	over-current-active-low;
 	status = "okay";
 };
