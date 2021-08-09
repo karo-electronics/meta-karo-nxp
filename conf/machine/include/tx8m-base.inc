@@ -56,8 +56,6 @@ MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "firmware-imx-sdma"
 KERNEL_MODULE_PROBECONF += "evbug"
 module_conf_evbug = "blacklist evbug"
 
-#FILESYSTEM_PERMS_TABLES = "files/fs-perms-karo.txt"
-
 PREFERRED_VERSION_isp-imx                 = "4.2.2.8+basler"
 PREFERRED_VERSION_basler-camera           = "4.2.2.8+basler"
 PREFERRED_VERSION_kernel-module-isp-vvcam = "4.2.2.8+basler"
