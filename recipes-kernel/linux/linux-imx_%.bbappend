@@ -36,6 +36,7 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mm-tx8m-1620-lvds-mb.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1620-mb7.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-1620.dts;subdir=git/arch/arm64/boot \
+	file://dts/freescale/imx8mm-tx8m-1622.dts;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-lvds-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-mipi-mb.dtsi;subdir=git/arch/arm64/boot \
 	file://dts/freescale/imx8mm-tx8m-mb7.dtsi;subdir=git/arch/arm64/boot \
