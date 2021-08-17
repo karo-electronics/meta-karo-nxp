@@ -71,6 +71,7 @@ SRC_URI_append_mx8 = " \
 
 KARO_BOARD_PMIC ??= ""
 
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','basler',' basler.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg mx8-cam.cfg','',d)}"
