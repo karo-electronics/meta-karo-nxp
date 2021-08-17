@@ -4,8 +4,6 @@
  *
  */
 
-/dts-v1/;
-
 #include "imx8mm.dtsi"
 #include "imx8m-tx8m.dtsi"
 
