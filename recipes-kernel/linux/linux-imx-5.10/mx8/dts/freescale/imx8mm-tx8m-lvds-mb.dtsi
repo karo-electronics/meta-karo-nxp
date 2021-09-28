@@ -45,7 +45,7 @@
 	};
 };
 
-&pcie0{
+&pcie0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie>;
 	disable-gpio = <&gpio5 18 GPIO_ACTIVE_LOW>;
