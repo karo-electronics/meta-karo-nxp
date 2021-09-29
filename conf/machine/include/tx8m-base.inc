@@ -23,6 +23,9 @@ SPL_BINARY = "spl/u-boot-spl.bin"
 
 # Set imx-mkimage boot target
 IMXBOOT_TARGETS ?= "flash_tx8m"
+IMX_BOOT_SOC_TARGET ?= "iMX8MM"
+ATF_PLATFORM ?= "imx8mm"
+ATF_LOAD_ADDR ?= "0x920000"
 
 # Set Serial console
 SERIAL_CONSOLES = "115200;ttymxc0 115200;ttymxc1 115200;ttymxc2"
@@ -49,8 +52,6 @@ PREFERRED_PROVIDER_virtual/kernel_imx = "linux-imx"
 IMAGE_FSTYPES_remove = "sdcard.bz2 wic.bz2 wic.bmap"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
-
-MACHINE_ESSENTIAL_EXTRA_RDEPENDS += "firmware-imx-sdma"
 
 # Blacklist evbug kernel module
 KERNEL_MODULE_PROBECONF += "evbug"
