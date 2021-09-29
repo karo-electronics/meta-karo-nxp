@@ -8,7 +8,7 @@ SRC_URI_append = " \
 		file://no-tee.patch \
 "
 
+
 do_compile_prepend() {
     export dtbs=${UBOOT_DTB_NAME}
-    export dtbs_ddr3l=${UBOOT_DTB_NAME}
 }

@@ -1,12 +1,13 @@
-# Copyright 2017-2020 NXP
+# Copyright (C) 2017-2020 NXP
 
 require imx-mkimage_git.inc
-require recipes-bsp/imx-seco/imx-seco.inc
 
 DESCRIPTION = "Generate Boot Loader for i.MX 8 device"
 LICENSE = "GPLv2"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/GPL-2.0-only;md5=801f80980d171dd6425610833a22dbe6"
 SECTION = "BSP"
+
+inherit use-imx-security-controller-firmware
 
 IMX_EXTRA_FIRMWARE      = "firmware-imx-8 imx-sc-firmware imx-seco"
 IMX_EXTRA_FIRMWARE_mx8m = "firmware-imx-8m"
@@ -17,6 +18,8 @@ DEPENDS += " \
     imx-atf \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
+# xxd is a dependency of fspi_packer.sh
+DEPENDS += "xxd-native"
 DEPENDS_append_mx8m = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot"
 PROVIDES = "${BOOT_NAME}"
@@ -26,53 +29,23 @@ inherit deploy
 # Add CFLAGS with native INCDIR & LIBDIR for imx-mkimage build
 CFLAGS = "-O2 -Wall -std=c99 -I ${STAGING_INCDIR_NATIVE} -L ${STAGING_LIBDIR_NATIVE}"
 
-IMX_M4_DEMOS        = ""
-IMX_M4_DEMOS_mx8qm  = "imx-m4-demos:do_deploy"
-IMX_M4_DEMOS_mx8x   = "imx-m4-demos:do_deploy"
-IMX_M4_DEMOS_mx8dxl = "imx-m4-demos:do_deploy"
-
-M4_DEFAULT_IMAGE ?= "m4_image.bin"
-M4_DEFAULT_IMAGE_mx8qxp = "imx8qx_m4_TCM_power_mode_switch.bin"
-M4_DEFAULT_IMAGE_mx8phantomdxl = "imx8dxl-phantom_m4_TCM_srtm_demo.bin"
-M4_DEFAULT_IMAGE_mx8dxl = "imx8dxl_m4_TCM_power_mode_switch.bin"
-M4_DEFAULT_IMAGE_mx8dx = "imx8qx_m4_TCM_power_mode_switch.bin"
-
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
 do_compile[depends] += " \
     virtual/bootloader:do_deploy \
     ${@' '.join('%s:do_deploy' % r for r in '${IMX_EXTRA_FIRMWARE}'.split() )} \
     imx-atf:do_deploy \
-    ${IMX_M4_DEMOS} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
 SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
 
-ATF_MACHINE_NAME ?= "bl31-imx8qm.bin"
-ATF_MACHINE_NAME_mx8qm = "bl31-imx8qm.bin"
-ATF_MACHINE_NAME_mx8x  = "bl31-imx8qx.bin"
-ATF_MACHINE_NAME_mx8mq = "bl31-imx8mq.bin"
-ATF_MACHINE_NAME_mx8mm = "bl31-imx8mm.bin"
-ATF_MACHINE_NAME_mx8mn = "bl31-imx8mn.bin"
-ATF_MACHINE_NAME_mx8mp = "bl31-imx8mp.bin"
-ATF_MACHINE_NAME_mx8phantomdxl = "bl31-imx8qx.bin"
-ATF_MACHINE_NAME_mx8dxl = "bl31-imx8dxl.bin"
-ATF_MACHINE_NAME_mx8dx = "bl31-imx8dx.bin"
+ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME_append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
 TOOLS_NAME ?= "mkimage_imx8"
 
-SOC_TARGET       ?= "INVALID"
-SOC_TARGET_mx8qm  = "iMX8QM"
-SOC_TARGET_mx8x   = "iMX8QX"
-SOC_TARGET_mx8mq  = "iMX8M"
-SOC_TARGET_mx8mm  = "iMX8MM"
-SOC_TARGET_mx8mn  = "iMX8MN"
-SOC_TARGET_mx8mp  = "iMX8MP"
-SOC_TARGET_mx8dxl = "iMX8DXL"
-SOC_TARGET_mx8phantomdxl = "iMX8QX"
-SOC_TARGET_mx8dx  = "iMX8DX"
+IMX_BOOT_SOC_TARGET ?= "INVALID"
 
 DEPLOY_OPTEE = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'true', 'false', d)}"
 
@@ -81,7 +54,7 @@ IMXBOOT_TARGETS ?= \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
                                                   'flash_multi_cores flash_dcd', d), d)}"
 
-BOOT_STAGING       = "${S}/${SOC_TARGET}"
+BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
 BOOT_STAGING_mx8m  = "${S}/iMX8M"
 BOOT_STAGING_mx8dx = "${S}/iMX8QX"
 
@@ -91,7 +64,9 @@ SOC_FAMILY_mx8m = "mx8m"
 SOC_FAMILY_mx8x = "mx8x"
 
 REV_OPTION ?= ""
-REV_OPTION_mx8qxpc0 = "REV=C0"
+REV_OPTION_mx8qxp = \
+    "${@bb.utils.contains('MACHINE_FEATURES', 'soc-revb0', '', \
+                                                           'REV=C0', d)}"
 
 compile_mx8m() {
     local t="$1"
@@ -134,14 +109,6 @@ compile_mx8() {
         install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
                                                             "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
     fi
-
-    install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${SC_FIRMWARE_NAME} ${BOOT_STAGING}/scfw_tcm.bin
-    install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
-    install -v "${DEPLOY_DIR_IMAGE}/imx8qm_m4_0_TCM_power_mode_switch_m40.bin" \
-                                                         "${BOOT_STAGING}/m4_image.bin"
-    install -v "${DEPLOY_DIR_IMAGE}/imx8qm_m4_1_TCM_power_mode_switch_m41.bin" \
-                                                         "${BOOT_STAGING}/m4_1_image.bin"
-    install -v "${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}"       "${BOOT_STAGING}"
 }
 
 compile_mx8x() {
@@ -177,12 +144,12 @@ do_compile() {
         # mkimage for i.MX8
         for target in ${IMXBOOT_TARGETS}; do
             if [ "$target" = "flash_linux_m4_no_v2x" ]; then
-               # Special target build for i.MX 8DXL with V2X off
-               bbnote "building ${SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
-               make SOC=${SOC_TARGET} ${REV_OPTION} V2X=NO  flash_linux_m4
+                # Special target build for i.MX 8DXL with V2X off
+                bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
+                make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME} flash_linux_m4
             else
-               bbnote "building ${SOC_TARGET} - ${REV_OPTION} ${target}"
-               make SOC=${SOC_TARGET} ${REV_OPTION} ${target}
+                bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} ${target}"
+                make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} dtbs=${UBOOT_DTB_NAME} ${target}
             fi
             if [ -e "${BOOT_STAGING}/flash.bin" ]; then
                 install -v "${BOOT_STAGING}/flash.bin" "${S}/${BOOT_CONFIG_MACHINE}-${target}"
