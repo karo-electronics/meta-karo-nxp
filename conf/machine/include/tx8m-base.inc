@@ -48,9 +48,6 @@ IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/bootloader_imx = "u-boot-imx"
 PREFERRED_PROVIDER_virtual/kernel_imx = "linux-imx"
 
-# Remove some image types we don't need
-IMAGE_FSTYPES_remove = "sdcard.bz2 wic.bz2 wic.bmap"
-
 PREFERRED_PROVIDER_ptpd = "ptpd"
 
 # Blacklist evbug kernel module
