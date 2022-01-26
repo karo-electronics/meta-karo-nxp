@@ -2,8 +2,8 @@
 *~
 
 # Patch files & directory
-/*.patch
-patch/
+/.pc
+/patches
 
 # Workflow files
 *.diff
