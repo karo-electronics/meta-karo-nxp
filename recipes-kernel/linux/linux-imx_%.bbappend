@@ -9,7 +9,9 @@ SRC_URI_append = " \
 	file://0001-lib-iov_iter-initialize-flags-in-new-pipe_buffer.patch \
 "
 
-SRC_URI_remove = "file://defconfig"
+SRC_URI_append = " \
+	file://0002-vf610-gpio.patch \
+"
 
 SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8m-qs8m-dsi83.dtsi;subdir=git/arch/arm64/boot \
