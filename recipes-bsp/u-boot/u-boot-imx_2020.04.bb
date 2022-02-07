@@ -53,5 +53,12 @@ do_deploy_append_mx8m () {
     fi
 }
 
+do_savedefconfig() {
+        bbplain "Saving defconfig to:\n${B}/defconfig"
+        oe_runmake -C ${B} savedefconfig
+}
+do_savedefconfig[nostamp] = "1"
+addtask savedefconfig after do_configure
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx8)"
