@@ -4,13 +4,10 @@ SRCBRANCH = "lf-5.10.y"
 SRCREV = "50f4621268ac737098ed536cdc64ad004c800aae"
 
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:"
-SRC_URI_append = " \
-	${@' file://cfg/'.join("${KERNEL_FEATURES}".split(" "))} \
-	file://0001-lib-iov_iter-initialize-flags-in-new-pipe_buffer.patch \
-"
+SRC_URI_append = "${@ "".join(map(lambda f: " file://cfg/" + f, "${KERNEL_FEATURES}".split()))}"
 
 SRC_URI_append = " \
-	file://0002-vf610-gpio.patch \
+	file://0001-lib-iov_iter-initialize-flags-in-new-pipe_buffer.patch \
 "
 
 SRC_URI_append_mx8 = " \
