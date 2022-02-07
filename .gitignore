@@ -1,7 +1,9 @@
 # Editor files
 *~
+.#*
+\#*#
 
-# Patch files & directory
+# quilt directories
 /.pc
 /patches
 
