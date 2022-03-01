@@ -28,6 +28,7 @@ SRCBRANCH = "lf_v2020.04-karo"
 SRCREV = "1a024e040659bb98401a57ad94583fc8622cbc47"
 
 S = "${WORKDIR}/git"
+B = "${WORKDIR}/build"
 
 LOCALVERSION ?= "-5.10.9-1.0.0"
 
