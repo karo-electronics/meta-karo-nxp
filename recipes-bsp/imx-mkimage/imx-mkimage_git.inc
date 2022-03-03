@@ -8,5 +8,4 @@ SRC_URI = "${IMX_MKIMAGE_SRC};branch=${SRCBRANCH}"
 SRCREV = "7a277c8a1a21ff921d217889dde6a9f84e6d2168"
 S = "${WORKDIR}/git"
 
-BOOT_TOOLS = "imx-boot-tools"
 SYSROOT_DIRS += "/boot"

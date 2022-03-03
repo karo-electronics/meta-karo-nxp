@@ -18,6 +18,7 @@ MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
 KARO_BOARD_PMIC ?= "bd71847"
 
 UBOOT_CONFIG ??= "noenv mfg default"
+BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
 
@@ -38,7 +39,7 @@ DDR_FIRMWARE_NAME ?= " \
         ddr3_dmem_1d.bin \
 "
 
-IMAGE_BOOTLOADER = "imx-boot"
+IMAGE_BOOTLOADER = "imx-boot-karo"
 
 LOADADDR = ""
 UBOOT_SUFFIX = "bin"

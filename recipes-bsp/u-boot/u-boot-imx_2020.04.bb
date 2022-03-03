@@ -32,7 +32,7 @@ B = "${WORKDIR}/build"
 
 LOCALVERSION ?= "-5.10.9-1.0.0"
 
-BOOT_TOOLS_mx8m = "imx-boot-tools"
+#BOOT_TOOLS_mx8m = "imx-boot-tools"
 
 do_deploy_append_mx8m () {
     install -d "${DEPLOYDIR}/${BOOT_TOOLS}"

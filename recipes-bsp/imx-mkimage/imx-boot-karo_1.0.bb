@@ -21,7 +21,7 @@ DEPENDS += " \
 # xxd is a dependency of fspi_packer.sh
 DEPENDS += "xxd-native"
 DEPENDS_append_mx8m = " u-boot-mkimage-native dtc-native"
-BOOT_NAME = "imx-boot"
+BOOT_NAME = "imx-boot-karo"
 PROVIDES = "${BOOT_NAME}"
 
 inherit deploy
