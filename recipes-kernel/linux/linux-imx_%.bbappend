@@ -6,6 +6,7 @@ SRCREV = "7f1c87a753d89b53f71ce176c25bf08d37c9aae4"
 FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:"
 SRC_URI_append = " \
 	${@' file://cfg/'.join("${KERNEL_FEATURES}".split(" "))} \
+	file://0001-lib-iov_iter-initialize-flags-in-new-pipe_buffer.patch \
 "
 SRC_URI_remove = "file://defconfig"
 
