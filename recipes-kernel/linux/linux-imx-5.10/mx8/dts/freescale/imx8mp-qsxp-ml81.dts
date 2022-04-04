@@ -13,6 +13,8 @@
 	compatible = "karo,imx8mp-qsxp", "fsl,imx8mp";
 
 	aliases {
+		can0 = &flexcan1;
+		can1 = &flexcan2;
 		/delete-property/ ethernet1;
 		i2c3 = &i2c4;
 		serial0 = &uart2;
@@ -29,6 +31,18 @@
 	};
 };
 
+&flexcan1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan1>;
+	status = "okay";
+};
+
+&flexcan2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan2>;
+	status = "okay";
+};
+
 &i2c3 {
 	status = "okay";
 };
@@ -42,4 +56,20 @@
 	regulator-max-microvolt = <3300000>;
 	regulator-boot-on;
 	regulator-always-on;
+};
+
+&iomuxc {
+	pinctrl_flexcan1: flexcan1grp {
+		fsl,pins = <
+			 MX8MP_IOMUXC_SPDIF_RX__CAN1_RX 0x140
+			 MX8MP_IOMUXC_SPDIF_TX__CAN1_TX 0x140
+		>;
+	};
+
+	pinctrl_flexcan2: flexcan2grp {
+		fsl,pins = <
+			 MX8MP_IOMUXC_SAI5_MCLK__CAN2_RX 0x140
+			 MX8MP_IOMUXC_SAI5_RXD3__CAN2_TX 0x140
+		>;
+	};
 };

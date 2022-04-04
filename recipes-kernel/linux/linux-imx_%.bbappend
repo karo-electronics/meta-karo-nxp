@@ -84,6 +84,7 @@ KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' sys
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','wifi',' wifi.cfg','',d)}"
 KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','pcie',' pcie.cfg apex.cfg','',d)}"
 KERNEL_FEATURES_append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_PMIC') != '' else ''}"
+KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' flexcan.cfg','',d)}"
 
 SRC_URI_append_mx8mm = " \
 	file://mx8mm_defconfig;subdir=git/arch/arm64/configs \
