@@ -22,6 +22,12 @@ KARO_BOARD_PMIC ?= "bd71847"
 UBOOT_CONFIG ??= "noenv mfg default"
 UBOOT_FEATURES ??= ""
 
+# Set U-Boot DTB
+KARO_BASEBOARD ??= ""
+UBOOT_DTB_NAME = "${@ "%s-%s.dtb" % (d.getVar('ATF_PLATFORM'), d.getVar('MACHINE') + "-" + d.getVar('KARO_BASEBOARD') if d.getVar('KARO_BASEBOARD') != "" else d.getVar('MACHINE'))}"
+
+KERNEL_DEVICETREE_append = "${@ " freescale/%s-%s.dtb" % (d.getVar('ATF_PLATFORM'), d.getVar('MACHINE') + "-" + d.getVar('KARO_BASEBOARD') if d.getVar('KARO_BASEBOARD') != "" else d.getVar('MACHINE'))}"
+
 BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
