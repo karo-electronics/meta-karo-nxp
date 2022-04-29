@@ -23,6 +23,7 @@ DEPENDS += "xxd-native"
 DEPENDS_append_mx8m = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot-karo"
 PROVIDES = "${BOOT_NAME}"
+PROVIDES += "imx-boot"
 
 inherit deploy
 

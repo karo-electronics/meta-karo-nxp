@@ -50,6 +50,7 @@ UBOOT_MAKE_TARGET = ""
 IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/bootloader_imx = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel_imx = "linux-imx"
+PREFERRED_PROVIDER_imx-boot = "imx-boot-karo"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
 
