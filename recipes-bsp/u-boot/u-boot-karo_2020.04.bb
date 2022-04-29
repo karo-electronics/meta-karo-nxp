@@ -53,8 +53,15 @@ do_deploy_append_mx8m () {
 }
 
 do_savedefconfig() {
+    if [ -n "${UBOOT_CONFIG}" ];then
+        for config in ${UBOOT_MACHINE};do
+            bbplain "Saving defconfig to:\n${B}/${config}/defconfig"
+            oe_runmake -C ${B}/${config} savedefconfig
+        done
+    else
         bbplain "Saving defconfig to:\n${B}/defconfig"
         oe_runmake -C ${B} savedefconfig
+    fi
 }
 do_savedefconfig[nostamp] = "1"
 addtask savedefconfig after do_configure
