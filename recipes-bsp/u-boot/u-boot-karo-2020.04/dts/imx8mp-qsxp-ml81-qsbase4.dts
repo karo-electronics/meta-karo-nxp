@@ -23,6 +23,9 @@
 	status = "okay";
 
 	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
 		ethphy1: ethernet-phy@7 {
 			reg = <7>;
 		};
