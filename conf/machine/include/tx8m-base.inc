@@ -20,6 +20,8 @@ MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
 KARO_BOARD_PMIC ?= "bd71847"
 
 UBOOT_CONFIG ??= "noenv mfg default"
+UBOOT_FEATURES ??= ""
+
 BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
