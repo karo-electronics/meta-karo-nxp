@@ -34,6 +34,8 @@ LOCALVERSION ?= "-5.10.9-1.0.0"
 
 SRC_URI_append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
 
+EXTRA_OEMAKE_append = " V=0"
+
 do_configure_append() {
     for f in ${UBOOT_FEATURES};do
         if ! [ -f "${WORKDIR}/${f}.cfg" ];then
