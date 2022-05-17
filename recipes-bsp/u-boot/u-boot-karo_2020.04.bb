@@ -11,7 +11,7 @@ DEPENDS += "flex-native bison-native dtc-native"
 require recipes-bsp/u-boot/u-boot.inc
 inherit fsl-u-boot-localversion
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS_prepend := "${THISDIR}/${BP}/cfg:"
 
 PROVIDES += "u-boot"
 
@@ -42,20 +42,6 @@ do_configure_append() {
             bbfatal "UBOOT_FEATURE: '${WORKDIR}/${f}.cfg' not found"
         fi
     done
-    if [ -n "${UBOOT_CONFIG}" ];then
-        for config in ${UBOOT_MACHINE};do
-            c="${B}/${config}"
-            for f in ${UBOOT_FEATURES};do
-                bbnote "Applying '$f' to '${c}/.config'"
-                cat "${WORKDIR}/${f}.cfg" >> ${c}/.config
-            done
-        done
-    else
-        for f in ${UBOOT_FEATURES};do
-            bbnote "Applying '$f' to '${B}/.config'"
-            cat "${WORKDIR}/${f}.cfg" >> ${B}/.config
-        done
-    fi
 }
 
 do_deploy_append_mx8m () {
