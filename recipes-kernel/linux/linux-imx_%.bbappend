@@ -120,15 +120,3 @@ deltask kernel_checkout
 deltask validate_branches
 deltask copy_defconfig
 deltask merge_delta_config
-
-do_preconfigure_prepend () {
-    if [ -z "${KBUILD_DEFCONFIG}" ];then
-        bbfatal "KBUILD_DEFCONFIG is not set"
-    fi
-    install -v ${S}/${DEFCONFIG_PATH}/${KBUILD_DEFCONFIG} ${WORKDIR}/defconfig
-    for cfg in ${KERNEL_FEATURES};do
-        bbnote "Merging ${cfg} into ${WORKDIR}/defconfig"
-        sed -i "$(sed -n '/CONFIG_/{s:^\(# \)\?:/:;s:[= ].*$:/d:;p}' ${WORKDIR}/cfg/${cfg})" ${WORKDIR}/defconfig
-        cat ${WORKDIR}/cfg/${cfg} >> ${WORKDIR}/defconfig
-    done
-}
