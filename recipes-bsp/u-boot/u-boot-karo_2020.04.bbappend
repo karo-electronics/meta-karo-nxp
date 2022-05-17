@@ -24,7 +24,7 @@ do_configure_append_mx8m () {
             c="${B}/${config}"
             if [ "${KARO_BASEBOARD}" != "" ];then
                 cat <<EOF >> "${c}/.config"
-CONFIG_DEFAULT_DEVICE_TREE="${ATF_PLATFORM}-${MACHINE}-${KARO_BASEBOARD}"
+CONFIG_DEFAULT_DEVICE_TREE="${DTB_BASENAME}-${KARO_BASEBOARD}"
 CONFIG_DEFAULT_ENV_FILE="board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}"
 EOF
             fi

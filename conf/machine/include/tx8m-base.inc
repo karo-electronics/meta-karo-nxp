@@ -24,9 +24,13 @@ UBOOT_FEATURES ??= ""
 
 # Set U-Boot DTB
 KARO_BASEBOARD ??= ""
-UBOOT_DTB_NAME = "${@ "%s-%s.dtb" % (d.getVar('ATF_PLATFORM'), d.getVar('MACHINE') + "-" + d.getVar('KARO_BASEBOARD') if d.getVar('KARO_BASEBOARD') != "" else d.getVar('MACHINE'))}"
+UBOOT_DTB_NAME = "${@ "${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
-KERNEL_DEVICETREE_append = "${@ " freescale/%s-%s.dtb" % (d.getVar('ATF_PLATFORM'), d.getVar('MACHINE') + "-" + d.getVar('KARO_BASEBOARD') if d.getVar('KARO_BASEBOARD') != "" else d.getVar('MACHINE'))}"
+DTB_BASENAME_mx8mm = "imx8mm-${MACHINE}"
+DTB_BASENAME_mx8mn = "imx8mn-${MACHINE}"
+DTB_BASENAME_mx8mp = "imx8mp-${MACHINE}"
+
+KERNEL_DEVICETREE_append = "${@ " freescale/${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 BOOT_TOOLS = "imx-boot-tools"
 
