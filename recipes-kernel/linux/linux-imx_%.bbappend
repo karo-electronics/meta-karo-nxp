@@ -103,6 +103,7 @@ SRC_URI_append_mx8mp = " \
 
 SRC_URI_append_qs8m = " \
 	file://0001-mx6s-capture-add-rggb8-video-format.patch \
+	file://0002-imx219-driver-zeus-version.patch \
 "
 
 KERNEL_FEATURES_append_tx8m-1620 = " no-suspend.cfg"
