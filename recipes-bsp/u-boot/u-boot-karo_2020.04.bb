@@ -25,7 +25,7 @@ SRCBRANCH = "lf_v2020.04-karo"
 
 # We use the revision in order to avoid having to fetch it from the
 # repo during parse
-SRCREV = "1a024e040659bb98401a57ad94583fc8622cbc47"
+SRCREV = "26cc8dc669d8e7085f603159e84df99d607ac77a"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
