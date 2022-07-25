@@ -13,6 +13,7 @@
 	compatible = "karo,imx8mp-tx8m", "fsl,imx8mp";
 
 	aliases {
+		can0 = &flexcan1;
 		serial0 = &uart1;
 		serial1 = &uart2;
 		serial2 = &uart4;
@@ -91,6 +92,12 @@
 	};
 };
 
+&flexcan1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan1>;
+	status = "okay";
+};
+
 &i2c3 {
 	status = "disabled";
 };
@@ -129,6 +136,13 @@
 	pinctrl_etnphy_rst_b: etnphy-rst-bgrp {
 		fsl,pins = <
 			    MX8MP_IOMUXC_SAI2_RXC__GPIO4_IO22		0x140
+		>;
+	};
+
+	pinctrl_flexcan1: flexcan1grp {
+		fsl,pins = <
+			 MX8MP_IOMUXC_SPDIF_RX__CAN1_RX 		0x140
+			 MX8MP_IOMUXC_SPDIF_TX__CAN1_TX 		0x140
 		>;
 	};
 
