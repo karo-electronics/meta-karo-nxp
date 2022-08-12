@@ -1,18 +1,18 @@
 KBUILD_BUILD_USER := "support"
 KBUILD_BUILD_HOST := "karo-electronics.de"
 
-MACHINEOVERRIDES =. "mx8:mx8m:tx8m:"
+MACHINEOVERRIDES =. "imx8:imx8m:"
 
 BUILD_REPRODUCIBLE_BINARIES ?= "0"
-INHERIT_remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARIES') == '0' else ''}"
+INHERIT:remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARIES') == '0' else ''}"
 
 IMAGE_CLASSES += "st-partitions-image"
 
 require conf/machine/include/imx-base.inc
-require conf/machine/include/tune-cortexa53.inc
+require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
 MACHINE_FEATURES += "emmc"
-MACHINE_FEATURES_remove = "nxp8987"
+MACHINE_FEATURES:remove = "nxp8987"
 
 MACHINE_USES_VIVANTE_KERNEL_DRIVER_MODULE = "0"
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
@@ -26,11 +26,11 @@ UBOOT_FEATURES ??= ""
 KARO_BASEBOARD ??= ""
 UBOOT_DTB_NAME = "${@ "${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
-DTB_BASENAME_mx8mm = "imx8mm-${MACHINE}"
-DTB_BASENAME_mx8mn = "imx8mn-${MACHINE}"
-DTB_BASENAME_mx8mp = "imx8mp-${MACHINE}"
+DTB_BASENAME:mx8mm-nxp-bsp = "imx8mm-${MACHINE}"
+DTB_BASENAME:mx8mn-nxp-bsp = "imx8mn-${MACHINE}"
+DTB_BASENAME:mx8mp-nxp-bsp = "imx8mp-${MACHINE}"
 
-KERNEL_DEVICETREE_append = "${@ " freescale/${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
+KERNEL_DEVICETREE:append := "${@ " freescale/${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 BOOT_TOOLS = "imx-boot-tools"
 
@@ -60,8 +60,8 @@ UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = ""
 
 IMX_DEFAULT_BSP = "nxp"
-PREFERRED_PROVIDER_virtual/bootloader_imx = "u-boot-karo"
-PREFERRED_PROVIDER_virtual/kernel_imx = "linux-imx"
+PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
+PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 PREFERRED_PROVIDER_imx-boot = "imx-boot-karo"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
@@ -74,19 +74,26 @@ PREFERRED_VERSION_isp-imx                 = "4.2.2.14+basler"
 PREFERRED_VERSION_basler-camera           = "4.2.2.14+basler"
 PREFERRED_VERSION_kernel-module-isp-vvcam = "4.2.2.14+basler"
 
-IMX_GPU_VERSION            ?= "6.4.3.p2.4"
-IMX_GPU_VERSION_SUFFIX      = "aarch64"
+PREFERRED_PROVIDER_opencl-headers:imxgpu = "imx-gpu-viv"
+PREFERRED_PROVIDER_opencl-icd-loader:imxgpu = "imx-gpu-viv"
+PREFERRED_PROVIDER_virtual/libgles3:imxgpu3d = "imx-gpu-viv"
 
-PREFERRED_VERSION_imx-gpu-viv               = "${IMX_GPU_VERSION}-${IMX_GPU_VERSION_SUFFIX}"
-PREFERRED_VERSION_kernel-module-imx-gpu-viv = "${IMX_GPU_VERSION}"
-PREFERRED_VERSION_imx-gpu-g2d               = "${IMX_GPU_VERSION}"
+PREFERRED_VERSION_gstreamer1.0-plugins-base = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad  = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good-qt = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly = "1.20.1"
+PREFERRED_VERSION_gstreamer1.0              = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-libav        = "1.20.1"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server  = "1.20.1"
 
-# Set the preffered provider for opencl-headers
-PREFERRED_PROVIDER_opencl-headers_imx = "imx-gpu-viv"
+PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8-nxp-bsp  = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good:mx8-nxp-bsp = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-good-qt:mx8-nxp-bsp = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8-nxp-bsp = "1.20.1"
+PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              = "1.20.0.imx"
+PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        = "1.20.1"
+PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  = "1.20.1"
 
-PREFERRED_VERSION_gstreamer1.0-plugins-base_mx8 = "1.18.5.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad_mx8  = "1.18.5.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good_mx8 = "1.18.5.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good-qt_mx8 = "1.18.5.imx"
-PREFERRED_VERSION_gstreamer1.0_mx8              = "1.18.5.imx"
-PREFERRED_VERSION_gstreamer1.0-libav_mx8        = "1.18.5"
+PREFERRED_VERSION_opengl-es-cts:aarch64 = "3.2.7.0"

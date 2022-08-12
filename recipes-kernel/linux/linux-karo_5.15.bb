@@ -1,16 +1,23 @@
-# Ka-Ro specific kernel source for NXP's linux-imx 5.10
-KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
-SRCBRANCH = "lf-5.10.y"
-SRCREV = "50f4621268ac737098ed536cdc64ad004c800aae"
+SUMMARY = "Linux Kernel for Ka-Ro electronics Computer-On-Modules"
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}-5.10/patches:${THISDIR}/${PN}-5.10:"
-SRC_URI_append = "${@ "".join(map(lambda f: " file://cfg/" + f, "${KERNEL_FEATURES}".split()))}"
+require recipes-kernel/linux/linux-karo.inc
 
-SRC_URI_append = " \
-	file://0001-lib-iov_iter-initialize-flags-in-new-pipe_buffer.patch \
-"
+DEPENDS += "lzop-native bc-native"
 
-SRC_URI_append_mx8 = " \
+LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
+
+SRCBRANCH = "lf-5.15.y-karo"
+SRCREV = "c01cf92b41552c65c5b18b2eae5a698f4a07c1e2"
+KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-5.15/patches:${THISDIR}/${PN}-5.15:"
+
+PROVIDES += "linux"
+
+SRC_URI = "${KERNEL_SRC};protocol=https;branch=${SRCBRANCH}"
+
+SRC_URI:append = "${@ "".join(map(lambda f: " file://cfg/" + f, "${KERNEL_FEATURES}".split()))}"
+
+SRC_URI:append:mx8-nxp-bsp = " \
 	file://dts/freescale/imx8m-qs8m-dsi83.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8m-qs8m-raspi-display.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8m-qs8m-tc358867.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
@@ -76,52 +83,74 @@ SRC_URI_append_mx8 = " \
 	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
 "
 
+SRC_URI:append:mx8-nxp-bsp = " \
+	file://0003-vf610-gpio.patch \
+"
+
 KARO_BOARD_PMIC ??= ""
 
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','basler',' basler.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg mx8-cam.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','tc358867',' tc358867.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' systemd.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','wifi',' wifi.cfg','',d)}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','pcie',' pcie.cfg apex.cfg','',d)}"
-KERNEL_FEATURES_append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_PMIC') != '' else ''}"
-KERNEL_FEATURES_append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' flexcan.cfg','',d)}"
-
-SRC_URI_append_mx8mm = " \
-	file://mx8mm_defconfig;subdir=git/arch/${ARCH}/configs \
+SRC_URI:append:mx8mm-nxp-bsp = " \
+	file://mx8mm_defconfig \
 "
-SRC_URI_append_mx8mn = " \
-	file://mx8mn_defconfig;subdir=git/arch/${ARCH}/configs \
+SRC_URI:append:mx8mn-nxp-bsp = " \
+	file://mx8mn_defconfig \
 "
-SRC_URI_append_mx8mp = " \
-	file://mx8mp_defconfig;subdir=git/arch/${ARCH}/configs \
+SRC_URI:append:mx8mp-nxp-bsp = " \
+	file://mx8mp_defconfig \
 "
 
-SRC_URI_append_qs8m = " \
+SRC_URI:append:qs8m = " \
 	file://0001-mx6s-capture-add-rggb8-video-format.patch \
 	file://0002-imx219-driver-zeus-version.patch \
 "
 
-KERNEL_FEATURES_append_tx8m-1620 = " no-suspend.cfg"
+KERNEL_LOCALVERSION = "${LINUX_VERSION_EXTENSION}"
+KERNEL_IMAGETYPE = "Image"
 
-# remove any defconfig added via SRC_URI
-SRC_URI_remove = "file://defconfig"
+KBUILD_DEFCONFIG:mx8mm-nxp-bsp = "mx8mm_defconfig"
+KBUILD_DEFCONFIG:mx8mn-nxp-bsp = "mx8mn_defconfig"
+KBUILD_DEFCONFIG:mx8mp-nxp-bsp = "mx8mp_defconfig"
 
-KBUILD_DEFCONFIG_mx8mm = "mx8mm_defconfig"
-KBUILD_DEFCONFIG_mx8mn = "mx8mn_defconfig"
-KBUILD_DEFCONFIG_mx8mp = "mx8mp_defconfig"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','basler',' basler.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg mx8-cam.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','tc358867',' tc358867.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' systemd.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','wifi',' wifi.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','pcie',' pcie.cfg apex.cfg','',d)}"
+KERNEL_FEATURES:append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_PMIC') != '' else ''}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' flexcan.cfg','',d)}"
 
-DEFCONFIG_PATH_mx8 = "arch/${ARCH}/configs"
+KERNEL_FEATURES:append:tx8m-1620 = " no-suspend.cfg"
 
-# with these two tasks overwritten files in kernel-source are reset,
-# so we delete them to keep our changes made by yocto
-deltask kernel_checkout
-deltask validate_branches
-deltask copy_defconfig
-deltask merge_delta_config
+COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
+
+# returns all the elements from the src uri that are .cfg files
+def find_cfgs(d):
+    sources=src_patches(d, True)
+    sources_list=[]
+    for s in sources:
+        if s.endswith('.cfg'):
+            sources_list.append(s)
+
+    return sources_list
+
+do_configure:prepend() {
+    # Add GIT revision to the local version
+    head=`git --git-dir=${S}/.git rev-parse --verify --short HEAD 2> /dev/null`
+    if ! [ -s "${S}/.scmversion" ] || ! grep -q "$head" ${S}/.scmversion;then
+        echo "+g$head" > "${S}/.scmversion"
+    fi
+    install -v "${WORKDIR}/${KBUILD_DEFCONFIG}" "${B}/.config"
+    sed -i '/CONFIG_LOCALVERSION/d' "${B}/.config"
+    echo 'CONFIG_LOCALVERSION="${KERNEL_LOCALVERSION}"' >> "${B}/.config"
+
+    for f in ${KERNEL_FEATURES};do
+        cat ${WORKDIR}/cfg/$f >> ${B}/.config
+    done
+}

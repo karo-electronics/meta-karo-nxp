@@ -11,11 +11,11 @@ DEPENDS += "flex-native bison-native dtc-native"
 require recipes-bsp/u-boot/u-boot.inc
 inherit fsl-u-boot-localversion
 
-FILESEXTRAPATHS_prepend := "${THISDIR}/${BP}/cfg:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/cfg:"
 
 PROVIDES += "u-boot"
 
-LICENSE = "GPLv2+"
+LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 PE = "1"
 
@@ -32,11 +32,11 @@ B = "${WORKDIR}/build"
 
 LOCALVERSION ?= "-5.10.9-1.0.0"
 
-SRC_URI_append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
+SRC_URI:append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
 
-EXTRA_OEMAKE_append = " V=0"
+EXTRA_OEMAKE:append = " V=0"
 
-do_configure_append() {
+do_configure:append() {
     for f in ${UBOOT_FEATURES};do
         if ! [ -f "${WORKDIR}/${f}.cfg" ];then
             bbfatal "UBOOT_FEATURE: '${WORKDIR}/${f}.cfg' not found"
@@ -44,7 +44,7 @@ do_configure_append() {
     done
 }
 
-do_deploy_append_mx8m () {
+do_deploy:append:mx8m-nxp-bsp () {
     install -d "${DEPLOYDIR}/${BOOT_TOOLS}"
 
     # Deploy u-boot-nodtb.bin and dtb file, to be packaged in boot binary by imx-boot

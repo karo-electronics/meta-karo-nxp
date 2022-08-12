@@ -1,5 +1,5 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/mkimage:"
-SRC_URI_append = " \
+FILESEXTRAPATHS:prepend := "${THISDIR}/mkimage:"
+SRC_URI:append = " \
 		file://imx8qxb0-bugfixes.patch \
 		file://make-clean-bugfix.patch \
 		file://make-dependencies.patch \
@@ -9,6 +9,6 @@ SRC_URI_append = " \
 "
 
 
-do_compile_prepend() {
+do_compile:prepend() {
     export dtbs=${UBOOT_DTB_NAME}
 }
