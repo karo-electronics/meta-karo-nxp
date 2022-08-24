@@ -1,7 +1,7 @@
 KBUILD_BUILD_USER := "support"
 KBUILD_BUILD_HOST := "karo-electronics.de"
 
-MACHINEOVERRIDES =. "imx8:imx8m:"
+MACHINEOVERRIDES =. "mx8:mx8m:"
 
 BUILD_REPRODUCIBLE_BINARIES ?= "0"
 INHERIT:remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARIES') == '0' else ''}"
@@ -97,3 +97,8 @@ PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        = "1.20.1"
 PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  = "1.20.1"
 
 PREFERRED_VERSION_opengl-es-cts:aarch64 = "3.2.7.0"
+
+# Set a more generic tuning for code reuse across parts
+# taken from fsl-imx-base.inc
+DEFAULTTUNE:mx8-nxp-bsp    ?= "armv8a-crc-crypto"
+DEFAULTTUNE:mx8m-nxp-bsp   ?= "armv8a-crc-crypto"
