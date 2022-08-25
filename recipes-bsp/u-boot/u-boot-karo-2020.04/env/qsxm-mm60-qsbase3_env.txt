@@ -1,5 +1,5 @@
-# default environment for QSXM-MM60
-append_bootargs=clk_ignore_unused debug
+# default environment for QSXM-MM60 on QSBASE3 baseboard
+append_bootargs=quiet
 autoload=no
 baseboard=qsbase3
 boot_mode=mmc
@@ -17,7 +17,7 @@ emmc_boot_part=1
 emmc_dev=0
 fastboot_dev=mmc
 fdtaddr=43000000
-fdtsave=save mmc ${mmcdev} ${fdt_addr} ${fdt_file} ${fdt_size}
+fdtsave=save mmc ${mmcdev} ${fdt_addr} /${fdt_file} ${fdt_size}
 fdt_addr=43000000
 fdt_file=imx8mm-qsxm-mm60-qsbase3.dtb
 fdt_high=63000000

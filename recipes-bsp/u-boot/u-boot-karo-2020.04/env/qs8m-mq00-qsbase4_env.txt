@@ -1,4 +1,4 @@
-# default environment for QS8M-MQ00
+# default environment for QS8M-MQ00 on QSBASE4 baseboard
 append_bootargs=quiet
 autoload=no
 baseboard=qsbase4
@@ -17,7 +17,7 @@ emmc_boot_part=1
 emmc_dev=0
 fastboot_dev=mmc
 fdtaddr=43000000
-fdtsave=save mmc ${mmcdev} ${fdt_addr} ${fdt_file} ${fdt_size}
+fdtsave=save mmc ${mmcdev} ${fdt_addr} /${fdt_file} ${fdt_size}
 fdt_addr=43000000
 fdt_file=imx8mm-qs8m-mq00-qsbase4.dtb
 fdt_high=63000000
