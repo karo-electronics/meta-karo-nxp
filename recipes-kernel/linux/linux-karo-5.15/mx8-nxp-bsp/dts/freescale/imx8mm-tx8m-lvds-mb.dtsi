@@ -87,7 +87,6 @@
 			MX8MM_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI	0x156
 			MX8MM_IOMUXC_ECSPI2_MISO_ECSPI2_MISO	0x156
 		>;
-
 	};
 
 	pinctrl_pcie: pciegrp {

@@ -9,5 +9,5 @@
 #include "imx8mp-tx8p-mb7.dtsi"
 
 / {
-	model = "Ka-Ro electronics TX8P-ML81 (NXP i.MX8MP) module on MB7 mainboard";
+	model = "Ka-Ro electronics TX8P-ML81 (NXP i.MX8MP) module on TX-Mainboard 7";
 };
