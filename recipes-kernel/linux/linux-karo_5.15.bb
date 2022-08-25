@@ -69,6 +69,7 @@ SRC_URI:append:mx8-nxp-bsp = " \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-laird.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
+	file://dts/freescale/imx8mp-qsxp-ml81-qsbase4-raspi-display.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-raspi-display.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3-tc358867.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-qsxp-ml81-qsbase3.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
