@@ -81,6 +81,9 @@ SRC_URI:append:mx8-nxp-bsp = " \
 	file://dts/freescale/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-tx8p-ml81-mb7.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-tx8p-ml81.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
+	file://dts/freescale/imx8mp-tx8p-ml82-lvds-mb.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
+	file://dts/freescale/imx8mp-tx8p-ml82-mb7.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
+	file://dts/freescale/imx8mp-tx8p-ml82.dts;subdir=git/${KERNEL_OUTPUT_DIR} \
 "
 
 SRC_URI:append:mx8-nxp-bsp = " \
