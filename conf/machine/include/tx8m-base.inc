@@ -6,8 +6,6 @@ MACHINEOVERRIDES =. "mx8:mx8m:"
 BUILD_REPRODUCIBLE_BINARIES ?= "0"
 INHERIT:remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARIES') == '0' else ''}"
 
-IMAGE_CLASSES += "st-partitions-image"
-
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
