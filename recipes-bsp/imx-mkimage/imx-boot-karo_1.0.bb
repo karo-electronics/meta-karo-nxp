@@ -1,4 +1,6 @@
-# Copyright (C) 2017-2020 NXP
+#
+# Copyright (C) 2022 Lothar Waßmann <LW@KARO-electronics.de>
+# based on meta-freescale/recipes-bsp/imx-mkimage/imx-boot_1.0.bb Copyright (C) 2017-2020 NXP
 
 require imx-mkimage_git.inc
 
@@ -183,7 +185,6 @@ do_deploy() {
         install -v -m 0644 ${DEPLOY_DIR_IMAGE}/tee.bin          ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 
-    # copy the tool mkimage to deploy path and sc fw, dcd and uboot
     # copy makefile (soc.mak) for reference
     install -v -m 0644 ${BOOT_STAGING}/soc.mak                  ${DEPLOYDIR}/${BOOT_TOOLS}
 
