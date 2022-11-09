@@ -60,10 +60,6 @@
 	pinctrl-names = "default", "sleep";
 	pinctrl-0 = <&pinctrl_eqos>;
 	pinctrl-1 = <&pinctrl_eqos_sleep>;
-	clocks = <&clk IMX8MP_CLK_ENET1_ROOT>,
-		 <&clk IMX8MP_CLK_SIM_ENET_ROOT>,
-		 <&clk IMX8MP_CLK_ENET_TIMER>,
-		 <&clk IMX8MP_CLK_ENET_REF>;
 	assigned-clocks = <&clk IMX8MP_CLK_ENET_AXI>,
 			  <&clk IMX8MP_CLK_ENET_QOS_TIMER>,
 			  <&clk IMX8MP_CLK_ENET_QOS>;
@@ -87,7 +83,12 @@
 
 		ethphy0: ethernet-phy@0 {
 			reg = <0>;
-			clocks = <&clk IMX8MP_CLK_ENET_REF>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_etnphy_int_b>;
+			interrupt-parent = <&gpio4>;
+			interrupts = <21 IRQ_TYPE_EDGE_FALLING>;
+			clocks = <&clk IMX8MP_CLK_ENET_QOS>;
+			smsc,disable-energy-detect;
 		};
 	};
 };
