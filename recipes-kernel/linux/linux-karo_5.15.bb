@@ -7,7 +7,7 @@ DEPENDS += "lzop-native bc-native"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRCBRANCH = "lf-5.15.y-karo"
-SRCREV = "c01cf92b41552c65c5b18b2eae5a698f4a07c1e2"
+SRCREV = "1bc4508ac322388f231561cd06b6d49281ac1b1c"
 KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git"
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-5.15/patches:${THISDIR}/${PN}-5.15:"
 
