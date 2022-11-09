@@ -157,3 +157,4 @@ do_configure:prepend() {
         cat ${WORKDIR}/cfg/$f >> ${B}/.config
     done
 }
+addtask do_configure before do_devshell
