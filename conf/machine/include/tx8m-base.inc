@@ -9,6 +9,14 @@ INHERIT:remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARI
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
+SOC_PREFIX = "imx8m"
+
+SOC_FAMILY ??= ""
+SOC_FAMILY:mx8mm-nxp-bsp = "imx8mm"
+SOC_FAMILY:mx8mn-nxp-bsp = "imx8mn"
+SOC_FAMILY:mx8mp-nxp-bsp = "imx8mp"
+MACHINEOVERRIDES =. "${@ "${SOC_FAMILY}:" if "${SOC_FAMILY}" != "" else ""}"
+
 MACHINE_FEATURES += "emmc"
 MACHINE_FEATURES:remove = "nxp8987"
 
@@ -24,11 +32,9 @@ UBOOT_FEATURES ??= ""
 KARO_BASEBOARD ??= ""
 UBOOT_DTB_NAME = "${@ "${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
-DTB_BASENAME:mx8mm-nxp-bsp = "imx8mm-${MACHINE}"
-DTB_BASENAME:mx8mn-nxp-bsp = "imx8mn-${MACHINE}"
-DTB_BASENAME:mx8mp-nxp-bsp = "imx8mp-${MACHINE}"
+DTB_BASENAME = "${SOC_FAMILY}-${MACHINE}"
 
-KERNEL_DEVICETREE:append := "${@ " freescale/${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
+KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
 
 BOOT_TOOLS = "imx-boot-tools"
 

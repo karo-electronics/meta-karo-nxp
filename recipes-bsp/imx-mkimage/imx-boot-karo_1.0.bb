@@ -60,13 +60,9 @@ IMXBOOT_TARGETS ?= \
 BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
 BOOT_STAGING:mx8m-nxp-bsp  = "${S}/iMX8M"
 
-SOC_FAMILY      = "INVALID"
-SOC_FAMILY:mx8-nxp-bsp  = "mx8"
-SOC_FAMILY:mx8m-nxp-bsp = "mx8m"
-
 REV_OPTION ?= ""
 
-compile_mx8m() {
+compile_imx8m() {
     local t="$1"
     bbnote 8MQ/8MM boot binary build
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
@@ -96,19 +92,6 @@ maintain a custom recipe."
     install -v "${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}" "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
 }
 
-compile_mx8() {
-    local t="$1"
-    bbnote 8QM boot binary build
-
-    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-    BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-    install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                 "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
-    if [ -e "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" ];then
-        install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
-                                                            "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
-    fi
-}
-
 do_compile() {
     install -v -d -m 0775 "${BOOT_STAGING}"
 
@@ -117,7 +100,7 @@ do_compile() {
         install -v "${DEPLOY_DIR_IMAGE}/tee.bin" "${BOOT_STAGING}"
     fi
     for type in ${UBOOT_CONFIG};do
-        compile_${SOC_FAMILY} ${type}
+        compile_${SOC_PREFIX} ${type}
         BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${type}"
 
         # mkimage for i.MX8
@@ -148,7 +131,7 @@ do_install () {
     done
 }
 
-deploy_mx8m() {
+deploy_imx8m() {
     for t in ${UBOOT_CONFIG};do
         install -v -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t} \
                                                              ${DEPLOYDIR}/${BOOT_TOOLS}
@@ -163,20 +146,6 @@ deploy_mx8m() {
     install -v -m 0755 ${BOOT_STAGING}/mkimage_uboot            ${DEPLOYDIR}/${BOOT_TOOLS}
 }
 
-deploy_mx8() {
-    install -v -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -v -m 0644 ${BOOT_STAGING}/m4_image.bin             ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -v -m 0644 ${BOOT_STAGING}/m4_1_image.bin           ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -v -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
-
-    for t in ${UBOOT_CONFIG};do
-        if [ -e "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" ];then
-            install -v -m 0644 "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
-                                                                 "${DEPLOYDIR}/${BOOT_TOOLS}"
-        fi
-    done
-}
-
 do_deploy() {
     install -v -d ${DEPLOYDIR}/${BOOT_TOOLS}
 
@@ -189,7 +158,7 @@ do_deploy() {
     install -v -m 0644 ${BOOT_STAGING}/soc.mak                  ${DEPLOYDIR}/${BOOT_TOOLS}
 
     for type in ${UBOOT_CONFIG};do
-        deploy_${SOC_FAMILY}
+        deploy_${SOC_PREFIX}
         UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${type}"
         BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${type}"
 
