@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright 2022 Lothar Waßmann <LW@KARO-electronics.de>
+ *
+ */
+
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/gpio/gpio.h>
+
+&fec1 {
+	phy-mode = "rgmii";
+	phy-handle = <&ethphy0>;
+	phy-supply = <&reg_vdd_3v3>;
+	phy-reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
+	phy-reset-duration = <25>;
+	phy-reset-post-delay = <100>;
+	status = "okay";
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		ethphy0: ethernet-phy@3 {
+			reg = <3>;
+			micrel,force-master;
+			rxd0-skew-ps = <(420 + 104)>;
+			rxd1-skew-ps = <(420 + 98)>;
+			rxd2-skew-ps = <(420 + 98)>;
+			rxd3-skew-ps = <(420 + 101)>;
+			txd0-skew-ps = <(420 + 203)>;
+			txd1-skew-ps = <(420 + 164)>;
+			txd2-skew-ps = <(420 + 149)>;
+			txd3-skew-ps = <(420 + 142)>;
+			rxdv-skew-ps = <(420 + 114)>;
+			txen-skew-ps = <(420 + 115)>;
+			rxc-skew-ps = <(900 + 140)>;
+			txc-skew-ps = <(900 + 132)>;
+		};
+	};
+};

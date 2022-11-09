@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright 2022 Lothar Waßmann <LW@KARO-electronics.de>
+ *
+ */
+
+/dts-v1/;
+
+/plugin/;
+
+&{/chosen} {
+	overlays {
+		qs8m-raspi-display;
+	};
+};
+
+&i2c2 {
+	rpi_ft5406: rpi_ft5406@38 {
+		compatible = "rpi_ft5406";
+		reg = <0x38>;
+	};
+
+	rpi_display: rpi_display@45 {
+		compatible = "rpi_display";
+		reg = <0x45>;
+	};
+};
+
+&lcdif {
+	status = "okay";
+};
+
+&mipi_dsi {
+	status = "okay";
+
+	panel@0 {
+		compatible = "raspberrypi,tc358762";
+		reg = <0>;
+		dsi-lanes = <1>;
+		video-mode = <2>;
+		panel-width-mm = <154>;
+		panel-height-mm = <86>;
+
+		port {
+			panel_from_mipi_dsi_bridge: endpoint {
+				remote-endpoint = <&mipi_dsi_bridge_to_panel>;
+			};
+		};
+	};
+
+	port@1 {
+		reg = <1>;
+
+		mipi_dsi_bridge_to_panel: endpoint {
+			remote-endpoint = <&panel_from_mipi_dsi_bridge>;
+		};
+	};
+};

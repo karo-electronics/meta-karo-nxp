@@ -2,7 +2,7 @@ SUMMARY = "Linux Kernel for Ka-Ro electronics Computer-On-Modules"
 
 require recipes-kernel/linux/linux-karo.inc
 
-DEPENDS += "lzop-native bc-native"
+DEPENDS += "lzop-native bc-native dtc-native"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
@@ -122,7 +122,7 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' b
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg mx8-cam.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
-KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg lvds.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','tc358867',' tc358867.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
@@ -159,4 +159,66 @@ addtask do_configure before do_devshell
 do_compile_dtbs() {
     oe_runmake -C ${B} DTC_FLAGS="${KERNEL_DTC_FLAGS}" ${KERNEL_DEVICETREE}
 }
-addtask do_compile_dtbs before do_compile after do_configure
+addtask do_compile_dtbs after do_configure before do_check_dtbs
+
+python do_check_dtbs () {
+    import os
+
+    def get_ovname(name):
+        pfx = d.getVar('SOC_PREFIX')
+        fam = d.getVar('SOC_FAMILY')
+        fn = []
+        for n in name.split(","):
+            if os.path.exists("%s-%s.dtb" % (fam, n)):
+                fn.append("%s-%s.dtb" % (fam, n))
+            elif os.path.exists("%s-%s.dtb" % (pfx, n)):
+                fn.append("%s-%s.dtb" % (pfx, n))
+            else:
+                bb.fatal("Overlay file '[%s,%s]-%s.dtb' not found" % (fam, pfx, n))
+        return fn
+
+    def apply_overlays(infile, outfile, overlays):
+        pfx = d.getVar('SOC_PREFIX')
+        ovlist = []
+        for f in overlays.split():
+            ovlist += get_ovname(f)
+        if len(ovlist) == 0:
+            bb.fatal("No files found for overlays %s" % overlays)
+            return
+        bb.debug(2, "ovlist=%s" % " ".join(ovlist))
+        ovfiles = " ".join(map(lambda f: "'%s'" % f, ovlist))
+        bb.debug(2, "ovfiles=%s" % ovfiles)
+        cmd = ("fdtoverlay -i '%s.dtb' -o '%s.dtb' %s" % (infile, outfile, ovfiles))
+        bb.debug(2, "%s" % cmd)
+        os.system("pwd")
+        os.system("ls -lH *.dtb | grep -v `date +%Y%m%d`")
+        if os.system("%s" % cmd):
+            bb.fatal("Failed to apply overlays %s for baseboard '%s' to '%s.dtb'" %
+                     (",".join(ovfiles.split()), baseboard, infile))
+            return
+        bb.note("FDT overlays %s for '%s' successfully applied to '%s.dtb'" %
+            (ovfiles, baseboard, infile))
+
+    here = os.getcwd()
+    baseboards = d.getVar('KARO_BASEBOARDS')
+    if baseboards == None:
+        bb.warn("KARO_BASEBOARDS is not set; cannot process FDT overlays")
+        return
+    basename = d.getVar('DTB_BASENAME')
+    if basename == None:
+        bb.warn("DTB_BASENAME is not set; cannot process FDT overlays")
+        return
+    os.chdir(os.path.join(d.getVar('B'), d.getVar('KERNEL_OUTPUT_DIR'), "dts", "freescale"))
+    for baseboard in baseboards.split():
+        bb.debug(2, "creating %s-%s.dtb from %s.dtb" % (basename, baseboard, basename))
+        outfile = "%s-%s" % (basename, baseboard)
+        overlays = " ".join(map(lambda f: f, d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True).split()))
+        bb.note("overlays_%s=%s" % (baseboard, overlays))
+        if overlays == None or len(overlays.split()) == 0:
+            bb.fatal("%s: No overlays specified for %s" % (d.getVar('MACHINE'), baseboard))
+        bb.debug(2, "overlays for %s-%s='%s'" %
+                 (basename, baseboard, "','".join(overlays.split())))
+        apply_overlays(basename, outfile, overlays)
+    os.chdir(here)
+}
+addtask do_check_dtbs after do_compile_dtbs before do_compile

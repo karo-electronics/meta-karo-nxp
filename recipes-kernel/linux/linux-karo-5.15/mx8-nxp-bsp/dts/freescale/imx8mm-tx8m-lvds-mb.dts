@@ -1,0 +1,21 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright 2022 Lothar Waßmann <LW@KARO-electronics.de>
+ *
+ */
+
+/dts-v1/;
+
+/plugin/;
+
+&{/chosen} {
+	overlays {
+		tx8m-lvds-mb;
+	};
+};
+
+&usdhc2 {
+	no-mmc;
+	voltage-ranges = <3300 3300>;
+	status = "okay";
+};

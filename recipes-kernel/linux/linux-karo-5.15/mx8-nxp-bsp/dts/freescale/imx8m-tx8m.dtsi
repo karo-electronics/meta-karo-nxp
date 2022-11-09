@@ -206,7 +206,7 @@
 	pinctrl-0 = <&pinctrl_i2c3>;
 	scl-gpios = <&gpio5 18 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
 	sda-gpios = <&gpio5 19 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-//	status = "okay";
+	status = "okay";
 };
 
 &mu {
@@ -256,7 +256,6 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
 	bus-width = <4>;
-	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
 	no-1-8-v;
 	fsl,wp-controller;
 };

@@ -26,16 +26,10 @@
 		stdout-path = "serial0:115200";
 	};
 
-	clocks {
-		#address-cells = <1>;
-		#size-cells = <0>;
-
-		audio_clk: clock@0 {
-			compatible = "fixed-clock";
-			reg = <0>;
-			#clock-cells = <0>;
-			clock-frequency = <26000000>;
-		};
+	audio_clk: audio-clock {
+		compatible = "fixed-clock";
+		#clock-cells = <0>;
+		clock-frequency = <26000000>;
 	};
 
 	memory@40000000 {

@@ -1,0 +1,23 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright 2022 Lothar Waßmann <LW@KARO-electronics.de>
+ *
+ */
+
+/dts-v1/;
+
+/plugin/;
+
+&{/chosen} {
+	overlays {
+		karo-panel-tm101jvhg32;
+	};
+};
+
+&panel {
+	compatible = "tianma,tm101jvhg32";
+	width-mm = <217>;
+	height-mm = <136>;
+	data-mapping = "vesa-24";
+	status = "okay";
+};

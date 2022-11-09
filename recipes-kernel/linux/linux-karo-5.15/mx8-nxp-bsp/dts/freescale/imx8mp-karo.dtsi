@@ -245,7 +245,6 @@
 	vmmc-supply = <&reg_vdd_3v3>;
 	vqmmc-supply = <&reg_vdd_3v3>;
 	voltage-ranges = <3300 3300>;
-	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
 	no-1-8-v;
 	fsl,wp-controller;
 };

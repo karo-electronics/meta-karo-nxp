@@ -13,9 +13,8 @@
 	compatible = "karo,imx8mp-tx8m", "fsl,imx8mp";
 
 	aliases {
-		serial0 = &uart1;
-		serial1 = &uart2;
 		serial2 = &uart4;
+		serial3 = &uart3;
 	};
 
 	reg_3v3_etn: regulator-3v3-etn {

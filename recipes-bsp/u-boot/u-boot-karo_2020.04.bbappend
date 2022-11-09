@@ -50,3 +50,34 @@ SRC_URI:append = " \
 	file://dts/imx8mp-tx8p-ml82-u-boot.dtsi;subdir=git/arch/arm \
 	file://dts/imx8mp-tx8p-ml82.dts;subdir=git/arch/arm \
 "
+
+require conf/machine/include/${SOC_PREFIX}-overlays.inc
+
+UBOOT_BOARD_DIR = "board/karo/tx8m"
+
+python do_env_overlays () {
+    import os
+    import shutil
+
+    if d.getVar('KARO_BASEBOARDS') == None:
+        bb.warn("KARO_BASEBOARDS is undefined")
+        return 1
+    src_file = "%s/%s/%s_env.txt" % (d.getVar('S'), d.getVar('UBOOT_BOARD_DIR'), d.getVar('MACHINE'))
+    dst_dir = "%s/%s_config/%s" % (d.getVar('B'), d.getVar('MACHINE'), d.getVar('UBOOT_BOARD_DIR'))
+    bb.utils.mkdirhier(dst_dir)
+    env_file = os.path.join(dst_dir, os.path.basename(src_file))
+    shutil.copyfile(src_file, env_file)
+    f = open(env_file, 'a')
+    for baseboard in d.getVar('KARO_BASEBOARDS').split():
+        ovlist = d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True)
+        if ovlist == None:
+            bb.note("No overlays defined for '%s' on baseboard '%s'" % (d.getVar('MACHINE'), baseboard))
+            continue
+        overlays = " ".join(map(lambda f: f, ovlist.split()))
+        bb.note("Adding overlays_%s='%s' to %s" % (baseboard, overlays, env_file))
+        f.write("overlays_%s=%s\n" %(baseboard, overlays))
+    f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
+    f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
+    f.close()
+}
+addtask do_env_overlays before do_compile after do_configure
