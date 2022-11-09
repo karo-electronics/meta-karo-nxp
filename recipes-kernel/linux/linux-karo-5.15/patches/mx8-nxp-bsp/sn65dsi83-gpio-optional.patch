@@ -1,0 +1,23 @@
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi83.c b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+index a32f70bc68ea..0d28cb653a13 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi83.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi83.c
+@@ -293,6 +293,9 @@ static void sn65dsi83_atomic_pre_enable(struct drm_bridge *bridge,
+ {
+ 	struct sn65dsi83 *ctx = bridge_to_sn65dsi83(bridge);
+ 
++	if (!ctx->enable_gpio)
++		return;
++
+ 	/*
+ 	 * Reset the chip, pull EN line low for t_reset=10ms,
+ 	 * then high for t_en=1ms.
+@@ -671,7 +674,7 @@ static int sn65dsi83_probe(struct i2c_client *client,
+ 		model = id->driver_data;
+ 	}
+ 
+-	ctx->enable_gpio = devm_gpiod_get(ctx->dev, "enable", GPIOD_OUT_LOW);
++	ctx->enable_gpio = devm_gpiod_get_optional(ctx->dev, "enable", GPIOD_OUT_LOW);
+ 	if (IS_ERR(ctx->enable_gpio))
+ 		return PTR_ERR(ctx->enable_gpio);
+ 
