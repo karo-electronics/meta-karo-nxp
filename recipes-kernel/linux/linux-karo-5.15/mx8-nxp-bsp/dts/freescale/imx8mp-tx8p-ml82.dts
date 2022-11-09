@@ -10,7 +10,7 @@
 
 / {
 	model = "Ka-Ro electronics TX8P-ML82 (NXP i.MX8MP) module";
-	compatible = "karo,imx8mp-tx8m", "fsl,imx8mp";
+	compatible = "karo,tx8p-ml82", "karo,imx8mp-tx8m", "fsl,imx8mp";
 
 	aliases {
 		serial2 = &uart4;
