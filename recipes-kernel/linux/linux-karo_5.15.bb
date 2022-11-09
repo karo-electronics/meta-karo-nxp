@@ -158,3 +158,8 @@ do_configure:prepend() {
     done
 }
 addtask do_configure before do_devshell
+
+do_compile_dtbs() {
+    oe_runmake -C ${B} DTC_FLAGS="${KERNEL_DTC_FLAGS}" ${KERNEL_DEVICETREE}
+}
+addtask do_compile_dtbs before do_compile after do_configure
