@@ -17,6 +17,9 @@ SRC_URI = "${KERNEL_SRC};protocol=https;branch=${SRCBRANCH}"
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://cfg/" + f, "${KERNEL_FEATURES}".split()))}"
 
+# automatically add all .dts files referenced by ${KERNEL_DEVICETREE} to SRC_URI
+SRC_URI:append:mx8-nxp-bsp = "${@"".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"
+
 SRC_URI:append:mx8-nxp-bsp = " \
 	file://dts/freescale/imx8m-qs8m-dsi83.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8m-qs8m-raspi-display.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
