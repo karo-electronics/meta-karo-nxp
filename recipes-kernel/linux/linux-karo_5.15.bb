@@ -136,6 +136,9 @@ KERNEL_FEATURES:append:tx8m-1620 = " no-suspend.cfg"
 
 COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
 
+EXTRA_OEMAKE:append = " V=0"
+KERNEL_DTC_FLAGS += "-@"
+
 # returns all the elements from the src uri that are .cfg files
 def find_cfgs(d):
     sources=src_patches(d, True)
