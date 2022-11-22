@@ -41,68 +41,61 @@ SRC_URI:append = "${@ "".join(map(lambda f: " file://u-boot-cfg.%s" % f, d.getVa
 
 EXTRA_OEMAKE:append = " V=0"
 
-do_patch:append() {
-    import shutil
-
-    def concat_file(src, dst):
-        bb.note("Appending '%s' to '%s'" % (src, dst))
-        r = open(src, 'r')
-        f = open(dst, 'a')
-        f.write(r.read())
-
-    if d.getVar('UBOOT_CONFIG') != "":
-        i = 0
-        for config in d.getVar('UBOOT_MACHINE').split():
-            j = 0
-            for type in d.getVar('UBOOT_CONFIG').split():
-                if i == j:
-                    c = config.replace("_config", "_defconfig")
-                    bb.note("Installing '%s' to '%s'" % (d.getVar('MACHINE') + "_defconfig.template", os.path.join(d.getVar('S'), "configs", c)))
-                    shutil.copyfile(d.getVar('MACHINE') + "_defconfig.template", os.path.join(d.getVar('S'), "configs", c))
-                    if os.path.exists("u-boot-cfg.%s" % type):
-                        bb.note("Appending '%s' specific config to '%s/configs/%s'" % (type, d.getVar('S'), c))
-                        concat_file("u-boot-cfg.%s" % type, os.path.join(d.getVar('S'), "configs", c))
-                j += 1
-            i += 1
-    else:
-        shutil.copyfile(d.getVar('MACHINE') + "_defconfig.template", os.path.join(d.getVar('S'), "configs", d.getVar('MACHINE') + "_defconfig"))
-}
-
 do_configure:prepend() {
-    for f in ${UBOOT_FEATURES};do
-        if ! [ -f "${WORKDIR}/${f}.cfg" ];then
-            bbfatal "UBOOT_FEATURE: '${WORKDIR}/${f}.cfg' not found"
-        fi
-    done
+    if [ -n "${UBOOT_CONFIG}" ];then
+        i=0
+        for config in ${UBOOT_MACHINE};do
+            i=$(expr $i + 1)
+            j=0
+            for type in ${UBOOT_CONFIG};do
+                j=$(expr $j + 1)
+                [ $j -lt $i ] && continue
+                c="`echo "$config" | sed 's/_config/_defconfig/'`"
+                bbnote "Copying '${MACHINE}_defconfig.template' to '${S}/configs/${c}'"
+                cp "${WORKDIR}/${MACHINE}_defconfig.template" "${S}/configs/${c}"
+                if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
+                    bbnote "Appending '$type' specific config to '${S}/configs/${c}'"
+                    cat "${WORKDIR}/u-boot-cfg.${type}" >> "${S}/configs/${c}"
+                fi
+                break
+            done
+        done
+        unset i j
+    else
+        cp "${WORKDIR}/${MACHINE}_defconfig.template" "${S}/configs/${MACHINE}_defconfig"
+    fi
 }
 
 do_configure:append() {
+    tmpfile="`mktemp cfg-XXXXXX.tmp`"
     if [ "${KARO_BASEBOARD}" != "" ];then
-        tmpfile="`mktemp cfg-XXXXXX.tmp`"
         if [ -z "$tmpfile" ];then
             bbfatal "Failed to create tmpfile"
         fi
         cat <<EOF >> "$tmpfile"
 CONFIG_DEFAULT_DEVICE_TREE="${DTB_BASENAME}-${KARO_BASEBOARD}"
-CONFIG_DEFAULT_ENV_FILE="board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}"
 EOF
-        if [ -n "${UBOOT_CONFIG}" ];then
-            for config in ${UBOOT_MACHINE};do
-                c="${B}/${config}"
-                merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
-                oe_runmake -C ${c} oldconfig
-            done
-        else
-            merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
-            oe_runmake -C ${c}/${config} oldconfig
-        fi
-        rm -f "$tmpfile"
-
         grep -q "${DTB_BASENAME}-${KARO_BASEBOARD}\.dtb" ${S}/arch/arm/dts/Makefile || \
                 sed -i '/^targets /i\
 dtb-y += ${DTB_BASENAME}-${KARO_BASEBOARD}.dtb\
 ' ${S}/arch/arm/dts/Makefile
     fi
+    if [ "${UBOOT_ENV_FILE}" != "${MACHINE}_env.txt" ];then
+        cat <<EOF >> "$tmpfile"
+CONFIG_DEFAULT_ENV_FILE="board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}"
+EOF
+    fi
+    if [ -n "${UBOOT_CONFIG}" ];then
+        for config in ${UBOOT_MACHINE};do
+            c="${B}/${config}"
+            merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
+            oe_runmake -C ${c} oldconfig
+        done
+    else
+        merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
+        oe_runmake -C "${B}" oldconfig
+    fi
+    rm -f "$tmpfile"
 }
 
 do_deploy:append:mx8m-nxp-bsp () {
@@ -121,9 +114,12 @@ do_deploy:append:mx8m-nxp-bsp () {
                     install -m 0644 "${B}/${config}/u-boot-nodtb.bin" "${DEPLOYDIR}/${BOOT_TOOLS}/u-boot-nodtb.${UBOOT_SUFFIX}-${MACHINE}-${type}"
                 fi
             done
-            unset  j
+            unset j
         done
-        unset  i
+        unset i
+    else
+        install -m 0644 "${B}/arch/arm/dts/${UBOOT_DTB_NAME}" "${DEPLOYDIR}/${BOOT_TOOLS}"
+        install -m 0644 "${B}/u-boot-nodtb.bin" "${DEPLOYDIR}/${BOOT_TOOLS}/u-boot-nodtb.${UBOOT_SUFFIX}-${MACHINE}-${type}"
     fi
 }
 
@@ -131,10 +127,12 @@ do_savedefconfig() {
     if [ -n "${UBOOT_CONFIG}" ];then
         for config in ${UBOOT_MACHINE};do
             bbplain "Saving defconfig to:\n${B}/${config}/defconfig"
+            oe_runmake -C ${B}/${config} oldconfig
             oe_runmake -C ${B}/${config} savedefconfig
         done
     else
         bbplain "Saving defconfig to:\n${B}/defconfig"
+        oe_runmake -C ${B} oldconfig
         oe_runmake -C ${B} savedefconfig
     fi
 }

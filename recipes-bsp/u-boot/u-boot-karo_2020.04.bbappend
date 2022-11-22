@@ -50,24 +50,3 @@ SRC_URI:append = " \
 	file://dts/imx8mp-tx8p-ml82-u-boot.dtsi;subdir=git/arch/arm \
 	file://dts/imx8mp-tx8p-ml82.dts;subdir=git/arch/arm \
 "
-
-do_configure:append:mx8m-nxp-bsp () {
-    if [ -n "${UBOOT_CONFIG}" ];then
-        for config in ${UBOOT_MACHINE};do
-            c="${B}/${config}"
-            if [ "${KARO_BASEBOARD}" != "" ];then
-                tmpfile="`mktemp cfg-XXXXXX.tmp`"
-                if [ -z "$tmpfile" ];then
-                    bbfatal "Failed to create tmpfile"
-                fi
-                cat <<EOF >> "$tmpfile"
-CONFIG_DEFAULT_DEVICE_TREE="${DTB_BASENAME}-${KARO_BASEBOARD}"
-CONFIG_DEFAULT_ENV_FILE="board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}"
-EOF
-                merge_config.sh -m -r -O "${B}/${config}" "${c}/.config" "$tmpfile"
-                rm -f "$tmpfile"
-            fi
-        done
-    fi
-}
-addtask do_configure before do_devshell
