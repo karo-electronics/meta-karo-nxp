@@ -22,7 +22,7 @@ PE = "1"
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "lf_v2020.04-karo"
-SRCREV = "d3987c4f40889be73aed0ecde9188bc1d2fdc0c8"
+SRCREV = "1be81b1938975adc6be7073df0ae5005fb4268cd"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
