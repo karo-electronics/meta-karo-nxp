@@ -54,6 +54,7 @@ SRC_URI:append = " \
 require conf/machine/include/${SOC_PREFIX}-overlays.inc
 
 UBOOT_BOARD_DIR = "board/karo/tx8m"
+UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 
 python do_env_overlays () {
     import os
