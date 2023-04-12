@@ -36,7 +36,9 @@ SRC_URI:append:mx8m-nxp-bsp = " file://${MACHINE}_env.txt;subdir=git/board/karo/
 SRC_URI:append = "${@ " file://dts/${UBOOT_DTB_NAME}".replace(".dtb", ".dts") + ";subdir=git/arch/arm"}"
 SRC_URI:append = "${@ " file://dts/${UBOOT_DTB_NAME}".replace(".dtb", "-u-boot.dtsi") + ";subdir=git/arch/arm"}"
 
-SRC_URI:append = " file://${MACHINE}_defconfig.template"
+SRC_URI:append = " file://u-boot-cfg.${SOC_PREFIX}"
+SRC_URI:append = " file://u-boot-cfg.${SOC_FAMILY}"
+SRC_URI:append = " file://u-boot-cfg.${MACHINE}"
 SRC_URI:append = "${@ "".join(map(lambda f: " file://u-boot-cfg.%s" % f, d.getVar('UBOOT_CONFIG').split()))}"
 
 EXTRA_OEMAKE:append = " V=0"
@@ -51,8 +53,12 @@ do_configure:prepend() {
                 j=$(expr $j + 1)
                 [ $j -lt $i ] && continue
                 c="`echo "$config" | sed 's/_config/_defconfig/'`"
-                bbnote "Copying '${MACHINE}_defconfig.template' to '${S}/configs/${c}'"
-                cp "${WORKDIR}/${MACHINE}_defconfig.template" "${S}/configs/${c}"
+                bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to '${S}/configs/${c}'"
+                cp "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${S}/configs/${c}"
+                bbnote "Appending '${SOC_FAMILY}' specific config to '${S}/configs/${c}'"
+                cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${c}"
+                bbnote "Appending '${MACHINE}' specific config to '${S}/configs/${c}'"
+                cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${S}/configs/${c}"
                 if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
                     bbnote "Appending '$type' specific config to '${S}/configs/${c}'"
                     cat "${WORKDIR}/u-boot-cfg.${type}" >> "${S}/configs/${c}"
@@ -62,7 +68,12 @@ do_configure:prepend() {
         done
         unset i j
     else
-        cp "${WORKDIR}/${MACHINE}_defconfig.template" "${S}/configs/${MACHINE}_defconfig"
+        bbnote "Copying 'u-boot-cfg.${MACHINE}' to '${S}/configs/${MACHINE}_defconfig'"
+        cp "${WORKDIR}/u-boot-cfg.${MACHINE}" "${S}/configs/${MACHINE}_defconfig"
+        bbnote "Appending '${SOC_FAMILY}' specific config to '${S}/configs/${MACHINE}_defconfig'"
+        cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${MACHINE}_defconfig"
+        bbnote "Appending '${MACHINE}' specific config to '${S}/configs/${MACHINE}_defconfig'"
+        cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${S}/configs/${MACHINE}_defconfig"
     fi
 }
 
@@ -129,16 +140,19 @@ check_cnf() {
 
 do_check_config() {
     bbnote "Checking defconfig consistency"
-    template="${WORKDIR}/${MACHINE}_defconfig.template"
     if [ -n "${UBOOT_CONFIG}" ];then
         i=0
         for config in ${UBOOT_MACHINE};do
             i=$(expr $i + 1)
             c="${B}/${config}"
-            merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
-            #cp "${template}" "${c}/.config"
-            oe_runmake -C "${c}" oldconfig
-            check_cnf "${template}" "${c}"
+            cp -v "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${c}/.config"
+            #oe_runmake -C "${c}" oldconfig
+            #check_cnf "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${c}"
+            merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+            #oe_runmake -C "${c}" oldconfig
+            #check_cnf "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" "${c}"
+            merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+            #oe_runmake -C "${c}" oldconfig
             j=0
             for type in ${UBOOT_CONFIG};do
                 j=$(expr $j + 1)
@@ -147,17 +161,23 @@ do_check_config() {
                     bbnote "Appending '$type' specific config to '$(basename "${c}")/.config'"
                     #cat "${WORKDIR}/u-boot-cfg.${type}" >> "${c}/.config"
                     merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${type}"
-                    oe_runmake -C "${c}" oldconfig
+                    #oe_runmake -C "${c}" oldconfig
                     check_cnf "${WORKDIR}/u-boot-cfg.${type}" "${c}"
                 fi
                 break
             done
+            #oe_runmake -C "${c}" oldconfig
+            check_cnf "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${c}"
+            check_cnf "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" "${c}"
+            check_cnf "${WORKDIR}/u-boot-cfg.${MACHINE}" "${c}"
         done
     else
-        merge_config.sh -m -r -O "${B}" "${B}/.config" "${template}"
-        #cp "${template}" "${B}/.config"
-        oe_runmake -C "${B}" oldconfig
-        check_cnf "${template}" "${B}"
+        cp -v "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${B}/.config"
+        merge_config.sh -m -r -O "${B}" "${B}/.config" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+        merge_config.sh -m -r -O "${B}" "${B}/.config" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+        check_cnf "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${B}"
+        check_cnf "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" "${B}"
+        check_cnf "${WORKDIR}/u-boot-cfg.${MACHINE}" "${B}"
     fi
 }
 addtask do_check_config after do_savedefconfig

@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}:${THISDIR}/${BP}/patches:${THISDIR}/${BP}/env:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}:${THISDIR}/${BP}/patches:"
 SRC_URI:append = " \
 	file://karo.bmp;subdir=git/tools/logos \
 "
@@ -55,6 +55,7 @@ require conf/machine/include/${SOC_PREFIX}-overlays.inc
 
 UBOOT_BOARD_DIR = "board/karo/tx8m"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
+UBOOT_FEATURES:append = " fastboot"
 
 python do_env_overlays () {
     import os
