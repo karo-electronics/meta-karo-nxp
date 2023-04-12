@@ -1,6 +1,7 @@
 SRC_URI:append = " \
         file://sn65dsi83-gpio-optional.patch \
         file://sec-dsim-bugfixes.patch \
+        file://fix-missing-drm-imx-dependency.patch \
 "
 
 SRC_URI:append:mx8m-nxp-bsp = "${@ "".join(map(lambda f: " file://dts/freescale/overlays/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"

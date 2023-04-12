@@ -1,0 +1,13 @@
+diff --git a/drivers/gpu/drm/imx/Kconfig b/drivers/gpu/drm/imx/Kconfig
+index fc746adfab10..1a533da15610 100644
+--- a/drivers/gpu/drm/imx/Kconfig
++++ b/drivers/gpu/drm/imx/Kconfig
+@@ -6,7 +6,7 @@ config DRM_IMX
+ 	select DRM_GEM_CMA_HELPER
+ 	select DRM_KMS_CMA_HELPER
+ 	depends on DRM && (ARCH_MXC || ARCH_MULTIPLATFORM || COMPILE_TEST)
+-	depends on IMX_IPUV3_CORE || IMX_DPU_CORE || IMX_LCDIF_CORE
++	depends on IMX_IPUV3_CORE || IMX_DPU_CORE || IMX_LCDIF_CORE || IMX_LCDIFV3_CORE
+ 	help
+ 	  enable i.MX graphics support
+ 
