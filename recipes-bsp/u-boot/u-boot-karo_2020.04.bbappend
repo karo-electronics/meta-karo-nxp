@@ -62,22 +62,31 @@ python do_env_overlays () {
     if d.getVar('KARO_BASEBOARDS') == None:
         bb.warn("KARO_BASEBOARDS is undefined")
         return 1
-    src_file = "%s/%s/%s_env.txt" % (d.getVar('S'), d.getVar('UBOOT_BOARD_DIR'), d.getVar('MACHINE'))
-    dst_dir = "%s/%s_config/%s" % (d.getVar('B'), d.getVar('MACHINE'), d.getVar('UBOOT_BOARD_DIR'))
-    bb.utils.mkdirhier(dst_dir)
-    env_file = os.path.join(dst_dir, os.path.basename(src_file))
-    shutil.copyfile(src_file, env_file)
-    f = open(env_file, 'a')
-    for baseboard in d.getVar('KARO_BASEBOARDS').split():
-        ovlist = d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True)
-        if ovlist == None:
-            bb.note("No overlays defined for '%s' on baseboard '%s'" % (d.getVar('MACHINE'), baseboard))
-            continue
-        overlays = " ".join(map(lambda f: f, ovlist.split()))
-        bb.note("Adding overlays_%s='%s' to %s" % (baseboard, overlays, env_file))
-        f.write("overlays_%s=%s\n" %(baseboard, overlays))
-    f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
-    f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
-    f.close()
+
+    def update_env_file (src_file, dst_dir):
+        bb.utils.mkdirhier(dst_dir)
+        env_file = os.path.join(dst_dir, os.path.basename(src_file))
+        shutil.copyfile(src_file, env_file)
+        f = open(env_file, 'a')
+        for baseboard in d.getVar('KARO_BASEBOARDS').split():
+            ovlist = d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True)
+            if ovlist == None:
+                bb.note("No overlays defined for '%s' on baseboard '%s'" % (d.getVar('MACHINE'), baseboard))
+                continue
+            overlays = " ".join(map(lambda f: f, ovlist.split()))
+            bb.note("Adding overlays_%s='%s' to %s" % (baseboard, overlays, env_file))
+            f.write("overlays_%s=%s\n" %(baseboard, overlays))
+        f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
+        f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
+        f.close()
+
+    src_file = os.path.join(d.getVar('S'), d.getVar('UBOOT_BOARD_DIR'), d.getVar('UBOOT_ENV_FILE'))
+    if d.getVar('UBOOT_CONFIG') != None:
+        for config in d.getVar('UBOOT_MACHINE').split():
+            dst_dir = os.path.join(d.getVar('B'), config, d.getVar('UBOOT_BOARD_DIR'))
+            update_env_file(src_file, dst_dir)
+    else:
+        dst_dir = os.path.join(d.getVar('B'), d.getVar('UBOOT_BOARD_DIR'))
+        update_env_file(src_file, dst_dir)
 }
 addtask do_env_overlays before do_compile after do_configure
