@@ -55,7 +55,6 @@ KBUILD_DEFCONFIG:mx8mm-nxp-bsp = "mx8mm_defconfig"
 KBUILD_DEFCONFIG:mx8mn-nxp-bsp = "mx8mn_defconfig"
 KBUILD_DEFCONFIG:mx8mp-nxp-bsp = "mx8mp_defconfig"
 
-KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','basler',' basler.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg mx8-cam.cfg','',d)}"
