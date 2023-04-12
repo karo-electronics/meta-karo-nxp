@@ -9,10 +9,6 @@
 	/delete-property/ assigned-clocks;
 };
 
-&eqos {
-	compatible = "fsl,imx-eqos";
-};
-
 &uart2 {
 	u-boot,dm-spl;
 };
