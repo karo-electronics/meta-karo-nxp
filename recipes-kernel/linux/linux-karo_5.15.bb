@@ -139,16 +139,6 @@ COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
 EXTRA_OEMAKE:append = " V=0"
 KERNEL_DTC_FLAGS += "-@"
 
-# returns all the elements from the src uri that are .cfg files
-def find_cfgs(d):
-    sources=src_patches(d, True)
-    sources_list=[]
-    for s in sources:
-        if s.endswith('.cfg'):
-            sources_list.append(s)
-
-    return sources_list
-
 do_configure:prepend() {
     # Add GIT revision to the local version
     head=`git --git-dir=${S}/.git rev-parse --verify --short HEAD 2> /dev/null`
