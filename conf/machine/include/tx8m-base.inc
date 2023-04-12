@@ -47,7 +47,7 @@ ATF_PLATFORM ?= "imx8mm"
 ATF_LOAD_ADDR ?= "0x920000"
 
 # Set Serial console
-SERIAL_CONSOLES = "115200;ttymxc0 115200;ttymxc1 115200;ttymxc2"
+SERIAL_CONSOLES ?= "115200;ttymxc0 115200;ttymxc1 115200;ttymxc2"
 # for imx-atf
 IMX_BOOT_UART_BASE ?= "0x30860000"
 
