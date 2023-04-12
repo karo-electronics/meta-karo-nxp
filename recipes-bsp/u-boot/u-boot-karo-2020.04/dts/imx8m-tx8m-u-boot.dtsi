@@ -31,10 +31,6 @@
 	u-boot,dm-spl;
 };
 
-&clk {
-	u-boot,dm-spl;
-};
-
 &gpio1 {
 	u-boot,dm-spl;
 };
@@ -82,6 +78,14 @@
 };
 
 &pinctrl_i2c1 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_uart1 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_uart2 {
 	u-boot,dm-spl;
 };
 

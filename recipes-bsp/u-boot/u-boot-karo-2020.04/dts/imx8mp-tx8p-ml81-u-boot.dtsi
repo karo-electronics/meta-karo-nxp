@@ -5,10 +5,6 @@
  */
 #include "imx8mp-tx8p-u-boot.dtsi"
 
-&clk {
-	/delete-property/ assigned-clocks;
-};
-
 &uart2 {
 	u-boot,dm-spl;
 };

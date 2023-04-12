@@ -50,6 +50,13 @@
 	status = "disabled";
 };
 
+&pinctrl_uart3 {
+	fsl,pins = <
+		MX8MM_IOMUXC_UART3_RXD_UART3_DCE_RX		0x140
+		MX8MM_IOMUXC_UART3_TXD_UART3_DCE_TX		0x140
+	>;
+};
+
 &pinctrl_usdhc1 {
 	fsl,pins = <
 		MX8MM_IOMUXC_SD1_CLK_USDHC1_CLK			0x190
@@ -79,7 +86,7 @@
 
 &uart3 {
 	/delete-property/uart-has-rtscts;
-	pinctrl-0 = <&pinctrl_uart3_qs8m>;
+	pinctrl-0 = <&pinctrl_uart3>;
 };
 
 &iomuxc {

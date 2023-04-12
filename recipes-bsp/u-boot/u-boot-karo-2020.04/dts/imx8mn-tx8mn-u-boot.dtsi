@@ -5,6 +5,10 @@
  */
 #include "imx8m-tx8m-u-boot.dtsi"
 
+&pinctrl_uart3 {
+	u-boot,dm-spl;
+};
+
 &pinctrl_usdhc1 {
 	u-boot,dm-spl;
 };
