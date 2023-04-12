@@ -11,6 +11,7 @@ bootcmd_nfs=run loadkernel bootargs_nfs
 bootdelay=1
 bootm_cmd=booti ${loadaddr} ${initrd_addr} ${fdt_addr}
 console=ttymxc0,115200 earlycon=ec_imx6q,0x30890000,115200
+debug_overlays=y
 default_bootargs=setenv bootargs console=${console} panic=-1 ro
 emmc_boot_ack=1
 emmc_boot_part=1
