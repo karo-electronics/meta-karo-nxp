@@ -133,6 +133,7 @@ KERNEL_FEATURES:append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_P
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' flexcan.cfg','',d)}"
 
 KERNEL_FEATURES:append:tx8m-1620 = " no-suspend.cfg"
+KERNEL_FEATURES:append:tx8m-1622 = " no-suspend.cfg"
 
 COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
 
