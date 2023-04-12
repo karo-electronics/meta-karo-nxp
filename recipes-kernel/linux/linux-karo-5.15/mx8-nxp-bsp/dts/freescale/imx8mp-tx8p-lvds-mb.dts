@@ -20,7 +20,7 @@
 &backlight {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwmbl_en>;
-	pwms = <&pwm1 0 500000>;
+	pwms = <&pwm1 0 50000>;
 	turn-on-delay-ms = <35>;
 	enable-gpios = <&gpio1 4 GPIO_ACTIVE_HIGH>;
 };

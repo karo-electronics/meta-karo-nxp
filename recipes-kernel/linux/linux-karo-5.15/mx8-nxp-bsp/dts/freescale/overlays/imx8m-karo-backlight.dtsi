@@ -10,7 +10,7 @@
 	backlight: backlight {
 		compatible = "pwm-backlight";
 		power-supply = <&reg_vdd_3v3>;
-		pwms = <&pwm1 0 500000>;
+		pwms = <&pwm1 0 50000>;
 		turn-on-delay-ms = <35>;
 		brightness-levels = < 0	 1  2  3  4  5	6  7  8	 9
 				     10 11 12 13 14 15 16 17 18 19
