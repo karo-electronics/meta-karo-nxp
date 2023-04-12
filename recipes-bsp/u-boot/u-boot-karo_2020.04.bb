@@ -98,6 +98,71 @@ EOF
     rm -f "$tmpfile"
 }
 
+check_cnf() {
+    local src="$1"
+    local cfg="$2"
+    local applied=$(fgrep -f "$src" "${cfg}/.config" | wc -l)
+    local configured=$(cat "$src" | wc -l)
+    if [ $applied != $configured ];then
+        bbwarn "The following items of '$(basename "$src")' have not been accepted by Kconfig"
+        bbwarn ">>>$(fgrep -f "$src" "${cfg}/.config" | fgrep -vf - "$src")<<<"
+        local p="$(fgrep -f "$src" "${cfg}/.config" | fgrep -vf - "$src" | \
+                sed 's/^# //;s/[= ].*$//')"
+        local pat
+        for pat in $p;do
+            if grep -q "$pat" "${cfg}/.config";then
+                bbwarn "Actual Kconfig value of '$pat' is: '$(grep "$pat" "${cfg}/.config")'"
+            else
+                bbwarn "'$pat' is not present in '$(basename "$cfg")/.config"
+            fi
+        done
+        applied="$(fgrep -f "$src" "${cfg}/defconfig" | wc -l)"
+        if [ $applied != $configured ];then
+            p="$(fgrep -f "$src" "${cfg}/defconfig" | fgrep -vf - "$src" | \
+                    sed 's/^# //;s/[= ].*$//')"
+            for pat in $p;do
+                bbwarn "'$(fgrep "$pat" "$src")' is obsolete in '$(basename "$src")'"
+            done
+        fi
+    fi
+}
+
+do_check_config() {
+    bbnote "Checking defconfig consistency"
+    template="${WORKDIR}/${MACHINE}_defconfig.template"
+    if [ -n "${UBOOT_CONFIG}" ];then
+        i=0
+        for config in ${UBOOT_MACHINE};do
+            i=$(expr $i + 1)
+            c="${B}/${config}"
+            merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
+            #cp "${template}" "${c}/.config"
+            oe_runmake -C "${c}" oldconfig
+            check_cnf "${template}" "${c}"
+            j=0
+            for type in ${UBOOT_CONFIG};do
+                j=$(expr $j + 1)
+                [ $j = $i ] || continue
+                if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
+                    bbnote "Appending '$type' specific config to '$(basename "${c}")/.config'"
+                    #cat "${WORKDIR}/u-boot-cfg.${type}" >> "${c}/.config"
+                    merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${type}"
+                    oe_runmake -C "${c}" oldconfig
+                    check_cnf "${WORKDIR}/u-boot-cfg.${type}" "${c}"
+                fi
+                break
+            done
+        done
+    else
+        merge_config.sh -m -r -O "${B}" "${B}/.config" "${template}"
+        #cp "${template}" "${B}/.config"
+        oe_runmake -C "${B}" oldconfig
+        check_cnf "${template}" "${B}"
+    fi
+}
+addtask do_check_config after do_savedefconfig
+do_check_config[nostamp] = "1"
+
 do_deploy:append:mx8m-nxp-bsp () {
     install -d "${DEPLOYDIR}/${BOOT_TOOLS}"
 
