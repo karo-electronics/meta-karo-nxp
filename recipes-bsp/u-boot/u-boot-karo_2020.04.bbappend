@@ -75,7 +75,7 @@ python do_env_overlays () {
             if ovlist == None:
                 bb.note("No overlays defined for '%s' on baseboard '%s'" % (d.getVar('MACHINE'), baseboard))
                 continue
-            overlays = " ".join(map(lambda f: f, ovlist.split()))
+            overlays = " ".join(map(lambda f: f if f.find(',') < 0 else f.split(',')[0], ovlist.split()))
             bb.note("Adding overlays_%s='%s' to %s" % (baseboard, overlays, env_file))
             f.write("overlays_%s=%s\n" %(baseboard, overlays))
         f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
