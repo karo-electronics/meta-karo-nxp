@@ -154,9 +154,9 @@ KARO_DTB_OVERLAYS[lvds-mb] = "\
 KARO_DTB_OVERLAYS[mipi-mb] = "\
         ${@ mach_overlay(d, "karo-copro:", dist="copro")} \
         karo-gpu \
-        karo-dsi83 \
-        karo-lvds-panel \
-        karo-panel-tm101jvhg32 \
+        ${@ mach_overlay(d, ":karo-dsi83", "tx8m-1622")} \
+        ${@ mach_overlay(d, ":karo-lvds-panel", "tx8m-1622")} \
+        ${@ mach_overlay(d, ":karo-panel-tm101jvhg32", "tx8m-1622")} \
         karo-rtc \
         tx8m-leds \
         tx8m-sound \
