@@ -15,7 +15,7 @@ def get_overlays(d):
     if d.getVar('KARO_BASEBOARDS') != None:
         for b in d.getVar('KARO_BASEBOARDS').split():
             bb.debug(2, "baseboard='%s'" % b)
-            o = d.getVarFlag('KARO_DTB_OVERLAYS', b, True) or ()
+            o = d.getVar('DTB_OVERLAYS', True) or ()
             bb.debug(2, "DTB_OVERLAYS[%s]='%s'" % (b, " ".join(o.split())))
             for ov in o.split():
                 bb.debug(2, "ov='%s'" % ov)
