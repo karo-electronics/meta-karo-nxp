@@ -1,8 +1,8 @@
 diff --git a/drivers/gpu/drm/imx/sec_mipi_dsim-imx.c b/drivers/gpu/drm/imx/sec_mipi_dsim-imx.c
-index cd80096477b0..274269eef517 100644
+index 4542b1ddc219..cec26095a61e 100644
 --- a/drivers/gpu/drm/imx/sec_mipi_dsim-imx.c
 +++ b/drivers/gpu/drm/imx/sec_mipi_dsim-imx.c
-@@ -450,13 +450,22 @@ static int imx_sec_dsim_probe(struct platform_device *pdev)
+@@ -450,19 +450,21 @@ static int imx_sec_dsim_probe(struct platform_device *pdev)
  
  	ret = sec_dsim_of_parse_resets(dsim_dev);
  	if (ret)
@@ -13,17 +13,20 @@ index cd80096477b0..274269eef517 100644
  
  	pm_runtime_enable(dev);
  
--	return component_add(dev, &imx_sec_dsim_ops);
-+	ret = component_add(dev, &imx_sec_dsim_ops);
+ 	ret = component_add(dev, &imx_sec_dsim_ops);
+-	if (ret) {
+-		pm_runtime_disable(dev);
+-		sec_dsim_of_put_resets(dsim_dev);
+-		dev_err_probe(dev, ret, "Failed to add component\n");
+-	}
 +	if (ret)
 +		goto pm_disable;
 +	return 0;
-+
+ 
 + pm_disable:
 +	pm_runtime_disable(dev);
 + put_resets:
 +	sec_dsim_of_put_resets(dsim_dev);
-+	return ret;
+ 	return ret;
  }
  
- static int imx_sec_dsim_remove(struct platform_device *pdev)
