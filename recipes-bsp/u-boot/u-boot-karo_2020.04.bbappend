@@ -57,6 +57,12 @@ UBOOT_BOARD_DIR = "board/karo/tx8m"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
 
+do_fetch:prepend () {
+    if d.getVar('KARO_BASEBOARD') != "" and d.getVar('KARO_BASEBOARD') not in d.getVar('KARO_BASEBOARDS').split():
+        raise_sanity_error("Module %s is not supported on Baseboard '%s'; available baseboards are:\n%s" % \
+            (d.getVar('MACHINE'), d.getVar('KARO_BASEBOARD'), "\n".join(d.getVar('KARO_BASEBOARDS').split())), d)
+}
+
 python do_env_overlays () {
     import os
     import shutil
