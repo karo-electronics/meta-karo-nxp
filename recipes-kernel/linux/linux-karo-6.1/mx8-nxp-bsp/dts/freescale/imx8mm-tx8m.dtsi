@@ -69,18 +69,6 @@
 	status = "okay";
 };
 
-&vpu_g1_pd {
-	power-supply = <&reg_vdd_dram>;
-};
-
-&vpu_g2_pd {
-	power-supply = <&reg_vdd_dram>;
-};
-
-&vpu_h1_pd {
-	power-supply = <&reg_vdd_dram>;
-};
-
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;

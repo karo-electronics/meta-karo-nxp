@@ -1,1 +1,1 @@
-COMPATIBLE_MACHINE = "(mx8mp)"
+COMPATIBLE_MACHINE = "(mx8-generic-bsp|mx9-nxp-bsp)"

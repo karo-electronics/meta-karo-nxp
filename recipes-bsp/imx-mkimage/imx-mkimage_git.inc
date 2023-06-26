@@ -1,11 +1,14 @@
-# Copyright 2017-2020 NXP
+# Copyright 2017-2022 NXP
  
 DEPENDS = "zlib-native openssl-native"
 
-SRCBRANCH = "lf-5.10.72_2.2.0"
+SRC_URI = "${IMX_MKIMAGE_SRC};branch=${SRCBRANCH} \
+           file://0001-iMX8M-soc.mak-use-native-mkimage-from-sysroot.patch \
+"
 IMX_MKIMAGE_SRC ?= "git://github.com/nxp-imx/imx-mkimage.git;protocol=https"
-SRC_URI = "${IMX_MKIMAGE_SRC};branch=${SRCBRANCH}"
-SRCREV = "7a277c8a1a21ff921d217889dde6a9f84e6d2168"
+SRCBRANCH = "lf-6.1.1_1.0.0"
+SRCREV = "d489494622585a47b4be88988595b0e4f9598f39"
+
 S = "${WORKDIR}/git"
 
 SYSROOT_DIRS += "/boot"

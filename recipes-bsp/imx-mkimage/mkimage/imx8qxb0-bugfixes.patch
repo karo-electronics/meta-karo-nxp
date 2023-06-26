@@ -1,8 +1,8 @@
-Index: imx8mm-mkimage/src/imx8qxb0.c
+Index: git/src/imx8qxb0.c
 ===================================================================
---- imx8mm-mkimage.orig/src/imx8qxb0.c
-+++ imx8mm-mkimage/src/imx8qxb0.c
-@@ -149,7 +149,7 @@ typedef struct {
+--- git.orig/src/imx8qxb0.c
++++ git/src/imx8qxb0.c
+@@ -152,7 +152,7 @@ typedef struct {
  
  uint32_t custom_partition = 0;
  
@@ -11,7 +11,7 @@ Index: imx8mm-mkimage/src/imx8qxb0.c
  {
  	int dfd;
  	struct stat sbuf;
-@@ -279,8 +279,8 @@ void set_image_hash(boot_img_t *img, cha
+@@ -296,8 +296,8 @@ void set_image_hash(boot_img_t *img, cha
  #define append(p, s, l) do {memcpy(p, (uint8_t *)s, l); p += l; } while (0)
  
  uint8_t *flatten_container_header(imx_header_v3_t *imx_header,

@@ -6,19 +6,27 @@ DEPENDS += "lzop-native bc-native dtc-native"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-SRCBRANCH = "lf-5.15.y-karo"
-SRCREV = "762911e0698c3e9b4a471daf16487a0e13fe2942"
-KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git"
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-5.15/patches:${THISDIR}/${PN}-5.15:"
+#SRCBRANCH = "lf-5.15.y-karo"
+#SRCREV = "1bc4508ac322388f231561cd06b6d49281ac1b1c"
+#KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git"
+
+SRCBRANCH = "lf-6.1.y"
+SRCREV = "29549c7073bf72cfb2c4614d37de45ec36b60475"
+LOCALVERSION = "-lts-next"
+KERNEL_SRC ?= "git://github.com/nxp-imx/linux-imx.git;protocol=https;branch=${SRCBRANCH}"
+KBRANCH = "${SRCBRANCH}"
+SRC_URI = "${KERNEL_SRC}"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
 
 PROVIDES += "linux"
 
-SRC_URI = "${KERNEL_SRC};protocol=https;branch=${SRCBRANCH}"
+SRC_URI = "${KERNEL_SRC}"
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://cfg/" + f, "${KERNEL_FEATURES}".split()))}"
 
 # automatically add all .dts files referenced by ${KERNEL_DEVICETREE} to SRC_URI
-SRC_URI:append:mx8-nxp-bsp = "${@"".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"
+SRC_URI:append = "${@"".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"
 
 SRC_URI:append:mx8-nxp-bsp = " \
 	file://dts/freescale/imx8m-qs8m.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
@@ -26,22 +34,16 @@ SRC_URI:append:mx8-nxp-bsp = " \
 	file://dts/freescale/imx8mm-tx8m.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 	file://dts/freescale/imx8mp-karo.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 "
-
 SRC_URI:append:mx8-nxp-bsp = " \
 	file://0003-vf610-gpio.patch \
+"
+SRC_URI:append:mx9-nxp-bsp = " \
+	file://dts/freescale/imx93-karo.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 "
 
 KARO_BOARD_PMIC ??= ""
 
-SRC_URI:append:mx8mm-nxp-bsp = " \
-	file://mx8mm_defconfig \
-"
-SRC_URI:append:mx8mn-nxp-bsp = " \
-	file://mx8mn_defconfig \
-"
-SRC_URI:append:mx8mp-nxp-bsp = " \
-	file://mx8mp_defconfig \
-"
+SRC_URI:append = " file://${KBUILD_DEFCONFIG}"
 
 SRC_URI:append:qs8m = " \
 	file://0001-mx6s-capture-add-rggb8-video-format.patch \
@@ -51,9 +53,7 @@ SRC_URI:append:qs8m = " \
 KERNEL_LOCALVERSION = "${LINUX_VERSION_EXTENSION}"
 KERNEL_IMAGETYPE = "Image"
 
-KBUILD_DEFCONFIG:mx8mm-nxp-bsp = "mx8mm_defconfig"
-KBUILD_DEFCONFIG:mx8mn-nxp-bsp = "mx8mn_defconfig"
-KBUILD_DEFCONFIG:mx8mp-nxp-bsp = "mx8mp_defconfig"
+KBUILD_DEFCONFIG ?= "${SOC_FAMILY}_defconfig"
 
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','copro',' copro.cfg','',d)}"
@@ -73,7 +73,7 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' fle
 KERNEL_FEATURES:append:tx8m-1620 = " no-suspend.cfg"
 KERNEL_FEATURES:append:tx8m-1622 = " no-suspend.cfg"
 
-COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx[89]-nxp-bsp)"
 
 EXTRA_OEMAKE:append = " V=0"
 KERNEL_DTC_FLAGS += "-@"

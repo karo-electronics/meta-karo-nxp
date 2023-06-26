@@ -1,7 +1,7 @@
-diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
-index e10af3f74b38..85749dfee9e6 100644
---- a/drivers/media/i2c/imx219.c
-+++ b/drivers/media/i2c/imx219.c
+Index: git/drivers/media/i2c/imx219.c
+===================================================================
+--- git.orig/drivers/media/i2c/imx219.c
++++ git/drivers/media/i2c/imx219.c
 @@ -15,6 +15,8 @@
   */
  
@@ -36,7 +36,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	/* V-timing */
  	unsigned int vts_def;
  
-@@ -262,6 +253,8 @@ static const struct imx219_reg mode_1920_1080_regs[] = {
+@@ -262,6 +253,8 @@ static const struct imx219_reg mode_1920
  	{0x4793, 0x10},
  	{0x4797, 0x0e},
  	{0x479b, 0x0e},
@@ -45,7 +45,7 @@ index e10af3f74b38..85749dfee9e6 100644
  };
  
  static const struct imx219_reg mode_1640_1232_regs[] = {
-@@ -390,10 +383,6 @@ static const struct imx219_reg raw10_framefmt_regs[] = {
+@@ -390,10 +383,6 @@ static const struct imx219_reg raw10_fra
  	{0x0309, 0x0a},
  };
  
@@ -56,7 +56,7 @@ index e10af3f74b38..85749dfee9e6 100644
  static const char * const imx219_test_pattern_menu[] = {
  	"Disabled",
  	"Color Bars",
-@@ -430,15 +419,16 @@ static const char * const imx219_supply_name[] = {
+@@ -430,15 +419,16 @@ static const char * const imx219_supply_
   * - h&v flips
   */
  static const u32 codes[] = {
@@ -77,7 +77,7 @@ index e10af3f74b38..85749dfee9e6 100644
  };
  
  /*
-@@ -474,12 +464,6 @@ static const struct imx219_mode supported_modes[] = {
+@@ -474,12 +464,6 @@ static const struct imx219_mode supporte
  		/* 8MPix 15fps mode */
  		.width = 3280,
  		.height = 2464,
@@ -90,7 +90,7 @@ index e10af3f74b38..85749dfee9e6 100644
  		.vts_def = IMX219_VTS_15FPS,
  		.reg_list = {
  			.num_of_regs = ARRAY_SIZE(mode_3280x2464_regs),
-@@ -490,12 +474,6 @@ static const struct imx219_mode supported_modes[] = {
+@@ -490,12 +474,6 @@ static const struct imx219_mode supporte
  		/* 1080P 30fps cropped */
  		.width = 1920,
  		.height = 1080,
@@ -103,7 +103,7 @@ index e10af3f74b38..85749dfee9e6 100644
  		.vts_def = IMX219_VTS_30FPS_1080P,
  		.reg_list = {
  			.num_of_regs = ARRAY_SIZE(mode_1920_1080_regs),
-@@ -506,12 +484,6 @@ static const struct imx219_mode supported_modes[] = {
+@@ -506,12 +484,6 @@ static const struct imx219_mode supporte
  		/* 2x2 binned 30fps mode */
  		.width = 1640,
  		.height = 1232,
@@ -116,7 +116,7 @@ index e10af3f74b38..85749dfee9e6 100644
  		.vts_def = IMX219_VTS_30FPS_BINNED,
  		.reg_list = {
  			.num_of_regs = ARRAY_SIZE(mode_1640_1232_regs),
-@@ -522,12 +494,6 @@ static const struct imx219_mode supported_modes[] = {
+@@ -522,12 +494,6 @@ static const struct imx219_mode supporte
  		/* 640x480 30fps mode */
  		.width = 640,
  		.height = 480,
@@ -137,7 +137,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	struct v4l2_ctrl *exposure;
  	struct v4l2_ctrl *vflip;
  	struct v4l2_ctrl *hflip;
-@@ -701,13 +666,6 @@ static int imx219_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
+@@ -701,13 +666,6 @@ static int imx219_open(struct v4l2_subde
  					       MEDIA_BUS_FMT_SRGGB10_1X10);
  	try_fmt->field = V4L2_FIELD_NONE;
  
@@ -151,7 +151,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	mutex_unlock(&imx219->mutex);
  
  	return 0;
-@@ -811,9 +769,7 @@ static int imx219_enum_mbus_code(struct v4l2_subdev *sd,
+@@ -811,9 +769,7 @@ static int imx219_enum_mbus_code(struct
  	if (code->index >= (ARRAY_SIZE(codes) / 4))
  		return -EINVAL;
  
@@ -161,7 +161,7 @@ index e10af3f74b38..85749dfee9e6 100644
  
  	return 0;
  }
-@@ -823,15 +779,11 @@ static int imx219_enum_frame_size(struct v4l2_subdev *sd,
+@@ -823,15 +779,11 @@ static int imx219_enum_frame_size(struct
  				  struct v4l2_subdev_frame_size_enum *fse)
  {
  	struct imx219 *imx219 = to_imx219(sd);
@@ -178,7 +178,7 @@ index e10af3f74b38..85749dfee9e6 100644
  		return -EINVAL;
  
  	fse->min_width = supported_modes[fse->index].width;
-@@ -979,103 +931,35 @@ static int imx219_set_framefmt(struct imx219 *imx219)
+@@ -979,103 +931,35 @@ static int imx219_set_framefmt(struct im
  	return -EINVAL;
  }
  
@@ -287,7 +287,7 @@ index e10af3f74b38..85749dfee9e6 100644
  }
  
  static void imx219_stop_streaming(struct imx219 *imx219)
-@@ -1088,16 +972,12 @@ static void imx219_stop_streaming(struct imx219 *imx219)
+@@ -1088,16 +972,12 @@ static void imx219_stop_streaming(struct
  			       IMX219_REG_VALUE_08BIT, IMX219_MODE_STANDBY);
  	if (ret)
  		dev_err(&client->dev, "%s failed to set stream\n", __func__);
@@ -305,7 +305,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	int ret = 0;
  
  	mutex_lock(&imx219->mutex);
-@@ -1107,23 +987,36 @@ static int imx219_set_stream(struct v4l2_subdev *sd, int enable)
+@@ -1107,23 +987,36 @@ static int imx219_set_stream(struct v4l2
  	}
  
  	if (enable) {
@@ -343,7 +343,7 @@ index e10af3f74b38..85749dfee9e6 100644
  err_unlock:
  	mutex_unlock(&imx219->mutex);
  
-@@ -1133,21 +1026,22 @@ static int imx219_set_stream(struct v4l2_subdev *sd, int enable)
+@@ -1133,21 +1026,22 @@ err_unlock:
  /* Power/clock management functions */
  static int imx219_power_on(struct device *dev)
  {
@@ -369,7 +369,7 @@ index e10af3f74b38..85749dfee9e6 100644
  			__func__);
  		goto reg_off;
  	}
-@@ -1166,7 +1060,8 @@ static int imx219_power_on(struct device *dev)
+@@ -1166,7 +1060,8 @@ reg_off:
  
  static int imx219_power_off(struct device *dev)
  {
@@ -379,7 +379,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	struct imx219 *imx219 = to_imx219(sd);
  
  	gpiod_set_value_cansleep(imx219->reset_gpio, 0);
-@@ -1178,7 +1073,8 @@ static int imx219_power_off(struct device *dev)
+@@ -1178,7 +1073,8 @@ static int imx219_power_off(struct devic
  
  static int __maybe_unused imx219_suspend(struct device *dev)
  {
@@ -389,7 +389,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	struct imx219 *imx219 = to_imx219(sd);
  
  	if (imx219->streaming)
-@@ -1189,7 +1085,8 @@ static int __maybe_unused imx219_suspend(struct device *dev)
+@@ -1189,7 +1085,8 @@ static int __maybe_unused imx219_suspend
  
  static int __maybe_unused imx219_resume(struct device *dev)
  {
@@ -399,7 +399,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	struct imx219 *imx219 = to_imx219(sd);
  	int ret;
  
-@@ -1203,7 +1100,7 @@ static int __maybe_unused imx219_resume(struct device *dev)
+@@ -1203,7 +1100,7 @@ static int __maybe_unused imx219_resume(
  
  error:
  	imx219_stop_streaming(imx219);
@@ -408,7 +408,7 @@ index e10af3f74b38..85749dfee9e6 100644
  
  	return ret;
  }
-@@ -1258,7 +1155,6 @@ static const struct v4l2_subdev_pad_ops imx219_pad_ops = {
+@@ -1258,7 +1155,6 @@ static const struct v4l2_subdev_pad_ops
  	.enum_mbus_code = imx219_enum_mbus_code,
  	.get_fmt = imx219_get_pad_format,
  	.set_fmt = imx219_set_pad_format,
@@ -416,7 +416,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	.enum_frame_size = imx219_enum_frame_size,
  };
  
-@@ -1278,12 +1174,11 @@ static int imx219_init_controls(struct imx219 *imx219)
+@@ -1278,12 +1174,11 @@ static int imx219_init_controls(struct i
  	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
  	struct v4l2_ctrl_handler *ctrl_hdlr;
  	unsigned int height = imx219->mode->height;
@@ -430,7 +430,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	if (ret)
  		return ret;
  
-@@ -1297,14 +1192,6 @@ static int imx219_init_controls(struct imx219 *imx219)
+@@ -1297,14 +1192,6 @@ static int imx219_init_controls(struct i
  					       IMX219_PIXEL_RATE, 1,
  					       IMX219_PIXEL_RATE);
  
@@ -445,7 +445,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	/* Initial vblank/hblank/exposure parameters based on current mode */
  	imx219->vblank = v4l2_ctrl_new_std(ctrl_hdlr, &imx219_ctrl_ops,
  					   V4L2_CID_VBLANK, IMX219_VBLANK_MIN,
-@@ -1370,15 +1257,6 @@ static int imx219_init_controls(struct imx219 *imx219)
+@@ -1370,15 +1257,6 @@ static int imx219_init_controls(struct i
  		goto error;
  	}
  
@@ -461,7 +461,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	imx219->sd.ctrl_handler = ctrl_hdlr;
  
  	return 0;
-@@ -1521,8 +1399,7 @@ static int imx219_probe(struct i2c_client *client)
+@@ -1521,8 +1399,7 @@ static int imx219_probe(struct i2c_clien
  
  	/* Initialize subdev */
  	imx219->sd.internal_ops = &imx219_internal_ops;
