@@ -46,6 +46,8 @@ SRC_URI:append:mx8mp-nxp-bsp = " \
 SRC_URI:append:qs8m = " \
 	file://0001-mx6s-capture-add-rggb8-video-format.patch \
 	file://0002-imx219-driver-zeus-version.patch \
+	file://0003-isi-fmts.patch \
+	file://0004-csi-fmts.patch \
 "
 
 KERNEL_LOCALVERSION = "${LINUX_VERSION_EXTENSION}"

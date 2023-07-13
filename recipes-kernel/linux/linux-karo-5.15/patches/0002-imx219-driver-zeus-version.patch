@@ -1,5 +1,5 @@
 diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
-index e10af3f74b38..85749dfee9e6 100644
+index 77bd79a5954e..c578c9bb6f68 100644
 --- a/drivers/media/i2c/imx219.c
 +++ b/drivers/media/i2c/imx219.c
 @@ -15,6 +15,8 @@
@@ -408,7 +408,30 @@ index e10af3f74b38..85749dfee9e6 100644
  
  	return ret;
  }
-@@ -1258,7 +1155,6 @@ static const struct v4l2_subdev_pad_ops imx219_pad_ops = {
+@@ -1245,9 +1142,22 @@ static int imx219_identify_module(struct imx219 *imx219)
+ 	return 0;
+ }
+ 
++static int imx219_link_setup(struct media_entity *entity,
++				const struct media_pad *local,
++				const struct media_pad *remote, u32 flags)
++{
++	return 0;
++}
++
++static int imx219_s_power(struct v4l2_subdev *sd, int on)
++{
++	return 0;
++}
++
+ static const struct v4l2_subdev_core_ops imx219_core_ops = {
+ 	.subscribe_event = v4l2_ctrl_subdev_subscribe_event,
+ 	.unsubscribe_event = v4l2_event_subdev_unsubscribe,
++	.s_power	= imx219_s_power,
+ };
+ 
+ static const struct v4l2_subdev_video_ops imx219_video_ops = {
+@@ -1258,7 +1168,6 @@ static const struct v4l2_subdev_pad_ops imx219_pad_ops = {
  	.enum_mbus_code = imx219_enum_mbus_code,
  	.get_fmt = imx219_get_pad_format,
  	.set_fmt = imx219_set_pad_format,
@@ -416,7 +439,17 @@ index e10af3f74b38..85749dfee9e6 100644
  	.enum_frame_size = imx219_enum_frame_size,
  };
  
-@@ -1278,12 +1174,11 @@ static int imx219_init_controls(struct imx219 *imx219)
+@@ -1272,18 +1181,21 @@ static const struct v4l2_subdev_internal_ops imx219_internal_ops = {
+ 	.open = imx219_open,
+ };
+ 
++static const struct media_entity_operations imx219_media_ops = {
++	.link_setup = imx219_link_setup,
++};
++
+ /* Initialize control handlers */
+ static int imx219_init_controls(struct imx219 *imx219)
+ {
  	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
  	struct v4l2_ctrl_handler *ctrl_hdlr;
  	unsigned int height = imx219->mode->height;
@@ -430,7 +463,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	if (ret)
  		return ret;
  
-@@ -1297,14 +1192,6 @@ static int imx219_init_controls(struct imx219 *imx219)
+@@ -1297,14 +1209,6 @@ static int imx219_init_controls(struct imx219 *imx219)
  					       IMX219_PIXEL_RATE, 1,
  					       IMX219_PIXEL_RATE);
  
@@ -445,7 +478,7 @@ index e10af3f74b38..85749dfee9e6 100644
  	/* Initial vblank/hblank/exposure parameters based on current mode */
  	imx219->vblank = v4l2_ctrl_new_std(ctrl_hdlr, &imx219_ctrl_ops,
  					   V4L2_CID_VBLANK, IMX219_VBLANK_MIN,
-@@ -1370,15 +1257,6 @@ static int imx219_init_controls(struct imx219 *imx219)
+@@ -1370,15 +1274,6 @@ static int imx219_init_controls(struct imx219 *imx219)
  		goto error;
  	}
  
@@ -461,13 +494,29 @@ index e10af3f74b38..85749dfee9e6 100644
  	imx219->sd.ctrl_handler = ctrl_hdlr;
  
  	return 0;
-@@ -1521,8 +1399,7 @@ static int imx219_probe(struct i2c_client *client)
+@@ -1453,6 +1348,12 @@ static int imx219_probe(struct i2c_client *client)
+ 	if (!imx219)
+ 		return -ENOMEM;
  
- 	/* Initialize subdev */
- 	imx219->sd.internal_ops = &imx219_internal_ops;
++	/* Initialize subdev */
++	imx219->sd.internal_ops = &imx219_internal_ops;
++	imx219->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
++	imx219->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
++	imx219->sd.entity.ops = &imx219_media_ops;
++
+ 	v4l2_i2c_subdev_init(&imx219->sd, client, &imx219_subdev_ops);
+ 
+ 	/* Check the hardware configuration in device tree */
+@@ -1519,12 +1420,6 @@ static int imx219_probe(struct i2c_client *client)
+ 	if (ret)
+ 		goto error_power_off;
+ 
+-	/* Initialize subdev */
+-	imx219->sd.internal_ops = &imx219_internal_ops;
 -	imx219->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
 -			    V4L2_SUBDEV_FL_HAS_EVENTS;
-+	imx219->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
- 	imx219->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
- 
+-	imx219->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+-
  	/* Initialize source pad */
+ 	imx219->pad.flags = MEDIA_PAD_FL_SOURCE;
+ 

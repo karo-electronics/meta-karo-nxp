@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
 /*
- * Copyright 2022 Lothar Waßmann <LW@KARO-electronics.de>
+ * Copyright 2023 Markus Bauer <MB@KARO-electronics.de>
  *
  */
 
@@ -8,6 +8,7 @@
 
 /plugin/;
 
+#include <dt-bindings/clock/imx8mn-clock.h>
 #include <dt-bindings/gpio/gpio.h>
 #include "imx8mn-pinfunc.h"
 
@@ -38,28 +39,11 @@
 		regulator-always-on;
 		vin-supply = <&reg_vdd_3v3>;
 	};
-
-	imx219_clk: imx219-clk {
-		compatible = "fixed-clock";
-		#clock-cells = <0>;
-		clock-frequency = <24000000>;
-	};
 };
 
 &{/chosen} {
 	overlays {
 		qs8m-cam;
-	};
-};
-
-&csi1_bridge {
-	fsl,mipi-mode;
-	status = "okay";
-
-	port {
-		csi1_bridge_from_mipi1: endpoint {
-			remote-endpoint = <&mipi1_to_csi1_bridge>;
-		};
 	};
 };
 
@@ -73,15 +57,23 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_imx219_reset>;
 		reset-gpios = <&gpio1 14 GPIO_ACTIVE_HIGH>;
-		clocks = <&imx219_clk>;
+		clocks = <&clk IMX8MN_CLK_CLKO1>;
+		clock-names = "xclk";
+		assigned-clocks = <&clk IMX8MN_CLK_CLKO1>;
+		assigned-clock-parents = <&clk IMX8MN_CLK_24M>;
+		assigned-clock-rates = <24000000>;
+		csi_id = <0>;
 		VANA-supply = <&reg_2v8>;   /* 2.8v */
 		VDIG-supply = <&reg_1v8>;   /* 1.8v */
 		VDDL-supply = <&reg_2v8>;   /* 1.2v */
+		mclk = <24000000>;
+		mclk_source = <0>;
+		mipi_csi;
 		status = "okay";
 
 		port {
-			imx219_to_mipi1: endpoint {
-				remote-endpoint = <&mipi1_from_imx219>;
+			imx219_out: endpoint {
+				remote-endpoint = <&csi_in>;
 				data-lanes = <1 2>;
 				clock-noncontinuous;
 				link-frequencies = /bits/ 64 <456000000>;
@@ -91,29 +83,32 @@
 };
 
 &mipi_csi_1 {
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
 
-	port {
-		#address-cells = <1>;
-		#size-cells = <0>;
-		/*
-		 * The ordering of the endpoint entries matters!
-		 * It will be reversed when the overlay is applied.
-		 */
-		mipi1_to_csi1_bridge: endpoint@2 {
-			reg = <2>;
-			remote-endpoint = <&csi1_bridge_from_mipi1>;
-		};
-
-		mipi1_from_imx219: endpoint@1 {
-			reg = <1>;
-			remote-endpoint = <&imx219_to_mipi1>;
+	port@0 {
+		reg = <0>;
+		csi_in: endpoint {
+			remote-endpoint = <&imx219_out>;
 			data-lanes = <2>;
 			csis-hs-settle = <13>;
 			csis-clk-settle = <2>;
 			csis-wclk;
 		};
 	};
+};
+
+&isi_0 {
+	status = "okay";
+
+	cap_device {
+		status = "okay";
+	};
+};
+
+&cameradev {
+	status = "okay";
 };
 
 &iomuxc {
