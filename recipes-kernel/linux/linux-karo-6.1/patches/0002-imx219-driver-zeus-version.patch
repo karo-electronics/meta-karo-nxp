@@ -1,7 +1,7 @@
-Index: git/drivers/media/i2c/imx219.c
-===================================================================
---- git.orig/drivers/media/i2c/imx219.c
-+++ git/drivers/media/i2c/imx219.c
+diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
+index 77bd79a5954e..c578c9bb6f68 100644
+--- a/drivers/media/i2c/imx219.c
++++ b/drivers/media/i2c/imx219.c
 @@ -15,6 +15,8 @@
   */
  
@@ -36,7 +36,7 @@ Index: git/drivers/media/i2c/imx219.c
  	/* V-timing */
  	unsigned int vts_def;
  
-@@ -262,6 +253,8 @@ static const struct imx219_reg mode_1920
+@@ -262,6 +253,8 @@ static const struct imx219_reg mode_1920_1080_regs[] = {
  	{0x4793, 0x10},
  	{0x4797, 0x0e},
  	{0x479b, 0x0e},
@@ -45,7 +45,7 @@ Index: git/drivers/media/i2c/imx219.c
  };
  
  static const struct imx219_reg mode_1640_1232_regs[] = {
-@@ -390,10 +383,6 @@ static const struct imx219_reg raw10_fra
+@@ -390,10 +383,6 @@ static const struct imx219_reg raw10_framefmt_regs[] = {
  	{0x0309, 0x0a},
  };
  
@@ -56,7 +56,7 @@ Index: git/drivers/media/i2c/imx219.c
  static const char * const imx219_test_pattern_menu[] = {
  	"Disabled",
  	"Color Bars",
-@@ -430,15 +419,16 @@ static const char * const imx219_supply_
+@@ -430,15 +419,16 @@ static const char * const imx219_supply_name[] = {
   * - h&v flips
   */
  static const u32 codes[] = {
@@ -77,7 +77,7 @@ Index: git/drivers/media/i2c/imx219.c
  };
  
  /*
-@@ -474,12 +464,6 @@ static const struct imx219_mode supporte
+@@ -474,12 +464,6 @@ static const struct imx219_mode supported_modes[] = {
  		/* 8MPix 15fps mode */
  		.width = 3280,
  		.height = 2464,
@@ -90,7 +90,7 @@ Index: git/drivers/media/i2c/imx219.c
  		.vts_def = IMX219_VTS_15FPS,
  		.reg_list = {
  			.num_of_regs = ARRAY_SIZE(mode_3280x2464_regs),
-@@ -490,12 +474,6 @@ static const struct imx219_mode supporte
+@@ -490,12 +474,6 @@ static const struct imx219_mode supported_modes[] = {
  		/* 1080P 30fps cropped */
  		.width = 1920,
  		.height = 1080,
@@ -103,7 +103,7 @@ Index: git/drivers/media/i2c/imx219.c
  		.vts_def = IMX219_VTS_30FPS_1080P,
  		.reg_list = {
  			.num_of_regs = ARRAY_SIZE(mode_1920_1080_regs),
-@@ -506,12 +484,6 @@ static const struct imx219_mode supporte
+@@ -506,12 +484,6 @@ static const struct imx219_mode supported_modes[] = {
  		/* 2x2 binned 30fps mode */
  		.width = 1640,
  		.height = 1232,
@@ -116,7 +116,7 @@ Index: git/drivers/media/i2c/imx219.c
  		.vts_def = IMX219_VTS_30FPS_BINNED,
  		.reg_list = {
  			.num_of_regs = ARRAY_SIZE(mode_1640_1232_regs),
-@@ -522,12 +494,6 @@ static const struct imx219_mode supporte
+@@ -522,12 +494,6 @@ static const struct imx219_mode supported_modes[] = {
  		/* 640x480 30fps mode */
  		.width = 640,
  		.height = 480,
@@ -137,7 +137,7 @@ Index: git/drivers/media/i2c/imx219.c
  	struct v4l2_ctrl *exposure;
  	struct v4l2_ctrl *vflip;
  	struct v4l2_ctrl *hflip;
-@@ -701,13 +666,6 @@ static int imx219_open(struct v4l2_subde
+@@ -701,13 +666,6 @@ static int imx219_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
  					       MEDIA_BUS_FMT_SRGGB10_1X10);
  	try_fmt->field = V4L2_FIELD_NONE;
  
@@ -151,7 +151,7 @@ Index: git/drivers/media/i2c/imx219.c
  	mutex_unlock(&imx219->mutex);
  
  	return 0;
-@@ -811,9 +769,7 @@ static int imx219_enum_mbus_code(struct
+@@ -811,9 +769,7 @@ static int imx219_enum_mbus_code(struct v4l2_subdev *sd,
  	if (code->index >= (ARRAY_SIZE(codes) / 4))
  		return -EINVAL;
  
@@ -161,7 +161,7 @@ Index: git/drivers/media/i2c/imx219.c
  
  	return 0;
  }
-@@ -823,15 +779,11 @@ static int imx219_enum_frame_size(struct
+@@ -823,15 +779,11 @@ static int imx219_enum_frame_size(struct v4l2_subdev *sd,
  				  struct v4l2_subdev_frame_size_enum *fse)
  {
  	struct imx219 *imx219 = to_imx219(sd);
@@ -178,7 +178,7 @@ Index: git/drivers/media/i2c/imx219.c
  		return -EINVAL;
  
  	fse->min_width = supported_modes[fse->index].width;
-@@ -979,103 +931,35 @@ static int imx219_set_framefmt(struct im
+@@ -979,103 +931,35 @@ static int imx219_set_framefmt(struct imx219 *imx219)
  	return -EINVAL;
  }
  
@@ -287,7 +287,7 @@ Index: git/drivers/media/i2c/imx219.c
  }
  
  static void imx219_stop_streaming(struct imx219 *imx219)
-@@ -1088,16 +972,12 @@ static void imx219_stop_streaming(struct
+@@ -1088,16 +972,12 @@ static void imx219_stop_streaming(struct imx219 *imx219)
  			       IMX219_REG_VALUE_08BIT, IMX219_MODE_STANDBY);
  	if (ret)
  		dev_err(&client->dev, "%s failed to set stream\n", __func__);
@@ -305,7 +305,7 @@ Index: git/drivers/media/i2c/imx219.c
  	int ret = 0;
  
  	mutex_lock(&imx219->mutex);
-@@ -1107,23 +987,36 @@ static int imx219_set_stream(struct v4l2
+@@ -1107,23 +987,36 @@ static int imx219_set_stream(struct v4l2_subdev *sd, int enable)
  	}
  
  	if (enable) {
@@ -343,7 +343,7 @@ Index: git/drivers/media/i2c/imx219.c
  err_unlock:
  	mutex_unlock(&imx219->mutex);
  
-@@ -1133,21 +1026,22 @@ err_unlock:
+@@ -1133,21 +1026,22 @@ static int imx219_set_stream(struct v4l2_subdev *sd, int enable)
  /* Power/clock management functions */
  static int imx219_power_on(struct device *dev)
  {
@@ -369,7 +369,7 @@ Index: git/drivers/media/i2c/imx219.c
  			__func__);
  		goto reg_off;
  	}
-@@ -1166,7 +1060,8 @@ reg_off:
+@@ -1166,7 +1060,8 @@ static int imx219_power_on(struct device *dev)
  
  static int imx219_power_off(struct device *dev)
  {
@@ -379,7 +379,7 @@ Index: git/drivers/media/i2c/imx219.c
  	struct imx219 *imx219 = to_imx219(sd);
  
  	gpiod_set_value_cansleep(imx219->reset_gpio, 0);
-@@ -1178,7 +1073,8 @@ static int imx219_power_off(struct devic
+@@ -1178,7 +1073,8 @@ static int imx219_power_off(struct device *dev)
  
  static int __maybe_unused imx219_suspend(struct device *dev)
  {
@@ -389,7 +389,7 @@ Index: git/drivers/media/i2c/imx219.c
  	struct imx219 *imx219 = to_imx219(sd);
  
  	if (imx219->streaming)
-@@ -1189,7 +1085,8 @@ static int __maybe_unused imx219_suspend
+@@ -1189,7 +1085,8 @@ static int __maybe_unused imx219_suspend(struct device *dev)
  
  static int __maybe_unused imx219_resume(struct device *dev)
  {
@@ -399,7 +399,7 @@ Index: git/drivers/media/i2c/imx219.c
  	struct imx219 *imx219 = to_imx219(sd);
  	int ret;
  
-@@ -1203,7 +1100,7 @@ static int __maybe_unused imx219_resume(
+@@ -1203,7 +1100,7 @@ static int __maybe_unused imx219_resume(struct device *dev)
  
  error:
  	imx219_stop_streaming(imx219);
@@ -408,7 +408,30 @@ Index: git/drivers/media/i2c/imx219.c
  
  	return ret;
  }
-@@ -1258,7 +1155,6 @@ static const struct v4l2_subdev_pad_ops
+@@ -1245,9 +1142,22 @@ static int imx219_identify_module(struct imx219 *imx219)
+ 	return 0;
+ }
+ 
++static int imx219_link_setup(struct media_entity *entity,
++				const struct media_pad *local,
++				const struct media_pad *remote, u32 flags)
++{
++	return 0;
++}
++
++static int imx219_s_power(struct v4l2_subdev *sd, int on)
++{
++	return 0;
++}
++
+ static const struct v4l2_subdev_core_ops imx219_core_ops = {
+ 	.subscribe_event = v4l2_ctrl_subdev_subscribe_event,
+ 	.unsubscribe_event = v4l2_event_subdev_unsubscribe,
++	.s_power	= imx219_s_power,
+ };
+ 
+ static const struct v4l2_subdev_video_ops imx219_video_ops = {
+@@ -1258,7 +1168,6 @@ static const struct v4l2_subdev_pad_ops imx219_pad_ops = {
  	.enum_mbus_code = imx219_enum_mbus_code,
  	.get_fmt = imx219_get_pad_format,
  	.set_fmt = imx219_set_pad_format,
@@ -416,7 +439,17 @@ Index: git/drivers/media/i2c/imx219.c
  	.enum_frame_size = imx219_enum_frame_size,
  };
  
-@@ -1278,12 +1174,11 @@ static int imx219_init_controls(struct i
+@@ -1272,18 +1181,21 @@ static const struct v4l2_subdev_internal_ops imx219_internal_ops = {
+ 	.open = imx219_open,
+ };
+ 
++static const struct media_entity_operations imx219_media_ops = {
++	.link_setup = imx219_link_setup,
++};
++
+ /* Initialize control handlers */
+ static int imx219_init_controls(struct imx219 *imx219)
+ {
  	struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
  	struct v4l2_ctrl_handler *ctrl_hdlr;
  	unsigned int height = imx219->mode->height;
@@ -430,7 +463,7 @@ Index: git/drivers/media/i2c/imx219.c
  	if (ret)
  		return ret;
  
-@@ -1297,14 +1192,6 @@ static int imx219_init_controls(struct i
+@@ -1297,14 +1209,6 @@ static int imx219_init_controls(struct imx219 *imx219)
  					       IMX219_PIXEL_RATE, 1,
  					       IMX219_PIXEL_RATE);
  
@@ -445,7 +478,7 @@ Index: git/drivers/media/i2c/imx219.c
  	/* Initial vblank/hblank/exposure parameters based on current mode */
  	imx219->vblank = v4l2_ctrl_new_std(ctrl_hdlr, &imx219_ctrl_ops,
  					   V4L2_CID_VBLANK, IMX219_VBLANK_MIN,
-@@ -1370,15 +1257,6 @@ static int imx219_init_controls(struct i
+@@ -1370,15 +1274,6 @@ static int imx219_init_controls(struct imx219 *imx219)
  		goto error;
  	}
  
@@ -461,13 +494,29 @@ Index: git/drivers/media/i2c/imx219.c
  	imx219->sd.ctrl_handler = ctrl_hdlr;
  
  	return 0;
-@@ -1521,8 +1399,7 @@ static int imx219_probe(struct i2c_clien
+@@ -1453,6 +1348,12 @@ static int imx219_probe(struct i2c_client *client)
+ 	if (!imx219)
+ 		return -ENOMEM;
  
- 	/* Initialize subdev */
- 	imx219->sd.internal_ops = &imx219_internal_ops;
++	/* Initialize subdev */
++	imx219->sd.internal_ops = &imx219_internal_ops;
++	imx219->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
++	imx219->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
++	imx219->sd.entity.ops = &imx219_media_ops;
++
+ 	v4l2_i2c_subdev_init(&imx219->sd, client, &imx219_subdev_ops);
+ 
+ 	/* Check the hardware configuration in device tree */
+@@ -1519,12 +1420,6 @@ static int imx219_probe(struct i2c_client *client)
+ 	if (ret)
+ 		goto error_power_off;
+ 
+-	/* Initialize subdev */
+-	imx219->sd.internal_ops = &imx219_internal_ops;
 -	imx219->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
 -			    V4L2_SUBDEV_FL_HAS_EVENTS;
-+	imx219->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
- 	imx219->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
- 
+-	imx219->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
+-
  	/* Initialize source pad */
+ 	imx219->pad.flags = MEDIA_PAD_FL_SOURCE;
+ 
