@@ -1,0 +1,15 @@
+Index: linux-tx93/drivers/irqchip/Kconfig
+===================================================================
+--- linux-tx93.orig/drivers/irqchip/Kconfig
++++ linux-tx93/drivers/irqchip/Kconfig
+@@ -485,8 +485,8 @@ config IMX_IRQSTEER
+ 	  Support for the i.MX IRQSTEER interrupt multiplexer/remapper.
+ 
+ config IMX_INTMUX
+-	bool "i.MX INTMUX support" if COMPILE_TEST
+-	default y if ARCH_MXC
++	bool "i.MX INTMUX support"
++	default ARCH_MXC || COMPILE_TEST
+ 	select IRQ_DOMAIN
+ 	help
+ 	  Support for the i.MX INTMUX interrupt multiplexer.

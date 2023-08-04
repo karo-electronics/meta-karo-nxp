@@ -1,0 +1,28 @@
+Index: u-boot-tx93-mb7/drivers/fastboot/fb_fsl/fb_fsl_partitions.c
+===================================================================
+--- u-boot-tx93-mb7.orig/drivers/fastboot/fb_fsl/fb_fsl_partitions.c
++++ u-boot-tx93-mb7/drivers/fastboot/fb_fsl/fb_fsl_partitions.c
+@@ -98,8 +98,12 @@ static int _fastboot_parts_add_ptable_en
+ 
+ 	if (part_get_info(dev_desc,
+ 			       mmc_dos_partition_index, &info)) {
+-		debug("Bad partition index:%d for partition:%s\n",
+-		       mmc_dos_partition_index, name);
++		if (name)
++			debug("Bad partition index %d for partition %s\n",
++			      mmc_dos_partition_index, name);
++		else
++			debug("Bad partition index %d\n",
++			      mmc_dos_partition_index);
+ 		return -1;
+ 	}
+ 	ptable[ptable_index].start = info.start;
+@@ -126,7 +130,7 @@ static int _fastboot_parts_add_ptable_en
+ #endif
+ 		strcpy(ptable[ptable_index].fstype, "erofs");
+ 	else if (!strcmp((const char *)info.name, FASTBOOT_PARTITION_DATA) ||
+-	         !strcmp((const char *)info.name, FASTBOOT_PARTITION_METADATA))
++		 !strcmp((const char *)info.name, FASTBOOT_PARTITION_METADATA))
+ 		strcpy(ptable[ptable_index].fstype, "f2fs");
+ 	else
+ 		strcpy(ptable[ptable_index].fstype, "raw");

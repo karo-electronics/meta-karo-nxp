@@ -1,0 +1,29 @@
+Index: u-boot-tx93-mb7/drivers/net/fec_mxc.c
+===================================================================
+--- u-boot-tx93-mb7.orig/drivers/net/fec_mxc.c
++++ u-boot-tx93-mb7/drivers/net/fec_mxc.c
+@@ -1378,6 +1378,13 @@ static void fec_gpio_reset(struct fec_pr
+ }
+ #endif
+ 
++/* board-specific Ethernet Interface initializations. */
++__weak int board_interface_eth_init(struct udevice *dev,
++				    phy_interface_t interface_type)
++{
++	return 0;
++}
++
+ static int fecmxc_probe(struct udevice *dev)
+ {
+ 	bool dm_mii_bus = true;
+@@ -1557,6 +1564,10 @@ static int fecmxc_probe(struct udevice *
+ 		break;
+ 	}
+ 
++	ret = board_interface_eth_init(dev, priv->interface);
++	if (ret)
++		return ret;
++
+ 	ret = fec_phy_init(priv, dev);
+ 	if (ret)
+ 		goto err_phy;

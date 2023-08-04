@@ -1,0 +1,27 @@
+// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+/*
+ * Copyright (C) 2023 Lothar Waßmann <LW@KARO-electronics.com>
+ */
+/dts-v1/;
+
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "overlays/imx93-karo-ili2130.dtsi"
+#include "imx93-pinfunc.h"
+
+&ili2130 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ili2130>;
+	interrupt-parent = <&gpio2>;
+	interrupts = <23 IRQ_TYPE_EDGE_FALLING>;
+};
+
+&iomuxc {
+	pinctrl_ili2130: ili2130grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO23__GPIO2_IO23		0x200 /* Interrupt */
+		>;
+	};
+};

@@ -1,0 +1,162 @@
+Index: linux-tx93/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+===================================================================
+--- linux-tx93.orig/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
++++ linux-tx93/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
+@@ -25,6 +25,20 @@ int dwmac4_dma_reset(void __iomem *ioadd
+ 				 10000, 1000000);
+ }
+ 
++int dwmac4_imx93_rmii_dma_reset(void __iomem *ioaddr)
++{
++	u32 value = readl(ioaddr + DMA_BUS_MODE);
++
++	/* DMA SW reset */
++	value |= DMA_BUS_MODE_SFT_RESET;
++	writel(value, ioaddr + DMA_BUS_MODE);
++	writel(GMAC_CONFIG_FES | GMAC_CONFIG_PS, ioaddr + GMAC_CONFIG);
++
++	return readl_poll_timeout(ioaddr + DMA_BUS_MODE, value,
++				 !(value & DMA_BUS_MODE_SFT_RESET),
++				 10000, 1000000);
++}
++
+ void dwmac4_set_rx_tail_ptr(void __iomem *ioaddr, u32 tail_ptr, u32 chan)
+ {
+ 	writel(tail_ptr, ioaddr + DMA_CHAN_RX_END_ADDR(chan));
+Index: linux-tx93/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+===================================================================
+--- linux-tx93.orig/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
++++ linux-tx93/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.c
+@@ -575,3 +575,33 @@ const struct stmmac_dma_ops dwmac410_dma
+ 	.enable_sph = dwmac4_enable_sph,
+ 	.enable_tbs = dwmac4_enable_tbs,
+ };
++
++const struct stmmac_dma_ops dwmac410_imx93_rmii_dma_ops = {
++	.reset = dwmac4_imx93_rmii_dma_reset,
++	.init = dwmac4_dma_init,
++	.init_chan = dwmac410_dma_init_channel,
++	.init_rx_chan = dwmac4_dma_init_rx_chan,
++	.init_tx_chan = dwmac4_dma_init_tx_chan,
++	.axi = dwmac4_dma_axi,
++	.dump_regs = dwmac4_dump_dma_regs,
++	.dma_rx_mode = dwmac4_dma_rx_chan_op_mode,
++	.dma_tx_mode = dwmac4_dma_tx_chan_op_mode,
++	.enable_dma_irq = dwmac410_enable_dma_irq,
++	.disable_dma_irq = dwmac4_disable_dma_irq,
++	.start_tx = dwmac4_dma_start_tx,
++	.stop_tx = dwmac4_dma_stop_tx,
++	.start_rx = dwmac4_dma_start_rx,
++	.stop_rx = dwmac4_dma_stop_rx,
++	.dma_interrupt = dwmac4_dma_interrupt,
++	.get_hw_feature = dwmac4_get_hw_feature,
++	.rx_watchdog = dwmac4_rx_watchdog,
++	.set_rx_ring_len = dwmac4_set_rx_ring_len,
++	.set_tx_ring_len = dwmac4_set_tx_ring_len,
++	.set_rx_tail_ptr = dwmac4_set_rx_tail_ptr,
++	.set_tx_tail_ptr = dwmac4_set_tx_tail_ptr,
++	.enable_tso = dwmac4_enable_tso,
++	.qmode = dwmac4_qmode,
++	.set_bfsize = dwmac4_set_bfsize,
++	.enable_sph = dwmac4_enable_sph,
++	.enable_tbs = dwmac4_enable_tbs,
++};
+Index: linux-tx93/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+===================================================================
+--- linux-tx93.orig/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
++++ linux-tx93/drivers/net/ethernet/stmicro/stmmac/dwmac4_dma.h
+@@ -220,6 +220,7 @@
+ #define DMA_CHAN0_DBG_STAT_RPS_SHIFT	8
+ 
+ int dwmac4_dma_reset(void __iomem *ioaddr);
++int dwmac4_imx93_rmii_dma_reset(void __iomem *ioaddr);
+ void dwmac4_enable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx);
+ void dwmac410_enable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx);
+ void dwmac4_disable_dma_irq(void __iomem *ioaddr, u32 chan, bool rx, bool tx);
+Index: linux-tx93/drivers/net/ethernet/stmicro/stmmac/hwif.c
+===================================================================
+--- linux-tx93.orig/drivers/net/ethernet/stmicro/stmmac/hwif.c
++++ linux-tx93/drivers/net/ethernet/stmicro/stmmac/hwif.c
+@@ -91,6 +91,7 @@ static const struct stmmac_hwif_entry {
+ 	bool gmac;
+ 	bool gmac4;
+ 	bool xgmac;
++	bool buggy_rmii_mode;
+ 	u32 min_id;
+ 	u32 dev_id;
+ 	const struct stmmac_regs_off regs;
+@@ -251,6 +252,25 @@ static const struct stmmac_hwif_entry {
+ 		.mmc = &dwxgmac_mmc_ops,
+ 		.setup = dwxlgmac2_setup,
+ 		.quirks = stmmac_dwxlgmac_quirks,
++	}, {
++		.gmac = false,
++		.gmac4 = true,
++		.xgmac = false,
++		.buggy_rmii_mode = 1,
++		.min_id = DWMAC_CORE_5_10,
++		.regs = {
++			.ptp_off = PTP_GMAC4_OFFSET,
++			.mmc_off = MMC_GMAC4_OFFSET,
++		},
++		.desc = &dwmac4_desc_ops,
++		.dma = &dwmac410_imx93_rmii_dma_ops,
++		.mac = &dwmac510_ops,
++		.hwtimestamp = &stmmac_ptp,
++		.mode = &dwmac4_ring_mode_ops,
++		.tc = &dwmac510_tc_ops,
++		.mmc = &dwmac_mmc_ops,
++		.setup = dwmac4_setup,
++		.quirks = NULL,
+ 	},
+ };
+ 
+@@ -310,6 +330,8 @@ int stmmac_hwif_init(struct stmmac_priv
+ 			continue;
+ 		if (needs_xgmac && (dev_id ^ entry->dev_id))
+ 			continue;
++		if (priv->plat->buggy_rmii_mode ^ entry->buggy_rmii_mode)
++			continue;
+ 
+ 		/* Only use generic HW helpers if needed */
+ 		mac->desc = mac->desc ? : entry->desc;
+Index: linux-tx93/drivers/net/ethernet/stmicro/stmmac/hwif.h
+===================================================================
+--- linux-tx93.orig/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ linux-tx93/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -623,6 +623,7 @@ extern const struct stmmac_ops dwmac4_op
+ extern const struct stmmac_dma_ops dwmac4_dma_ops;
+ extern const struct stmmac_ops dwmac410_ops;
+ extern const struct stmmac_dma_ops dwmac410_dma_ops;
++extern const struct stmmac_dma_ops dwmac410_imx93_rmii_dma_ops;
+ extern const struct stmmac_ops dwmac510_ops;
+ extern const struct stmmac_tc_ops dwmac510_tc_ops;
+ extern const struct stmmac_ops dwxgmac210_ops;
+Index: linux-tx93/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+===================================================================
+--- linux-tx93.orig/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ linux-tx93/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -524,6 +524,11 @@ stmmac_probe_config_dt(struct platform_d
+ 		plat->has_gmac = 0;
+ 		plat->pmt = 1;
+ 		plat->tso_en = of_property_read_bool(np, "snps,tso");
++		if (of_machine_is_compatible("fsl,imx93") &&
++		    plat->phy_interface == PHY_INTERFACE_MODE_RMII) {
++			dev_dbg(&pdev->dev, "i.MX93 BUGGY RMII mode workaround enabled\n");
++			plat->buggy_rmii_mode = 1;
++		}
+ 	}
+ 
+ 	if (of_device_is_compatible(np, "snps,dwmac-3.610") ||
+Index: linux-tx93/include/linux/stmmac.h
+===================================================================
+--- linux-tx93.orig/include/linux/stmmac.h
++++ linux-tx93/include/linux/stmmac.h
+@@ -205,6 +205,7 @@ struct plat_stmmacenet_data {
+ 	int tx_coe;
+ 	int rx_coe;
+ 	int bugged_jumbo;
++	int buggy_rmii_mode;
+ 	int pmt;
+ 	int force_sf_dma_mode;
+ 	int force_thresh_dma_mode;

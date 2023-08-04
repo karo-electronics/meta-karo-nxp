@@ -1,9 +1,25 @@
-SRC_URI:append = " \
+SRC_URI:append:mx8-nxp-bsp = " \
         file://sec-dsim-bugfixes.patch \
         file://fix-missing-drm-imx-dependency.patch \
+        file://0001-display-support.patch \
+        file://0002-panel-dpi-bus-format.patch \
+        file://0017-spi-nand-dma-map-bugfix.patch \
+        file://0019-fdt5x06-dma-bugfix.patch \
 "
 
-SRC_URI:append:mx8m-nxp-bsp = "${@ "".join(map(lambda f: " file://dts/freescale/overlays/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
+SRC_URI:append:mx9-nxp-bsp = " \
+        file://imx-intmux-dependency-bugfix.patch \
+        file://dont-select-imx-gpcv2.patch \
+        file://drm-imx-dependency-bugfix.patch \
+        file://imx93-dtsi-bugfixes.patch \
+        file://lpspi-dmas.patch \
+        file://imx93-eqos-rmii-workaround.patch \
+        file://imx93-tpm-bugfix.patch \
+        file://imx93-pll-rate-bugfix.patch \
+        file://karo-spidev-test.patch \
+"
+
+SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/overlays/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
 
 def get_overlays(d):
     ovlist = []

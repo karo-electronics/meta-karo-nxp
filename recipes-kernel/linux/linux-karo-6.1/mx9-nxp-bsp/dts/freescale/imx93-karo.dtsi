@@ -1,0 +1,47 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright 2023 Lothar Waßmann <LW@KARO-electronics.de>
+ * Copyright 2023 Markus Bauer <MB@KARO-electronics.de>
+ */
+
+/dts-v1/;
+
+#include "imx93.dtsi"
+
+/ {
+	chosen {
+		stdout-path = "serial0:115200n8";
+
+		overlays {
+		};
+	};
+
+	panel: lvds-panel {
+		compatible = "panel-lvds";
+		label = "PANEL SPECIFIC OVERLAY MISSING";
+		data-mapping = "jeida-24";
+	};
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		linux,cma {
+			compatible = "shared-dma-pool";
+			reusable;
+			size = <0 0x10000000>;
+			linux,cma-default;
+		};
+
+		ele_reserved: ele-reserved@a4120000 {
+			compatible = "shared-dma-pool";
+			reg = <0 0xa4120000 0 0x100000>;
+			no-map;
+		};
+	};
+};
+
+&ele_mu {
+	memory-region = <&ele_reserved>;
+};

@@ -1,0 +1,179 @@
+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+/*
+ * Copyright 2023 Lothar Waßmann <LW@KARO-electronics.de>
+ *
+ */
+
+/dts-v1/;
+
+/plugin/;
+
+#include <dt-bindings/clock/imx93-clock.h>
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "imx93-pinfunc.h"
+
+#define EQOS_PHY_RST	3
+#define FEC_PHY_RST	3
+
+&{/} {
+	chosen {
+		overlays {
+			qs93-qsbase93;
+		};
+	};
+};
+
+&eqos {
+	pinctrl-names = "default";
+#if EQOS_PHY_RST == 1
+	pinctrl-0 = <&pinctrl_eqos_rmii &pinctrl_ethphy0_rst>;
+	snps,reset-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
+	snps,reset-delays-us = <0 25000 100>;
+	mdio_rst_after_resume;
+#else
+	pinctrl-0 = <&pinctrl_eqos_rmii>;
+#endif
+	assigned-clock-rates = <100000000 50000000>;
+	phy-handle = <&ethphy0>;
+	phy-mode = "rmii";
+
+	mdio {
+#if EQOS_PHY_RST == 2
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ethphy0_rst>;
+		reset-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
+		reset-delay-us = <25000>;
+		reset-post-delay-us = <100>;
+#endif
+		ethphy0: ethernet-phy@1 {
+			reg = <1>;
+			pinctrl-names = "default";
+#if EQOS_PHY_RST == 3
+			pinctrl-0 = <&pinctrl_ethphy0_int &pinctrl_ethphy0_rst>;
+			reset-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
+			reset-delay-us = <25000>;
+			reset-post-delay-us = <100>;
+#else
+			pinctrl-0 = <&pinctrl_ethphy0_int>;
+#endif
+			interrupt-parent = <&gpio3>;
+			interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
+			clocks = <&clk IMX93_CLK_ENET_QOS_GATE>;
+			eee-broken-100tx;
+			smsc,disable-energy-detect;
+		};
+	};
+};
+
+&fec {
+	pinctrl-names = "default";
+#if FEC_PHY_RST == 1
+	pinctrl-0 = <&pinctrl_fec_rmii &pinctrl_ethphy1_rst>;
+	phy-reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+	phy-reset-duration = <25>;
+	phy-reset-post-delay = <1>;
+#else
+	pinctrl-0 = <&pinctrl_fec_rmii>;
+#endif
+	assigned-clock-rates = <100000000 50000000 50000000>;
+	phy-handle = <&ethphy1>;
+	phy-mode = "rmii";
+	mdio {
+#if FEC_PHY_RST == 2
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ethphy1_rst>;
+		reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+		reset-delay-us = <25000>;
+		reset-post-delay-us = <100>;
+#endif
+		ethphy1: ethernet-phy@0 {
+			reg = <0>;
+			pinctrl-names = "default";
+#if FEC_PHY_RST == 3
+			pinctrl-0 = <&pinctrl_ethphy1_int &pinctrl_ethphy1_rst>;
+			reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+			reset-delay-us = <25000>;
+			reset-post-delay-us = <100>;
+#else
+			pinctrl-0 = <&pinctrl_ethphy1_int>;
+#endif
+			clocks = <&clk IMX93_CLK_ENET_REF_PHY>;
+			interrupt-parent = <&gpio4>;
+			interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
+			eee-broken-100tx;
+			smsc,disable-energy-detect;
+		};
+	};
+};
+
+&panel {
+	data-mapping = "vesa-24";
+};
+
+&iomuxc {
+	pinctrl_eqos_rmii: eqos-rmiigrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_MDC__ENET_QOS_MDC			0x51e
+			MX93_PAD_ENET1_MDIO__ENET_QOS_MDIO			0x11e
+			MX93_PAD_ENET1_TD2__CCM_ENET_QOS_CLOCK_GENERATE_REF_CLK	0x4000011e
+			/* Strap pins: HIGH: 0x3.. LOW: 0x5.. */
+			/* MODE[0..1] */
+			MX93_PAD_ENET1_RD0__ENET_QOS_RGMII_RD0			0x300
+			MX93_PAD_ENET1_RD1__ENET_QOS_RGMII_RD1			0x300
+			/* MODE2 (external pullup) */
+			MX93_PAD_ENET1_RX_CTL__ENET_QOS_RGMII_RX_CTL		0x300
+			/* PHYAD0 */
+			MX93_PAD_ENET1_RXC__ENET_QOS_RX_ER			0x300
+
+			MX93_PAD_ENET1_TD0__ENET_QOS_RGMII_TD0			0x51e
+			MX93_PAD_ENET1_TD1__ENET_QOS_RGMII_TD1			0x51e
+			MX93_PAD_ENET1_TX_CTL__ENET_QOS_RGMII_TX_CTL		0x51e
+		>;
+	};
+
+	pinctrl_ethphy0_int: ethphy0-intgrp {
+		fsl,pins = <
+			MX93_PAD_SD2_DATA2__GPIO3_IO05				0x300
+		>;
+	};
+
+	pinctrl_ethphy0_rst: ethphy0-rstgrp {
+		fsl,pins = <
+			MX93_PAD_SD2_DATA1__GPIO3_IO04				0x11e
+		>;
+	};
+
+	pinctrl_ethphy1_int: ethphy1-intgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_RD2__GPIO4_IO12				0x300
+		>;
+	};
+
+	pinctrl_ethphy1_rst: ethphy1-rstgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_RD3__GPIO4_IO13				0x11e
+		>;
+	};
+
+	pinctrl_fec_rmii: fec-rmiigrp {
+		fsl,pins = <
+			MX93_PAD_ENET2_MDC__ENET1_MDC				0x51e
+			MX93_PAD_ENET2_MDIO__ENET1_MDIO				0x11e
+#ifndef PHY_CLK_EXT
+			MX93_PAD_ENET2_TD2__ENET1_TX_CLK			0x4000011e
+#endif
+			/* Strap pins: MODE[0..1] */
+			MX93_PAD_ENET2_RD0__ENET1_RGMII_RD0			0x300
+			MX93_PAD_ENET2_RD1__ENET1_RGMII_RD1			0x300
+			/* MODE2 (external pullup) */
+			MX93_PAD_ENET2_RX_CTL__ENET1_RGMII_RX_CTL		0x300
+			/* PHYAD0 */
+			MX93_PAD_ENET2_RXC__ENET1_RX_ER				0x500
+
+			MX93_PAD_ENET2_TD0__ENET1_RGMII_TD0			0x51e
+			MX93_PAD_ENET2_TD1__ENET1_RGMII_TD1			0x51e
+			MX93_PAD_ENET2_TX_CTL__ENET1_RGMII_TX_CTL		0x51e
+		>;
+	};
+};

@@ -1,0 +1,336 @@
+diff --git a/arch/arm/cpu/armv8/cpu.c b/arch/arm/cpu/armv8/cpu.c
+index ea40c55dd2..2feb6bc479 100644
+--- a/arch/arm/cpu/armv8/cpu.c
++++ b/arch/arm/cpu/armv8/cpu.c
+@@ -44,22 +44,31 @@ int cleanup_before_linux(void)
+ 	 * disable interrupt and turn off caches etc ...
+ 	 */
+ 
++printf("%s@%d: \n", __func__, __LINE__);
+ 	board_cleanup_before_linux();
++printf("%s@%d: \n", __func__, __LINE__);
+ 
+ 	disable_interrupts();
++printf("%s@%d: \n", __func__, __LINE__);
+ 
+ 	/*
+ 	 * Turn off I-cache and invalidate it
+ 	 */
++printf("%s@%d: \n", __func__, __LINE__);
+ 	icache_disable();
++printf("%s@%d: \n", __func__, __LINE__);
+ 	invalidate_icache_all();
++printf("%s@%d: \n", __func__, __LINE__);
+ 
+ 	/*
+ 	 * turn off D-cache
+ 	 * dcache_disable() in turn flushes the d-cache and disables MMU
+ 	 */
++printf("%s@%d: \n", __func__, __LINE__);
+ 	dcache_disable();
++printf("%s@%d: \n", __func__, __LINE__);
+ 	invalidate_dcache_all();
++printf("%s@%d: \n", __func__, __LINE__);
+ 
+ 	return 0;
+ }
+diff --git a/arch/arm/lib/bootm.c b/arch/arm/lib/bootm.c
+index d41377c4a3..c531d8bf2c 100644
+--- a/arch/arm/lib/bootm.c
++++ b/arch/arm/lib/bootm.c
+@@ -274,6 +274,7 @@ bool armv7_boot_nonsec(void)
+ }
+ #endif
+ 
++#include <hexdump.h>
+ #ifdef CONFIG_ARM64
+ __weak void update_os_arch_secondary_cores(uint8_t os_arch)
+ {
+@@ -315,26 +316,47 @@ static void boot_jump_linux(bootm_headers_t *images, int flag)
+ 
+ 	if (!fake) {
+ #ifdef CONFIG_ARMV8_PSCI
++printf("%s@%d: \n", __func__, __LINE__);
+ 		armv8_setup_psci();
++printf("%s@%d: \n", __func__, __LINE__);
+ #endif
++printf("%s@%d: \n", __func__, __LINE__);
+ 		do_nonsec_virt_switch();
++printf("%s@%d: \n", __func__, __LINE__);
+ 
+ 		update_os_arch_secondary_cores(images->os.arch);
++printf("%s@%d: \n", __func__, __LINE__);
+ 
+ #ifdef CONFIG_ARMV8_SWITCH_TO_EL1
++printf("%s@%d: \n", __func__, __LINE__);
+ 		armv8_switch_to_el2((u64)images->ft_addr, 0, 0, 0,
+ 				    (u64)switch_to_el1, ES_TO_AARCH64);
++printf("%s@%d: \n", __func__, __LINE__);
+ #else
+ 		if ((IH_ARCH_DEFAULT == IH_ARCH_ARM64) &&
+ 		    (images->os.arch == IH_ARCH_ARM))
++{
++printf("%s@%d: \n", __func__, __LINE__);
+ 			armv8_switch_to_el2(0, (u64)gd->bd->bi_arch_number,
+ 					    (u64)images->ft_addr, 0,
+ 					    (u64)images->ep,
+ 					    ES_TO_AARCH32);
+-		else
++printf("%s@%d: \n", __func__, __LINE__);
++}		else
++{
++	u32 el;
++
++	asm ("\tmrs %0, currentel\n" : "=r"(el));
++printf("%s@%d: fdt_addr=%p ep=%08lx el=%u\n", __func__, __LINE__,
++       images->ft_addr, images->ep, el);
++print_hex_dump("Linux: ", DUMP_PREFIX_ADDRESS, 16, 4, (void *)images->ep, 1024, true);
++printf("%s@%d: \n", __func__, __LINE__);
++working_fdt = env_get_hex("fdtaddr", 0x83000000);
++_fdt_print();
+ 			armv8_switch_to_el2((u64)images->ft_addr, 0, 0, 0,
+ 					    images->ep,
+ 					    ES_TO_AARCH64);
++}
+ #endif
+ 	}
+ #else
+Index: u-boot-denx-imx93/board/karo/imx93/config.mk
+===================================================================
+--- /dev/null
++++ u-boot-denx-imx93/board/karo/imx93/config.mk
+@@ -0,0 +1,3 @@
++ifeq ($(CONFIG_KARO_UBOOT_MFG)$(CONFIG_SPL_BUILD),)
++#	PLATFORM_CPPFLAGS += -DDEBUG
++endif
+diff --git a/cmd/fdt.c b/cmd/fdt.c
+index 2a207bf2b5..684cb8e349 100644
+--- a/cmd/fdt.c
++++ b/cmd/fdt.c
+@@ -31,6 +31,11 @@ static int fdt_parse_prop(char *const*newval, int count, char *data, int *len);
+ static int fdt_print(const char *pathp, char *prop, int depth);
+ static int is_printable_string(const void *data, int len);
+ 
++int _fdt_print(void)
++{
++	fdt_print("/", NULL, 0);
++}
++
+ /*
+  * The working_fdt points to our working flattened device tree.
+  */
+diff --git a/drivers/clk/clk-uclass.c b/drivers/clk/clk-uclass.c
+index c20c928bf1..2807395f36 100644
+--- a/drivers/clk/clk-uclass.c
++++ b/drivers/clk/clk-uclass.c
+@@ -604,21 +604,27 @@ int clk_set_parent(struct clk *clk, struct clk *parent)
+ 	const struct clk_ops *ops;
+ 	int ret;
+ 
+-	debug("%s(clk=%p, parent=%p)\n", __func__, clk, parent);
++	debug("%s(clk=%s, parent=%s)\n", __func__, clk ? clk->dev->name : "NULL",
++	      parent ? parent->dev->name : "NULL");
+ 	if (!clk_valid(clk))
+ 		return 0;
++printf("%s@%d: \n", __func__, __LINE__);
+ 	ops = clk_dev_ops(clk->dev);
++printf("%s@%d: ops=%p\n", __func__, __LINE__, ops);
+ 
+ 	if (!ops->set_parent)
+ 		return -ENOSYS;
+ 
+ 	ret = ops->set_parent(clk, parent);
++printf("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 	if (ret)
+ 		return ret;
+ 
+-	if (CONFIG_IS_ENABLED(CLK_CCF))
++	if (CONFIG_IS_ENABLED(CLK_CCF)) {
++printf("%s@%d: \n", __func__, __LINE__);
+ 		ret = device_reparent(clk->dev, parent->dev);
+-
++	}
++printf("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 	return ret;
+ }
+ 
+@@ -628,31 +634,42 @@ int clk_enable(struct clk *clk)
+ 	struct clk *clkp = NULL;
+ 	int ret;
+ 
+-	debug("%s(clk=%p)\n", __func__, clk);
++	debug("%s(clk=%s)\n", __func__, clk ? clk->dev->name : "NULL");
++
+ 	if (!clk_valid(clk))
+ 		return 0;
++printf("%s@%d: \n", __func__, __LINE__);
+ 	ops = clk_dev_ops(clk->dev);
++printf("%s@%d: ops=%p\n", __func__, __LINE__, ops);
+ 
+ 	if (CONFIG_IS_ENABLED(CLK_CCF)) {
+ 		/* Take id 0 as a non-valid clk, such as dummy */
++printf("%s@%d: id=%ld\n", __func__, __LINE__, clk->id);
+ 		if (clk->id && !clk_get_by_id(clk->id, &clkp)) {
++debug("%s(clkp=%s) %d\n", __func__, clkp ? clkp->dev->name : "NULL", clkp->enable_count);
+ 			if (clkp->enable_count) {
+ 				clkp->enable_count++;
++printf("%s@%d: return %p\n", __func__, __LINE__, __builtin_return_address(0));
+ 				return 0;
+ 			}
+ 			if (clkp->dev->parent &&
+ 			    device_get_uclass_id(clkp->dev->parent) == UCLASS_CLK) {
++debug("%s(clkp->dev->parent=%s)\n", __func__, clkp->dev->parent->name);
+ 				ret = clk_enable(dev_get_clk_ptr(clkp->dev->parent));
++printf("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 				if (ret) {
+ 					printf("Enable %s failed\n",
+ 					       clkp->dev->parent->name);
+ 					return ret;
+ 				}
+ 			}
++printf("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 		}
+ 
+ 		if (ops->enable) {
++printf("%s@%d: ops->enable@%p\n", __func__, __LINE__, ops->enable);
+ 			ret = ops->enable(clk);
++printf("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 			if (ret) {
+ 				printf("Enable %s failed\n", clk->dev->name);
+ 				return ret;
+@@ -663,8 +680,10 @@ int clk_enable(struct clk *clk)
+ 	} else {
+ 		if (!ops->enable)
+ 			return -ENOSYS;
++printf("%s@%d: ops->enable(%s)\n", __func__, __LINE__, clk->dev->name);
+ 		return ops->enable(clk);
+ 	}
++printf("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 
+ 	return 0;
+ }
+@@ -688,7 +707,7 @@ int clk_disable(struct clk *clk)
+ 	struct clk *clkp = NULL;
+ 	int ret;
+ 
+-	debug("%s(clk=%p)\n", __func__, clk);
++	debug("%s(clk=%s)\n", __func__, clk ? clk->dev->name : "NULL");
+ 	if (!clk_valid(clk))
+ 		return 0;
+ 	ops = clk_dev_ops(clk->dev);
+diff --git a/drivers/clk/imx/clk-imx93.c b/drivers/clk/imx/clk-imx93.c
+index f0d7f49a1f..b9c24e810b 100644
+--- a/drivers/clk/imx/clk-imx93.c
++++ b/drivers/clk/imx/clk-imx93.c
+@@ -255,9 +255,11 @@ static int imx93_clk_enable(struct clk *clk)
+ {
+ 	struct clk *c;
+ 	int err = clk_get_by_id(clk->id, &c);
++printf("%s@%d: err=%d\n", __func__, __LINE__, err);
+ 
+ 	if (err)
+ 		return err;
++printf("%s@%d: clk_enable(%s)\n", __func__, __LINE__, clk->dev->name);
+ 	return clk_enable(c);
+ }
+ 
+diff --git a/drivers/serial/serial_lpuart.c b/drivers/serial/serial_lpuart.c
+index 064c4c7406..1724f8251f 100644
+--- a/drivers/serial/serial_lpuart.c
++++ b/drivers/serial/serial_lpuart.c
+@@ -33,6 +33,7 @@
+ #define STAT_LBKDIF	(1 << 31)
+ #define STAT_RXEDGIF	(1 << 30)
+ #define STAT_TDRE	(1 << 23)
++#define STAT_TC		(1 << 22)
+ #define STAT_RDRF	(1 << 21)
+ #define STAT_IDLE	(1 << 20)
+ #define STAT_OR		(1 << 19)
+@@ -41,8 +42,6 @@
+ #define STAT_PF		(1 << 16)
+ #define STAT_MA1F	(1 << 15)
+ #define STAT_MA2F	(1 << 14)
+-#define STAT_FLAGS	(STAT_LBKDIF | STAT_RXEDGIF | STAT_IDLE | STAT_OR | \
+-			 STAT_NF | STAT_FE | STAT_PF | STAT_MA1F | STAT_MA2F)
+ 
+ #define CTRL_TE		(1 << 19)
+ #define CTRL_RE		(1 << 18)
+@@ -325,7 +324,7 @@ static int _lpuart32_serial_getc(struct lpuart_serial_plat *plat)
+ 
+ 	lpuart_read32(plat->flags, &base->stat, &stat);
+ 	while ((stat & STAT_RDRF) == 0) {
+-		lpuart_write32(plat->flags, &base->stat, STAT_FLAGS);
++		lpuart_write32(plat->flags, &base->stat, stat);
+ 		WATCHDOG_RESET();
+ 		lpuart_read32(plat->flags, &base->stat, &stat);
+ 	}
+@@ -374,6 +373,22 @@ static int _lpuart32_serial_tstc(struct lpuart_serial_plat *plat)
+ 	return 1;
+ }
+ 
++static void _lpuart32_serial_flush(struct lpuart_serial_plat *plat)
++{
++	struct lpuart_fsl_reg32 *base = (struct lpuart_fsl_reg32 *)plat->reg;
++	int timeout = 4000;
++
++	if (!(readl(&base->ctrl) & CTRL_RE) ||
++	    !(readl(&base->ctrl) & CTRL_TE))
++		return;
++
++	while (!(readl(&base->stat) & STAT_TC) && --timeout) {
++		udelay(1);
++		if (timeout-- <= 0)
++			break;
++	}
++}
++
+ /*
+  * Initialise the serial port with the given baudrate. The settings
+  * are always 8 data bits, no parity, 1 stop bit, no start bits.
+@@ -383,6 +398,18 @@ static int _lpuart32_serial_init(struct udevice *dev)
+ 	struct lpuart_serial_plat *plat = dev_get_plat(dev);
+ 	struct lpuart_fsl_reg32 *base = (struct lpuart_fsl_reg32 *)plat->reg;
+ 	u32 val, tx_fifo_size;
++	u32 serial_rdy = gd->flags & GD_FLG_SERIAL_READY;
++
++printf("%s@%d: \n", __func__, __LINE__);
++	if ((readl(&base->ctrl) & CTRL_RE) ||
++	    (readl(&base->ctrl) & CTRL_TE)) {
++printf("%s@%d: \n", __func__, __LINE__);
++		return 0;
++	}
++printf("%s@%d: \n", __func__, __LINE__);
++
++	_lpuart32_serial_flush(plat);
++	gd->flags &= ~GD_FLG_SERIAL_READY;
+ 
+ 	lpuart_read32(plat->flags, &base->ctrl, &val);
+ 	val &= ~CTRL_RE;
+@@ -417,6 +444,7 @@ static int _lpuart32_serial_init(struct udevice *dev)
+ 
+ 	lpuart_write32(plat->flags, &base->ctrl, CTRL_RE | CTRL_TE);
+ 
++	gd->flags |= serial_rdy;
+ 	return 0;
+ }
+ 
+@@ -490,7 +518,9 @@ static int lpuart_serial_probe(struct udevice *dev)
+ 
+ 	ret = clk_get_by_name(dev, "per", &per_clk);
+ 	if (!ret) {
++debug("%s@%d: enabling PER clk\n", __func__, __LINE__);
+ 		ret = clk_enable(&per_clk);
++debug("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 		if (ret) {
+ 			dev_err(dev, "Failed to enable per clk: %d\n", ret);
+ 			return ret;
+@@ -501,7 +531,9 @@ static int lpuart_serial_probe(struct udevice *dev)
+ 
+ 	ret = clk_get_by_name(dev, "ipg", &ipg_clk);
+ 	if (!ret) {
++debug("%s@%d: enabling IPG clk\n", __func__, __LINE__);
+ 		ret = clk_enable(&ipg_clk);
++debug("%s@%d: ret=%d\n", __func__, __LINE__, ret);
+ 		if (ret) {
+ 			dev_err(dev, "Failed to enable ipg clk: %d\n", ret);
+ 			return ret;

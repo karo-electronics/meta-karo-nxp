@@ -63,8 +63,11 @@ BOOT_STAGING:mx8m-nxp-bsp  = "${S}/iMX8M"
 REV_OPTION ?= ""
 
 compile_imx8m() {
-    local t="$1"
     bbnote 8MQ/8MM boot binary build
+
+    local t="$1"
+    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING}"
         install -v "${DEPLOY_DIR_IMAGE}/${ddr_firmware}"               "${BOOT_STAGING}"
@@ -75,21 +78,34 @@ compile_imx8m() {
 
     install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${UBOOT_DTB_NAME}"   "${BOOT_STAGING}"
 
-    bbnote "\
-Using standard mkimage from u-boot-tools for FIT image builds. The standard \
-mkimage is compatible for this use, and using it saves us from having to \
-maintain a custom recipe."
-    ln -svf "${STAGING_DIR_NATIVE}${bindir}/mkimage"            "${BOOT_STAGING}/mkimage_uboot"
     install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME}" "${BOOT_STAGING}/bl31.bin"
-
-    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-    BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${t}"
 
     install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
                                                             "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
     install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/u-boot-nodtb.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
                                                             "${BOOT_STAGING}/u-boot-nodtb.${UBOOT_SUFFIX}"
     install -v "${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}" "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
+}
+
+
+compile_imx93() {
+    bbnote i.MX 93 boot binary build
+
+    local t="$1"
+    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
+
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING} "
+        install -v ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}
+    done
+
+    install -v ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
+    install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
+    install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
+    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} ] ; then
+        install -v ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} \
+                                                             ${BOOT_STAGING}/u-boot-spl.bin
+    fi
 }
 
 do_compile() {
@@ -143,7 +159,23 @@ deploy_imx8m() {
     install -v -m 0644 ${BOOT_STAGING}/signed_hdmi_imx8m.bin    ${DEPLOYDIR}/${BOOT_TOOLS}
     install -v -m 0755 ${BOOT_STAGING}/${TOOLS_NAME}            ${DEPLOYDIR}/${BOOT_TOOLS}
     install -v -m 0755 ${BOOT_STAGING}/mkimage_fit_atf.sh       ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -v -m 0755 ${BOOT_STAGING}/mkimage_uboot            ${DEPLOYDIR}/${BOOT_TOOLS}
+}
+
+deploy_imx93() {
+    install -d ${DEPLOYDIR}/${BOOT_TOOLS}
+
+    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+        install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
+    done
+
+    install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
+    install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
+    for t in ${UBOOT_CONFIG};do
+        if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} ] ; then
+            install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} \
+                                                             ${DEPLOYDIR}/${BOOT_TOOLS}
+        fi
+    done
 }
 
 do_deploy() {
@@ -181,4 +213,4 @@ addtask deploy before do_build after do_compile
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILES:${PN} = "/boot"
 
-COMPATIBLE_MACHINE = "(mx8)"
+COMPATIBLE_MACHINE = "(mx8|mx9)"

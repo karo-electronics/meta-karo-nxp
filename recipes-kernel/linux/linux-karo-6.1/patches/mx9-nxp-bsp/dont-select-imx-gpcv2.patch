@@ -1,0 +1,22 @@
+Index: linux-tx93/arch/arm64/Kconfig.platforms
+===================================================================
+--- linux-tx93.orig/arch/arm64/Kconfig.platforms
++++ linux-tx93/arch/arm64/Kconfig.platforms
+@@ -206,12 +206,12 @@ config ARCH_LAYERSCAPE
+ 
+ config ARCH_MXC
+ 	bool "ARMv8 based NXP i.MX SoC family"
+-	select ARM64_ERRATUM_843419
+-	select ARM64_ERRATUM_845719 if COMPAT
++	select ARM64_ERRATUM_843419 if SOC_IMX8M
++	select ARM64_ERRATUM_845719 if SOC_IMX8M && COMPAT
+ 	select GPIOLIB
+-	select IMX_GPCV2
+-	select IMX_GPCV2_PM_DOMAINS
+-	select HAVE_IMX_BUSFREQ
++	select IMX_GPCV2 if SOC_IMX8M || SOC_IMX7D
++	select IMX_GPCV2_PM_DOMAINS if IMX_GPCV2
++	select HAVE_IMX_BUSFREQ if SOC_IMX8M
+ 	select PM
+ 	select PM_GENERIC_DOMAINS
+ 	select SOC_BUS
