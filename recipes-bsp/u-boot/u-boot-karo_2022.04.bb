@@ -29,7 +29,7 @@ PROVIDES += "u-boot"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-UBOOT_SRC ?= "git://github.com/nxp-imx/uboot-imx.git;protocol=https"
+UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "lf_v2022.04-karo"
 SRCREV = "4acff84453027573a7dd5b3643a261325855c901"
