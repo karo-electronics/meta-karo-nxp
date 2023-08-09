@@ -63,7 +63,6 @@
 		compatible = "snps,dwmac-mdio";
 		#address-cells = <1>;
 		#size-cells = <0>;
-		clock-frequency = <5000000>;
 	};
 };
 
@@ -74,7 +73,6 @@
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
-		clock-frequency = <5000000>;
 	};
 };
 
