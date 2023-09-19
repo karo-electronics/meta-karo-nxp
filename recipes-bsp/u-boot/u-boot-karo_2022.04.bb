@@ -18,6 +18,8 @@ DEPENDS += "\
         python3-setuptools-native \
 "
 
+inherit use-imx-security-controller-firmware
+
 require recipes-bsp/u-boot/u-boot.inc
 require conf/machine/include/${SOC_PREFIX}-overlays.inc
 inherit fsl-u-boot-localversion
@@ -29,19 +31,35 @@ PROVIDES += "u-boot"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
-UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
+#UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
+UBOOT_SRC ?= "git:///net/karonas/repos/git/u-boot"
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
-SRCBRANCH = "lf_v2022.04-karo"
-SRCREV = "4acff84453027573a7dd5b3643a261325855c901"
+#SRCBRANCH = "lf_v2022.04-karo"
+#SRCREV = "cb7fe6fb13f8258dacc1ac0ee62c7173a7644309"
+SRCBRANCH = "lf_v2022.04-devel"
+SRCREV = "1372944df3fea40cacd5b0bfdf8585021d5cc959"
 
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 LOCALVERSION = "-${SRCBRANCH}-karo"
 
+IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "firmware-imx-8m"
 IMX_EXTRA_FIRMWARE:mx9-nxp-bsp = "firmware-imx-9 firmware-sentinel"
 
-UBOOT_BOARD_DIR = "board/karo/imx93"
+ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
+ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
+
+DEPENDS += " \
+    ${IMX_EXTRA_FIRMWARE} \
+    imx-atf \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
+"
+DEPENDS:append:mx8m-nxp-bsp = " u-boot-mkimage-native"
+
+UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
+UBOOT_BOARD_DIR:mx9-nxp-bsp = "board/karo/imx93"
+
 UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
                        "-" + d.getVar('KARO_BASEBOARD') \
                        if d.getVar('KARO_BASEBOARD') != "" else "")}"
@@ -57,6 +75,10 @@ SRC_URI:append = " ${@ " file://dts/%s.dts;subdir=git/arch/arm" % \
                        d.getVar('UBOOT_DTB_NAME').replace(".dtb", "")}"
 SRC_URI:append = " ${@ " file://dts/%s-u-boot.dtsi;subdir=git/arch/arm" % \
                        d.getVar('UBOOT_DTB_NAME').replace(".dtb", "")}"
+SRC_URI:append = " \
+    file://dts/${DTB_BASENAME}-u-boot.dtsi;subdir=git/arch/arm \
+    file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
+"
 
 SRC_URI:append = " file://u-boot-cfg.${SOC_PREFIX}"
 SRC_URI:append = " file://u-boot-cfg.${SOC_FAMILY}"
@@ -64,6 +86,10 @@ SRC_URI:append = " file://u-boot-cfg.${MACHINE}"
 SRC_URI:append = "${@ "".join(map(lambda f: " file://u-boot-cfg.%s" % f, d.getVar('UBOOT_CONFIG').split()))}"
 
 EXTRA_OEMAKE:append = " V=0"
+
+FILES:${PN} += "${@ "".join(map(lambda f: " u-boot-%s-%s.%s" % (d.getVar('MACHINE'), \
+                                f, d.getVar('UBOOT_SUFFIX')), \
+                                d.getVar('UBOOT_CONFIG').split()))}"
 
 do_fetch[prefuncs] =+ "karo_check_baseboard"
 
@@ -89,16 +115,16 @@ do_configure:prepend() {
                 j=$(expr $j + 1)
                 [ $j -lt $i ] && continue
                 c="`echo "$config" | sed 's/_config/_defconfig/'`"
-                bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to '${S}/configs/${c}'"
+                bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to 'configs/${c}'"
                 cp "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${S}/configs/${c}"
                 if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-                    bbnote "Appending '${SOC_FAMILY}' specific config to '${S}/configs/${c}'"
+                    bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to 'configs/${c}'"
                     cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${c}"
                 fi
-                bbnote "Appending '${MACHINE}' specific config to '${S}/configs/${c}'"
+                bbnote "Appending 'u-boot-cfg.${MACHINE}' to 'configs/${c}'"
                 cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${S}/configs/${c}"
                 if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
-                    bbnote "Appending '$type' specific config to '${S}/configs/${c}'"
+                    bbnote "Appending 'u-boot-cfg.${type}' to 'configs/${c}'"
                     cat "${WORKDIR}/u-boot-cfg.${type}" >> "${S}/configs/${c}"
                 fi
                 break
@@ -106,23 +132,28 @@ do_configure:prepend() {
         done
         unset i j
     else
-        bbnote "Copying 'u-boot-cfg.${MACHINE}' to '${S}/configs/${MACHINE}_defconfig'"
-        cp "${WORKDIR}/u-boot-cfg.${MACHINE}" "${S}/configs/${MACHINE}_defconfig"
+        c="${MACHINE}_defconfig"
+        bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to 'configs/${c}'"
+        cp "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${S}/configs/${c}"
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-            bbnote "Appending '${SOC_FAMILY}' specific config to '${S}/configs/${MACHINE}_defconfig'"
-            cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${MACHINE}_defconfig"
+            bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to 'configs/${c}'"
+            cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${c}"
         fi
-        bbnote "Appending '${MACHINE}' specific config to '${S}/configs/${MACHINE}_defconfig'"
-        cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${S}/configs/${MACHINE}_defconfig"
+        if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
+            bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to 'configs/${c}'"
+            cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${c}"
+        fi
+        bbnote "Appending 'u-boot-cfg.${MACHINE}' to 'configs/${c}'"
+        cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${S}/configs/${c}"
     fi
 }
 
 do_configure:append() {
     tmpfile="`mktemp cfg-XXXXXX.tmp`"
-    if [ "${KARO_BASEBOARD}" != "" ];then
-        if [ -z "$tmpfile" ];then
-            bbfatal "Failed to create tmpfile"
-        fi
+    if [ -z "$tmpfile" ];then
+        bbfatal "Failed to create tmpfile"
+    fi
+    if [ -n "${KARO_BASEBOARD}" ];then
         cat <<EOF >> "$tmpfile"
 CONFIG_DEFAULT_DEVICE_TREE="${DTB_BASENAME}-${KARO_BASEBOARD}"
 EOF
@@ -130,15 +161,19 @@ EOF
                 sed -i '/^targets /i\
 dtb-y += ${DTB_BASENAME}-${KARO_BASEBOARD}.dtb\
 ' ${S}/arch/arm/dts/Makefile
+        echo "CONFIG_OF_LIST=\"${DTB_BASENAME}-${KARO_BASEBOARD} ${DTB_BASENAME}\"" >> "$tmpfile"
     fi
+
     bbnote "UBOOT_ENV_FILE='${UBOOT_ENV_FILE}'"
     if [ -n "${UBOOT_ENV_FILE}" ];then
         cat <<EOF >> "$tmpfile"
+CONFIG_USE_DEFAULT_ENV_FILE=y
 CONFIG_DEFAULT_ENV_FILE="board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}.env"
 EOF
     else
         echo "# CONFIG_USE_DEFAULT_ENV_FILE is not set" >> "$tmpfile"
     fi
+
     if [ -n "${UBOOT_CONFIG}" ];then
         for config in ${UBOOT_MACHINE};do
             c="${B}/${config}"
@@ -151,9 +186,6 @@ EOF
     fi
     rm -vf "$tmpfile"
 }
-
-do_compile[depends] += "${@ "".join(map(lambda f: " %s:do_deploy" % f, \
-                                        d.getVar('IMX_EXTRA_FIRMWARE').split()))}"
 
 check_cnf() {
     local src="$1"
@@ -207,12 +239,20 @@ do_check_config() {
                 fi
                 break
             done
-            oe_runmake -C "${c}" olddefconfig
+            for feature in ${UBOOT_FEATURES};do
+                bbnote "Appending '$feature' specific config to '$(basename "${c}")/.config'"
+                merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/${feature}.cfg"
+                check_cnf "${WORKDIR}/${feature}.cfg" "${c}"
+            done
             check_cnf "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${c}"
             if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
                 check_cnf "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" "${c}"
             fi
             check_cnf "${WORKDIR}/u-boot-cfg.${MACHINE}" "${c}"
+
+            # restore the original config
+            cp -v "${c}/defconfig" "${c}/.config"
+            oe_runmake -C "${c}" olddefconfig
         done
     else
         cp -v "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${B}/.config"
@@ -225,10 +265,64 @@ do_check_config() {
             check_cnf "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" "${B}"
         fi
         check_cnf "${WORKDIR}/u-boot-cfg.${MACHINE}" "${B}"
+
+        # restore the original config
+        cp -v "${B}/defconfig" "${B}/.config"
+        oe_runmake -C "${B}" olddefconfig
     fi
 }
 addtask do_check_config after do_savedefconfig
 do_check_config[nostamp] = "1"
+
+# This package aggregates output deployed by other packages,
+# so set the appropriate dependencies
+do_compile[depends] += " \
+    ${@ "".join(map(lambda f: " %s:do_deploy" % f, d.getVar('IMX_EXTRA_FIRMWARE').split()))} \
+    imx-atf:do_deploy \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
+"
+
+do_compile:prepend() {
+    if [ -n "${UBOOT_CONFIG}" ];then
+	for m in ${UBOOT_MACHINE};do
+	    bbnote "Copy ATF: '${ATF_MACHINE_NAME}' from '${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}' to '${B}/${m}/bl31.bin'"
+	    install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME}" "${B}/${m}/bl31.bin"
+	    for f in ${DDR_FIRMWARE_NAME} ${SECO_FIRMWARE_NAME};do
+		bbnote "Copy ddr_firmware: ${f} from ${DEPLOY_DIR_IMAGE} -> ${B}/${m}"
+		install -D "${DEPLOY_DIR_IMAGE}/${f}" "${B}/${m}"
+	    done
+	done
+    else
+	bbnote "Copy ATF: '${ATF_MACHINE_NAME}' from '${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}' to '${B}'"
+	install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME}" "${B}/bl31.bin"
+	for f in ${DDR_FIRMWARE_NAME} ${SECO_FIRMWARE_NAME};do
+	    bbnote "Copy ddr_firmware: ${f} from ${DEPLOY_DIR_IMAGE} -> ${B}"
+	    install -D "${DEPLOY_DIR_IMAGE}/${f}" "${B}"
+	done
+    fi
+}
+
+do_deploy:append:mx8m-nxp-bsp () {
+    install -d "${DEPLOYDIR}"
+
+    if [ -n "${UBOOT_CONFIG}" ];then
+        i=0
+        for config in ${UBOOT_MACHINE};do
+            i=$(expr $i + 1)
+            j=0
+            for type in ${UBOOT_CONFIG};do
+                j=$(expr $j + 1)
+                if [ $j -eq $i ];then
+                    install -m 0644 "${B}/${config}/flash.bin" "${DEPLOYDIR}/u-boot-${MACHINE}-${type}.${UBOOT_SUFFIX}"
+                fi
+            done
+            unset j
+        done
+        unset i
+    else
+        install -m 0644 "${B}/flash.bin" "${DEPLOYDIR}/u-boot-${MACHINE}.${UBOOT_SUFFIX}"
+    fi
+}
 
 do_savedefconfig() {
     if [ -n "${UBOOT_CONFIG}" ];then
@@ -258,25 +352,37 @@ python do_env_overlays () {
     if d.getVar('UBOOT_ENV_FILE') == None:
         bb.warn("UBOOT_ENV_FILE is undefined")
         return 1
-    src_file = "%s/%s/%s.env" % (d.getVar('S'), d.getVar('UBOOT_BOARD_DIR'), d.getVar('UBOOT_ENV_FILE'))
-    dst_dir = "%s/%s_config/%s" % (d.getVar('B'), d.getVar('MACHINE'), d.getVar('UBOOT_BOARD_DIR'))
-    bb.utils.mkdirhier(dst_dir)
-    env_file = os.path.join(dst_dir, os.path.basename(src_file))
-    shutil.copyfile(src_file, env_file)
-    f = open(env_file, 'a')
+
+    overlays = []
     for baseboard in d.getVar('KARO_BASEBOARDS').split():
         ovlist = d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True)
         if ovlist == None:
             bb.note("No overlays defined for '%s' on baseboard '%s'" % (d.getVar('MACHINE'), baseboard))
             continue
-        overlays = " ".join(map(lambda f: f, ovlist.split()))
-        bb.note("Adding overlays_%s='%s' to %s" % (baseboard, overlays, env_file))
-        f.write("overlays_%s=%s\n" %(baseboard, overlays))
-    f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
-    f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
-    f.close()
+        ov = " ".join(map(lambda f: f, ovlist.split()))
+        overlays += ["overlays_%s=%s" % (baseboard, ov)]
+
+    src_file = "%s/%s/%s.env" % (d.getVar('S'), d.getVar('UBOOT_BOARD_DIR'), d.getVar('UBOOT_ENV_FILE'))
+    if d.getVar('UBOOT_CONFIG') != None:
+        configs = d.getVar('UBOOT_MACHINE').split()
+    else:
+        configs = (d.getVar('MACHINE'))
+
+    for config in configs:
+        dst_dir = "%s/%s/%s" % (d.getVar('B'), config, d.getVar('UBOOT_BOARD_DIR'))
+        bb.utils.mkdirhier(dst_dir)
+        env_file = os.path.join(dst_dir, os.path.basename(src_file))
+        shutil.copyfile(src_file, env_file)
+        f = open(env_file, 'a')
+        for ov in overlays:
+            bb.note("Adding '%s' to '%s'" % (ov, env_file))
+            f.write("%s\n" % ov)
+        f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
+        f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
+        f.close()
 }
 addtask do_env_overlays before do_compile after do_configure
+do_env_overlays[vardeps] += "KARO_BASEBOARDS KARO_DTB_OVERLAYS"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx93)"
+COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx93)"

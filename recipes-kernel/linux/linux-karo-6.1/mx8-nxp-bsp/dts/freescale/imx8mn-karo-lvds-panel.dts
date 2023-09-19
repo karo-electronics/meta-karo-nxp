@@ -38,11 +38,6 @@
 	};
 };
 
-&pwm1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_pwm1>;
-};
-
 &backlight {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lcd_en>;

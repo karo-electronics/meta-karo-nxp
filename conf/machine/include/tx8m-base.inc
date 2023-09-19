@@ -25,33 +25,33 @@ MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "1"
 
 KARO_BOARD_PMIC ?= "bd71847"
 
-UBOOT_CONFIG ??= "default mfg noenv"
+UBOOT_CONFIG ??= "noenv mfg default"
 UBOOT_FEATURES ??= ""
+UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.bz2"
 
 # Set U-Boot DTB
 KARO_BASEBOARD ??= ""
-UBOOT_DTB_NAME = "${@ "${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
-
-DTB_BASENAME = "${SOC_FAMILY}-${MACHINE}"
+DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
+UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s.dtb" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
 
 BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
+UBOOT_INITIAL_ENV = ""
 
 # Set imx-mkimage boot target
 IMXBOOT_TARGETS ?= "flash_tx8m"
-IMX_BOOT_SOC_TARGET ?= "iMX8MM"
 ATF_PLATFORM ?= "imx8mm"
 ATF_LOAD_ADDR ?= "0x920000"
 
 # Set Serial console
 SERIAL_CONSOLES ?= "115200;ttymxc0 115200;ttymxc1 115200;ttymxc2"
 # for imx-atf
-IMX_BOOT_UART_BASE ?= "0x30860000"
+IMX_BOOT_UART_BASE ??= "0x30860000"
 
 # Set DDR FIRMWARE
 DDR_FIRMWARE_NAME ?= " \
@@ -59,7 +59,7 @@ DDR_FIRMWARE_NAME ?= " \
         ddr3_dmem_1d.bin \
 "
 
-IMAGE_BOOTLOADER = "imx-boot-karo"
+IMAGE_BOOTLOADER = "u-boot"
 
 LOADADDR = ""
 UBOOT_SUFFIX = "bin"
@@ -69,7 +69,6 @@ IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 PREFERRED_VERSION_linux-karo ?= "6.1"
-PREFERRED_PROVIDER_imx-boot = "imx-boot-karo"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
 

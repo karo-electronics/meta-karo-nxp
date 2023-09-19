@@ -5,7 +5,7 @@ SRC_URI:append = " \
         file://get-console-from-fdt.patch \
         file://fmt-bugfix.patch \
         file://debug-verbosity.patch \
-	file://errata-report-msg.patch \
+        file://errata-report-msg.patch \
 "
 SRC_URI:append:mx9-nxp-bsp = " \
         file://imx93-psci-cleanup.patch \
@@ -13,14 +13,20 @@ SRC_URI:append:mx9-nxp-bsp = " \
 
 EXTRA_OEMAKE:append = " \
         CRASH_REPORTING=1 \
-	LOG_LEVEL=30 \
+        LOG_LEVEL=30 \
+        DEBUG=0 \
 "
 
 EXTRA_OEMAKE:append:mx8-nxp-bsp = " \
-        RESET_TO_BL31=0 \
-	WDOG_B_RESET=1 \
+        RESET_TO_BL31=1 \
+        WDOG_B_RESET=1 \
         IMX_BOOT_UART_BASE=${IMX_BOOT_UART_BASE} \
 "
+
+EXTRA_OEMAKE:append:mx8-nxp-bsp = " \
+        ERRATA_A53_1530924=1 \
+"
+
 EXTRA_OEMAKE:append:mx9-nxp-bsp = " \
         IMX_LPUART_BASE=${IMX_BOOT_UART_BASE} \
 "

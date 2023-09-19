@@ -60,7 +60,9 @@ EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
 do_configure[noexec] = "1"
 
 do_compile() {
-    # Clear LDFLAGS to avoid the option -Wl recognize issue
+    # 'make clean' before compiling because atf build system does not recognise
+    # changed compiler settings
+    oe_runmake clean
     oe_runmake bl31
     if ${BUILD_OPTEE}; then
         oe_runmake clean BUILD_BASE=build-optee
@@ -73,11 +75,11 @@ do_install[noexec] = "1"
 addtask deploy after do_compile
 do_deploy() {
     builddir="${@ bb.utils.contains('EXTRA_OEMAKE','DEBUG=1',"debug", "release", d)}"
-    install -Dm 0644 ${S}/build/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin
-    install -Dm 0644 ${S}/build/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${ATF_PLATFORM}.bin
+    install -vDm 0644 ${S}/build/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin
+    install -vDm 0644 ${S}/build/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${ATF_PLATFORM}.bin
     if ${BUILD_OPTEE}; then
-        install -m 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin-optee
-        install -m 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${ATF_PLATFORM}.bin-optee
+        install -vm 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin-optee
+        install -vm 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${ATF_PLATFORM}.bin-optee
     fi
 }
 
