@@ -22,6 +22,7 @@ KARO_BOARD_PMIC ?= "pca9450"
 
 UBOOT_CONFIG ??= "noenv mfg default"
 UBOOT_FEATURES ??= ""
+UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.bz2"
 
@@ -92,8 +93,6 @@ PREFERRED_VERSION_opengl-es-cts:aarch64 = "3.2.7.0"
 
 # Set a more generic tuning for code reuse across parts
 # taken from fsl-imx-base.inc
-DEFAULTTUNE:mx8-nxp-bsp    ?= "armv8a-crc-crypto"
-DEFAULTTUNE:mx8m-nxp-bsp   ?= "armv8a-crc-crypto"
 DEFAULTTUNE:mx9-nxp-bsp    ?= "cortexa55"
 
 PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
