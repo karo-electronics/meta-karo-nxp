@@ -4,6 +4,7 @@ SRC_URI:append = " \
 "
 
 SRC_URI:append = " \
+    file://dts/imx93-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx93-karo.dtsi;subdir=git/arch/arm \
 "
 
