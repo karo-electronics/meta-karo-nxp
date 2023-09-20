@@ -1,0 +1,86 @@
+From 13ab647e9a70bed313cee8e4bbf1fff7eb40da9c Mon Sep 17 00:00:00 2001
+From: "Zoey.Li" <zoey.li@nxp.com>
+Date: Thu, 14 Sep 2023 18:07:15 +0900
+Subject: [PATCH 2/3] imx219 test: enable embedded data support and MSB aligned
+ for raw formats
+
+Signed-off-by: Zoey.Li <zoey.li@nxp.com>
+---
+ drivers/staging/media/imx/dwc-mipi-csi2.c | 8 +++++---
+ drivers/staging/media/imx/imx8-isi-cap.c  | 1 +
+ drivers/staging/media/imx/imx8-isi-fmt.c  | 9 +++++++++
+ 3 files changed, 15 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/staging/media/imx/dwc-mipi-csi2.c b/drivers/staging/media/imx/dwc-mipi-csi2.c
+index 0c7ae3895e7c..a87721e50800 100644
+--- a/drivers/staging/media/imx/dwc-mipi-csi2.c
++++ b/drivers/staging/media/imx/dwc-mipi-csi2.c
+@@ -741,13 +741,13 @@ static void disp_mix_gasket_config(struct dwc_mipi_csi2_host *csi2h)
+ 	case MEDIA_BUS_FMT_SGBRG10_1X10:
+ 	case MEDIA_BUS_FMT_SGRBG10_1X10:
+ 	case MEDIA_BUS_FMT_SRGGB10_1X10:
+-		fmt_val = DT_RAW10;
++		fmt_val = /*DT_RAW10*/ 0x31;
+ 		break;
+ 	case MEDIA_BUS_FMT_SBGGR12_1X12:
+ 	case MEDIA_BUS_FMT_SGBRG12_1X12:
+ 	case MEDIA_BUS_FMT_SGRBG12_1X12:
+ 	case MEDIA_BUS_FMT_SRGGB12_1X12:
+-		fmt_val = DT_RAW12;
++		fmt_val = /*DT_RAW12*/ 0x31;
+ 		break;
+ 	default:
+ 		pr_err("gasket not support format %d\n", mf->code);
+@@ -906,6 +906,8 @@ static int dwc_mipi_csi2_host_ipi_config(struct dwc_mipi_csi2_host *csi2h)
+ 	/* Configure the IPI horizontal frame information */
+ 	dwc_mipi_csi2_ipi_config_htiming(csi2h);
+ 
++	dwc_mipi_csi2h_write(csi2h, DWC_MIPI_CSI2_IPI_ADV_FEATURES, 0x1230000);
++
+ 	if (csi2h->ppi_pg_enable)
+ 		dwc_mipi_csi2h_write(csi2h, DWC_MIPI_CSI2_IPI_ADV_FEATURES,
+ 				     0x01050000);
+@@ -1061,7 +1063,7 @@ static int dwc_mipi_csi2_param_init(struct dwc_mipi_csi2_host *csi2h)
+ 			ipi_cfg->vactive_lines   = 0x320;
+ 			ipi_cfg->controller_mode = 0;
+ 			ipi_cfg->color_mode_16   = 0;
+-			ipi_cfg->embeded_data    = 0;
++			ipi_cfg->embeded_data    = 1;
+ 		}
+ 	}
+ 
+diff --git a/drivers/staging/media/imx/imx8-isi-cap.c b/drivers/staging/media/imx/imx8-isi-cap.c
+index 748955650990..464d99308a4e 100644
+--- a/drivers/staging/media/imx/imx8-isi-cap.c
++++ b/drivers/staging/media/imx/imx8-isi-cap.c
+@@ -973,6 +973,7 @@ static int mxc_isi_source_fmt_init(struct mxc_isi_cap_dev *isi_cap)
+ 	src_fmt.pad = source_pad->index;
+ 	src_fmt.which = V4L2_SUBDEV_FORMAT_ACTIVE;
+ 	ret = v4l2_subdev_call(src_sd, pad, get_fmt, NULL, &src_fmt);
++	src_fmt.format.code = MEDIA_BUS_FMT_UYVY8_1X16;
+ 	if (ret < 0 && ret != -ENOIOCTLCMD) {
+ 		v4l2_err(&isi_cap->sd, "get remote fmt fail!\n");
+ 		return ret;
+diff --git a/drivers/staging/media/imx/imx8-isi-fmt.c b/drivers/staging/media/imx/imx8-isi-fmt.c
+index 93ee37f536cf..ee496c354bf2 100644
+--- a/drivers/staging/media/imx/imx8-isi-fmt.c
++++ b/drivers/staging/media/imx/imx8-isi-fmt.c
+@@ -115,6 +115,15 @@ struct mxc_isi_fmt mxc_isi_out_formats[] = {
+ 		.colplanes	= 1,
+ 		.align		= 2,
+ 		.mbus_code	= MEDIA_BUS_FMT_SGRBG10_1X10,
++	}, {
++		.name           = "RAW10 (SRGGB10)",
++		.fourcc         = V4L2_PIX_FMT_SRGGB10,
++		.depth          = { 16 },
++		.color          = MXC_ISI_OUT_FMT_RAW16,
++		.memplanes      = 1,
++		.colplanes      = 1,
++		.align          = 2,
++		.mbus_code      = MEDIA_BUS_FMT_SRGGB10_1X10,
+ 	}, {
+ 		.name		= "RAW12 (SGRBG12)",
+ 		.fourcc		= V4L2_PIX_FMT_SGRBG12,
+-- 
+2.34.1
+
