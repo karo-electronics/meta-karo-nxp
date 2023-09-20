@@ -171,6 +171,14 @@
 	status = "okay";
 };
 
+&resmem {
+       /* overwrite freescale cma setting since it's not allocatable */
+       linux,cma {
+               size = <0 0xf000000>;
+               /delete-property/ alloc-ranges;
+       };
+};
+
 &uart1 { /* console */
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart1>;
