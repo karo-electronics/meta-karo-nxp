@@ -78,6 +78,7 @@ DTB_OVERLAYS:append:qsxm = "\
 "
 
 DTB_OVERLAYS:append:qsxp = "\
+        ${@ mach_overlay(d, "qsxp-cam", dist="csi-camera")} \
         karo-vpu \
         qsxp-flexcan \
         qsxp-ksz9031 \
