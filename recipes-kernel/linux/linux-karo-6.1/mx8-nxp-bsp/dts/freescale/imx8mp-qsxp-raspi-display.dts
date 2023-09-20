@@ -5,7 +5,6 @@
  */
 
 /dts-v1/;
-
 /plugin/;
 
 &{/chosen} {
@@ -15,14 +14,18 @@
 };
 
 &i2c2 {
+	status = "okay";
+
 	rpi_ft5406: rpi_ft5406@38 {
 		compatible = "rpi_ft5406";
 		reg = <0x38>;
 	};
 
-	rpi_display: rpi_display@45 {
-		compatible = "rpi_display";
+	reg_rpi_display: regulator-rpi-display@45 {
+		compatible = "raspberrypi,7inch-touchscreen-panel-regulator";
 		reg = <0x45>;
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
 	};
 };
 
@@ -40,6 +43,8 @@
 		video-mode = <2>;
 		panel-width-mm = <154>;
 		panel-height-mm = <86>;
+		power-supply = <&reg_rpi_display>;
+		status = "okay";
 
 		port {
 			panel_from_mipi_dsi_bridge: endpoint {
