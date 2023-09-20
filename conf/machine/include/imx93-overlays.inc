@@ -39,6 +39,7 @@ DTB_OVERLAYS:append:qs93 = " \
         qs93-eqos-ksz9031 \
         qs93-eqos-lan8710 \
         qs93-fec-lan8710 \
+        qs93-imx219 \
         qs93-qsbase93 \
         qs93-spidev \
 "
