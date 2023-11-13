@@ -14,7 +14,6 @@ DTB_OVERLAY_INCLUDES = " \
 DTB_OVERLAYS_generic = "\
         karo-copro \
         karo-gpu \
-        karo-mb7 \
         karo-lcd-panel \
         karo-lvds-mb \
         karo-lvds-panel \
@@ -24,6 +23,10 @@ DTB_OVERLAYS_generic = "\
         karo-panel-etm0350 \
         karo-panel-etm0700 \
         karo-panel-tm101jvhg32 \
+"
+
+DTB_OVERLAYS_generic:append:tx93 = "\
+        karo-mb7 \
 "
 
 DTB_OVERLAYS ??= ""
@@ -45,8 +48,8 @@ DTB_OVERLAYS:append:qs93 = " \
 "
 
 KARO_BASEBOARDS:tx93 += "\
-        mb7 \
         lvds-mb \
+        mb7 \
 "
 
 KARO_BASEBOARDS:qs93 += "\
