@@ -6,9 +6,9 @@ DEPENDS += "lzop-native bc-native dtc-native"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-SRCBRANCH = "lf-6.1.y-karo"
-SRCREV = "4cf0ec7b8c89a6a6f51b510ad298b89ed2bcbc30"
-KERNEL_SRC = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https;branch=${SRCBRANCH}"
+SRCBRANCH = "lf-6.1.y-karo-2"
+SRCREV = "36213e6dd44c4a0479bda36734c266a3f90af16e"
+KERNEL_SRC ?= "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https;branch=${SRCBRANCH}"
 SRC_URI = "${KERNEL_SRC}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
@@ -45,7 +45,7 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','copro',' copro
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','csi-camera',' csi-camera.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','imx219',' imx219.cfg mx8-cam.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','ipv6',' ipv6.cfg','',d)}"
-KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg lvds.cfg','',d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','dsi83',' dsi83.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','tc358867',' tc358867.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"

@@ -1,7 +1,7 @@
-diff --git a/drivers/media/platform/mxc/capture/mx6s_capture.c b/drivers/media/platform/mxc/capture/mx6s_capture.c
-index a45d01ed8bfd..1e1ff604dbd9 100644
---- a/drivers/media/platform/mxc/capture/mx6s_capture.c
-+++ b/drivers/media/platform/mxc/capture/mx6s_capture.c
+Index: linux-tx8m-1620/drivers/media/platform/mxc/capture/mx6s_capture.c
+===================================================================
+--- linux-tx8m-1620.orig/drivers/media/platform/mxc/capture/mx6s_capture.c
++++ linux-tx8m-1620/drivers/media/platform/mxc/capture/mx6s_capture.c
 @@ -266,6 +266,12 @@ static struct mx6s_fmt formats[] = {
  		.pixelformat	= V4L2_PIX_FMT_SBGGR8,
  		.mbus_code	= MEDIA_BUS_FMT_SBGGR8_1X8,
@@ -15,7 +15,7 @@ index a45d01ed8bfd..1e1ff604dbd9 100644
  	}
  };
  
-@@ -838,6 +844,7 @@ static int mx6s_configure_csi(struct mx6s_csi_dev *csi_dev)
+@@ -838,6 +844,7 @@ static int mx6s_configure_csi(struct mx6
  	switch (csi_dev->fmt->pixelformat) {
  	case V4L2_PIX_FMT_YUV32:
  	case V4L2_PIX_FMT_SBGGR8:
@@ -23,7 +23,7 @@ index a45d01ed8bfd..1e1ff604dbd9 100644
  		width = pix->width;
  		break;
  	case V4L2_PIX_FMT_UYVY:
-@@ -869,6 +876,7 @@ static int mx6s_configure_csi(struct mx6s_csi_dev *csi_dev)
+@@ -869,6 +876,7 @@ static int mx6s_configure_csi(struct mx6
  			cr18 |= BIT_MIPI_DATA_FORMAT_YUV422_8B;
  			break;
  		case V4L2_PIX_FMT_SBGGR8:
@@ -31,11 +31,11 @@ index a45d01ed8bfd..1e1ff604dbd9 100644
  			cr18 |= BIT_MIPI_DATA_FORMAT_RAW8;
  			break;
  		default:
-diff --git a/drivers/media/platform/mxc/capture/mxc_mipi_csi.c b/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
-index 069a0b9bb961..affc08e271ce 100644
---- a/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
-+++ b/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
-@@ -322,6 +322,10 @@ static const struct csis_pix_format mipi_csis_formats[] = {
+Index: linux-tx8m-1620/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
+===================================================================
+--- linux-tx8m-1620.orig/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
++++ linux-tx8m-1620/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
+@@ -321,6 +321,10 @@ static const struct csis_pix_format mipi
  		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
  		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
  		.data_alignment = 8,

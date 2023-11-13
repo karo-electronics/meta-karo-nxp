@@ -1,12 +1,11 @@
-diff --git a/drivers/staging/media/imx/imx8-mipi-csi2-sam.c b/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
-index 1d12365520a6..4169cebadbe5 100644
---- a/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
-+++ b/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
-@@ -471,6 +471,18 @@ static const struct csis_pix_format mipi_csis_formats[] = {
- 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
+Index: linux-tx8m-1620/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
+===================================================================
+--- linux-tx8m-1620.orig/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
++++ linux-tx8m-1620/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
+@@ -476,6 +476,18 @@ static const struct csis_pix_format mipi
  		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
  		.data_alignment = 8,
-+	}, {
+ 	}, {
 +		.code = MEDIA_BUS_FMT_SRGGB8_1X8,
 +		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
 +		.data_alignment = 8,
@@ -18,10 +17,11 @@ index 1d12365520a6..4169cebadbe5 100644
 +		.code = MEDIA_BUS_FMT_SGRBG8_1X8,
 +		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
 +		.data_alignment = 8,
- 	}, {
++	}, {
  		.code = MEDIA_BUS_FMT_SBGGR10_1X10,
  		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW10,
-@@ -955,6 +967,15 @@ static void disp_mix_gasket_config(struct csi_state *state)
+ 		.data_alignment = 16,
+@@ -957,6 +969,15 @@ static void disp_mix_gasket_config(struc
  	case MEDIA_BUS_FMT_SBGGR8_1X8:
  		fmt_val = GASKET_0_CTRL_DATA_TYPE_RAW8;
  		break;
@@ -37,15 +37,14 @@ index 1d12365520a6..4169cebadbe5 100644
  	case MEDIA_BUS_FMT_SBGGR10_1X10:
  		fmt_val = GASKET_0_CTRL_DATA_TYPE_RAW10;
  		break;
-diff --git a/drivers/staging/media/imx/dwc-mipi-csi2.c b/drivers/staging/media/imx/dwc-mipi-csi2.c
-index 8a24b0231596..8ce84699a54a 100644
---- a/drivers/staging/media/imx/dwc-mipi-csi2.c
-+++ b/drivers/staging/media/imx/dwc-mipi-csi2.c
-@@ -395,6 +395,15 @@ static const struct csi2h_pix_format dwc_csi2h_formats[] = {
-	}, {
-		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
-		.fmt_reg = 0x2A,
-+	}, {
+Index: linux-tx8m-1620/drivers/staging/media/imx/dwc-mipi-csi2.c
+===================================================================
+--- linux-tx8m-1620.orig/drivers/staging/media/imx/dwc-mipi-csi2.c
++++ linux-tx8m-1620/drivers/staging/media/imx/dwc-mipi-csi2.c
+@@ -396,6 +396,15 @@ static const struct csi2h_pix_format dwc
+ 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
+ 		.fmt_reg = 0x2A,
+ 	}, {
 +		.code = MEDIA_BUS_FMT_SRGGB8_1X8,
 +		.fmt_reg = 0x2A,
 +	}, {
@@ -54,16 +53,17 @@ index 8a24b0231596..8ce84699a54a 100644
 +	}, {
 +		.code = MEDIA_BUS_FMT_SGRBG8_1X8,
 +		.fmt_reg = 0x2A,
-	}, {
-		.code = MEDIA_BUS_FMT_SBGGR10_1X10,
-		.fmt_reg = 0x2B,
-@@ -702,6 +711,9 @@ static void disp_mix_gasket_config(struct dwc_mipi_csi2_host *csi2h)
-		fmt_val = DT_YUV422_8;
-		break;
-	case MEDIA_BUS_FMT_SBGGR8_1X8:
++	}, {
+ 		.code = MEDIA_BUS_FMT_SBGGR10_1X10,
+ 		.fmt_reg = 0x2B,
+ 	}, {
+@@ -702,6 +711,9 @@ static void disp_mix_gasket_config(struc
+ 		fmt_val = DT_YUV422_8;
+ 		break;
+ 	case MEDIA_BUS_FMT_SBGGR8_1X8:
 +	case MEDIA_BUS_FMT_SRGGB8_1X8:
 +	case MEDIA_BUS_FMT_SGBRG8_1X8:
 +	case MEDIA_BUS_FMT_SGRBG8_1X8:
-		fmt_val = DT_RAW8;
-		break;
-	case MEDIA_BUS_FMT_SBGGR10_1X10:
+ 		fmt_val = DT_RAW8;
+ 		break;
+ 	case MEDIA_BUS_FMT_SBGGR10_1X10:
