@@ -28,13 +28,8 @@ SOC_DEFAULT_IMAGE_FSTYPES = "tar.bz2"
 
 # Set U-Boot DTB
 KARO_BASEBOARD ??= ""
-UBOOT_DTB_NAME = "${@ "%s%s.dtb" % (d.getVar('DTB_BASENAME'), "-" + d.getVar('KARO_BASEBOARD') \
-                      if d.getVar('KARO_BASEBOARD') != "" else "")}"
-
-UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), "-" + d.getVar('KARO_BASEBOARD') \
-                      if d.getVar('KARO_BASEBOARD') != "" else "")}"
-
-DTB_BASENAME = "${SOC_FAMILY}-${MACHINE}"
+DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
+UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
 

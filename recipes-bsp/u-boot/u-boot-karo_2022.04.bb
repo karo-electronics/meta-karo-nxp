@@ -71,10 +71,8 @@ SRC_URI:append = "${@ " file://%s.env;subdir=git/%s" % \
                       if d.getVar('UBOOT_ENV_FILE') != None else ""} \
 "
 
-SRC_URI:append = " ${@ " file://dts/%s.dts;subdir=git/arch/arm" % \
-                       d.getVar('UBOOT_DTB_NAME').replace(".dtb", "")}"
-SRC_URI:append = " ${@ " file://dts/%s-u-boot.dtsi;subdir=git/arch/arm" % \
-                       d.getVar('UBOOT_DTB_NAME').replace(".dtb", "")}"
+SRC_URI:append = " ${@ " file://dts/%s.dts;subdir=git/arch/arm" %  d.getVar('UBOOT_DTB_NAME')}"
+SRC_URI:append = " ${@ " file://dts/%s-u-boot.dtsi;subdir=git/arch/arm" % d.getVar('UBOOT_DTB_NAME')}"
 SRC_URI:append = " \
     file://dts/${DTB_BASENAME}-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
@@ -156,13 +154,13 @@ do_configure:append() {
     fi
     if [ -n "${KARO_BASEBOARD}" ];then
         cat <<EOF >> "$tmpfile"
-CONFIG_DEFAULT_DEVICE_TREE="${DTB_BASENAME}-${KARO_BASEBOARD}"
+CONFIG_DEFAULT_DEVICE_TREE="${UBOOT_DTB_NAME}"
 EOF
-        grep -q "${DTB_BASENAME}-${KARO_BASEBOARD}\.dtb" ${S}/arch/arm/dts/Makefile || \
+        grep -q "${UBOOT_DTB_NAME}\.dtb" ${S}/arch/arm/dts/Makefile || \
                 sed -i '/^targets /i\
-dtb-y += ${DTB_BASENAME}-${KARO_BASEBOARD}.dtb\
+dtb-y += ${UBOOT_DTB_NAME}.dtb\
 ' ${S}/arch/arm/dts/Makefile
-        echo "CONFIG_OF_LIST=\"${DTB_BASENAME}-${KARO_BASEBOARD} ${DTB_BASENAME}\"" >> "$tmpfile"
+        echo "CONFIG_OF_LIST=\"${UBOOT_DTB_NAME} ${DTB_BASENAME}\"" >> "$tmpfile"
     fi
 
     bbnote "UBOOT_ENV_FILE='${UBOOT_ENV_FILE}'"
