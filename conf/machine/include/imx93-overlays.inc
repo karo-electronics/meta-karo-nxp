@@ -2,7 +2,6 @@ require karo-dtb-overlays.inc
 
 DTB_OVERLAY_INCLUDES = " \
         karo-backlight \
-        karo-dsi83 \
         karo-ft5x06 \
         karo-ili2130 \
         karo-mcp2515 \
