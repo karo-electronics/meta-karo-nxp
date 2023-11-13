@@ -23,7 +23,8 @@
 		i2c6 = &lpi2c8;
 		i2c7 = &lpi2c6;
 		mmc0 = &usdhc1;
-		mmc1 = &usdhc2;
+		mmc1 = &usdhc3;
+		mmc2 = &usdhc2;
 		serial1 = &lpuart3;
 		serial2 = &lpuart5;
 		serial3 = &lpuart4;
@@ -300,9 +301,9 @@
 	status = "okay";
 };
 
-&usdhc2 {
+&usdhc3 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usdhc2>;
+	pinctrl-0 = <&pinctrl_usdhc3>;
 	vmmc-supply = <&buck4>;
 	vqmmc-supply = <&buck4>;
 	bus-width = <4>;
@@ -519,7 +520,7 @@
 		>;
 	};
 
-	pinctrl_usdhc2: usdhc2grp {
+	pinctrl_usdhc3: usdhc3grp {
 		fsl,pins = <
 			MX93_PAD_SD2_CLK__USDHC2_CLK				0x01fe
 			MX93_PAD_SD2_CMD__USDHC2_CMD				0x13fe
@@ -530,9 +531,9 @@
 		>;
 	};
 
-	pinctrl_usdhc2_cd: usdhc2-cdgrp {
+	pinctrl_usdhc3_cd: usdhc3-cdgrp {
 		fsl,pins = <
-			MX93_PAD_SD2_CD_B__GPIO3_IO00				0x200
+			MX93_PAD_SD2_DATA3__GPIO3_IO06				0x200
 		>;
 	};
 };
