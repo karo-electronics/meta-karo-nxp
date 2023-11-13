@@ -94,6 +94,7 @@ FILES:${PN} += "${@ "".join(map(lambda f: " u-boot-%s-%s.%s" % (d.getVar('MACHIN
 do_fetch[prefuncs] =+ "karo_check_baseboard"
 
 python karo_check_baseboard () {
+    bb.note("Checking validity of KARO_BASEBOARD: ")
     if d.getVar('KARO_BASEBOARDS') == None:
         bb.fatal("'KARO_BASEBOARDS' is undefined")
     if d.getVar('KARO_BASEBOARD') != "":
@@ -289,7 +290,7 @@ do_compile:prepend() {
 	    install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME}" "${B}/${m}/bl31.bin"
 	    for f in ${DDR_FIRMWARE_NAME} ${SECO_FIRMWARE_NAME};do
 		bbnote "Copy ddr_firmware: ${f} from ${DEPLOY_DIR_IMAGE} -> ${B}/${m}"
-		install -D "${DEPLOY_DIR_IMAGE}/${f}" "${B}/${m}"
+		install -v -D "${DEPLOY_DIR_IMAGE}/${f}" "${B}/${m}"
 	    done
 	done
     else
@@ -297,14 +298,12 @@ do_compile:prepend() {
 	install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME}" "${B}/bl31.bin"
 	for f in ${DDR_FIRMWARE_NAME} ${SECO_FIRMWARE_NAME};do
 	    bbnote "Copy ddr_firmware: ${f} from ${DEPLOY_DIR_IMAGE} -> ${B}"
-	    install -D "${DEPLOY_DIR_IMAGE}/${f}" "${B}"
+	    install -v -D "${DEPLOY_DIR_IMAGE}/${f}" "${B}"
 	done
     fi
 }
 
 do_deploy:append:mx8m-nxp-bsp () {
-    install -d "${DEPLOYDIR}"
-
     if [ -n "${UBOOT_CONFIG}" ];then
         i=0
         for config in ${UBOOT_MACHINE};do
@@ -312,15 +311,35 @@ do_deploy:append:mx8m-nxp-bsp () {
             j=0
             for type in ${UBOOT_CONFIG};do
                 j=$(expr $j + 1)
-                if [ $j -eq $i ];then
-                    install -m 0644 "${B}/${config}/flash.bin" "${DEPLOYDIR}/u-boot-${MACHINE}-${type}.${UBOOT_SUFFIX}"
-                fi
+                [ $j = $i ] || continue
+                install -v "${B}/${config}/flash.bin" "u-boot-${MACHINE}-${type}.${UBOOT_SUFFIX}"
+                break
             done
             unset j
         done
         unset i
     else
-        install -m 0644 "${B}/flash.bin" "${DEPLOYDIR}/u-boot-${MACHINE}.${UBOOT_SUFFIX}"
+        install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
+    fi
+}
+
+do_deploy:append:mx9-nxp-bsp () {
+    if [ -n "${UBOOT_CONFIG}" ];then
+        i=0
+        for config in ${UBOOT_MACHINE};do
+            i=$(expr $i + 1)
+            j=0
+            for type in ${UBOOT_CONFIG};do
+                j=$(expr $j + 1)
+                [ $j = $i ] || continue
+                ln -snvf "u-boot-spl.${UBOOT_SUFFIX}-${type}" "${DEPLOYDIR}/u-boot-spl-${MACHINE}.${UBOOT_SUFFIX}-${type}"
+                break
+            done
+            unset j
+        done
+        unset i
+    else
+        ln -snvf "u-boot-spl.${UBOOT_SUFFIX}" "${DEPLOYDIR}/u-boot-spl-${MACHINE}.${UBOOT_SUFFIX}"
     fi
 }
 

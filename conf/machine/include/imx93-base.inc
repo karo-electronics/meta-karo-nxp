@@ -20,7 +20,7 @@ MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "0"
 
 KARO_BOARD_PMIC ?= "pca9450"
 
-UBOOT_CONFIG ??= "noenv mfg default"
+UBOOT_CONFIG ??= "default mfg noenv"
 UBOOT_FEATURES ??= ""
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
 

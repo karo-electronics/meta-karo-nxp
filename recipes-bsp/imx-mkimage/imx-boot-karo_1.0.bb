@@ -21,6 +21,7 @@ DEPENDS += " \
 "
 # xxd is a dependency of fspi_packer.sh
 DEPENDS += "xxd-native"
+DEPENDS += "u-boot-imx-tools-native"
 BOOT_NAME = "imx-boot-karo"
 PROVIDES = "${BOOT_NAME}"
 PROVIDES += "imx-boot"
@@ -39,12 +40,8 @@ do_compile[depends] += " \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
-SC_FIRMWARE_NAME ?= "scfw_tcm.bin"
-
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
-
-TOOLS_NAME ?= "mkimage_imx8"
 
 IMX_BOOT_SOC_TARGET ?= "INVALID"
 
@@ -55,54 +52,42 @@ IMXBOOT_TARGETS ?= \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
                                                   'flash_multi_cores flash_dcd', d), d)}"
 
-BOOT_STAGING = "${S}/${IMX_BOOT_SOC_TARGET}"
+B = "${WORKDIR}/build"
+BOOT_STAGING = "${B}/${IMX_BOOT_SOC_TARGET}"
 
-REV_OPTION ?= ""
-
-compile_imx93() {
-    bbnote i.MX 93 boot binary build
-
-    local t="$1"
-    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-
-    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING} "
-        install -v ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}
-    done
-
-    install -v ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/
-    install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/bl31.bin
-    install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}                     ${BOOT_STAGING}/u-boot.bin
-    if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} ] ; then
-        install -v ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} \
-                                                             ${BOOT_STAGING}/u-boot-spl.bin
-    fi
-}
+do_configure[noexec] = "1"
 
 do_compile() {
-    install -v -d -m 0775 "${BOOT_STAGING}"
+    bbnote i.MX 93 boot binary build
+
+    ( cd "${S}"; git rev-parse --short HEAD ) > ${B}/head.hash
 
     # Copy TEE binary to SoC target folder to mkimage
-    if ${DEPLOY_OPTEE}; then
-        install -v "${DEPLOY_DIR_IMAGE}/tee.bin" "${BOOT_STAGING}"
-    fi
     for type in ${UBOOT_CONFIG};do
-        compile_${SOC_PREFIX} ${type}
         BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${type}"
 
-        # mkimage for i.MX8
+        install -v -D ${DEPLOY_DIR_IMAGE}/u-boot-${MACHINE}.${UBOOT_SUFFIX}-${type} ${BOOT_STAGING}/${type}/u-boot.bin
+        install -v ${DEPLOY_DIR_IMAGE}/u-boot-spl-${MACHINE}.${UBOOT_SUFFIX}-${type} ${BOOT_STAGING}/${type}/u-boot-spl.bin
+        cat ${BOOT_STAGING}/${type}/u-boot.bin ${B}/head.hash > ${BOOT_STAGING}/${type}/u-boot-hash.bin
+
+        ln -snvf "../../../git/${IMX_BOOT_SOC_TARGET}/soc.mak" "${BOOT_STAGING}/${type}"
+
+        install -v ${DEPLOY_DIR_IMAGE}/${SECO_FIRMWARE_NAME}             ${BOOT_STAGING}/${type}
+        install -v ${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME} ${BOOT_STAGING}/${type}/bl31.bin
+
+        for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
+            bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING}/${type}"
+            install -v ${DEPLOY_DIR_IMAGE}/${ddr_firmware}               ${BOOT_STAGING}/${type}
+        done
+
+        if ${DEPLOY_OPTEE}; then
+            install -v "${DEPLOY_DIR_IMAGE}/tee.bin" "${BOOT_STAGING}"
+        fi
+
         for target in ${IMXBOOT_TARGETS}; do
-            if [ "$target" = "flash_linux_m4_no_v2x" ]; then
-                # Special target build for i.MX 8DXL with V2X off
-                bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} V2X=NO ${target}"
-                make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} V2X=NO dtbs=${UBOOT_DTB_NAME} flash_linux_m4
-            else
-                bbnote "building ${IMX_BOOT_SOC_TARGET} - ${REV_OPTION} ${target}"
-                make SOC=${IMX_BOOT_SOC_TARGET} ${REV_OPTION} dtbs=${UBOOT_DTB_NAME} ${target}
-            fi
-            if [ -e "${BOOT_STAGING}/flash.bin" ]; then
-                install -v "${BOOT_STAGING}/flash.bin" "${S}/${BOOT_CONFIG_MACHINE}-${target}"
-            fi
+            bbnote "building ${IMX_BOOT_SOC_TARGET} - ${target} in `pwd`"
+            make -C "${S}" MKIMG=${B}/mkimage_imx8 O="${BOOT_STAGING}/${type}" SOC_DIR=../${IMX_BOOT_SOC_TARGET}/${type} SOC=${IMX_BOOT_SOC_TARGET} dtbs=${UBOOT_DTB_NAME} ${target}
+            install -v "${BOOT_STAGING}/${type}/flash.bin" "${S}/${BOOT_CONFIG_MACHINE}-${target}"
         done
     done
 }
@@ -113,23 +98,20 @@ do_install () {
     for type in ${UBOOT_CONFIG};do
         BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${type}"
         for target in ${IMXBOOT_TARGETS}; do
-            install -v -m 0644 ${S}/${BOOT_CONFIG_MACHINE}-${target} ${D}/boot/
+            install -v ${S}/${BOOT_CONFIG_MACHINE}-${target} ${D}/boot/
         done
     done
 }
 
 deploy_imx93() {
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -v ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
     done
 
-    install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
-#    install -m 0755 ${D}/tools/${TOOLS_NAME}         ${DEPLOYDIR}/${BOOT_TOOLS}
     for t in ${UBOOT_CONFIG};do
-        if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} ] ; then
-            install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} \
-                                                             ${DEPLOYDIR}/${BOOT_TOOLS}
-        fi
+        install -v -d ${DEPLOYDIR}/${BOOT_TOOLS}/${t}
+        install -v ${BOOT_STAGING}/${t}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}/${t}
+        install -v ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} ${DEPLOYDIR}/${BOOT_TOOLS}/${t}
     done
 }
 
@@ -138,30 +120,29 @@ do_deploy() {
 
     # copy tee.bin to deploy path
     if "${DEPLOY_OPTEE}"; then
-        install -v -m 0644 ${DEPLOY_DIR_IMAGE}/tee.bin          ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -v ${DEPLOY_DIR_IMAGE}/tee.bin ${DEPLOYDIR}/${BOOT_TOOLS}
     fi
 
-    # copy makefile (soc.mak) for reference
-    install -v -m 0644 ${BOOT_STAGING}/soc.mak                  ${DEPLOYDIR}/${BOOT_TOOLS}
-
+    deploy_${SOC_PREFIX}
     for type in ${UBOOT_CONFIG};do
-        deploy_${SOC_PREFIX}
         UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${type}"
         BOOT_CONFIG_MACHINE="${BOOT_NAME}-${MACHINE}.${UBOOT_SUFFIX}-${type}"
 
-        install -v -m 0644 ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}        ${DEPLOYDIR}/${BOOT_TOOLS}
+        install -v ${DEPLOY_DIR_IMAGE}/${UBOOT_NAME} ${DEPLOYDIR}/${BOOT_TOOLS}
+
         # copy the generated boot image to deploy path
         for target in ${IMXBOOT_TARGETS}; do
+            install -v ${S}/${BOOT_CONFIG_MACHINE}-${target} ${DEPLOYDIR}/${BOOT_NAME}-${MACHINE}-${type}.${UBOOT_SUFFIX}
+            ln -snvf ${BOOT_NAME}-${MACHINE}-${type}.${UBOOT_SUFFIX} ${DEPLOYDIR}/${BOOT_NAME}-${type}
+            ln -snvf ${BOOT_NAME}-${MACHINE}-${type}.${UBOOT_SUFFIX} ${DEPLOYDIR}/${BOOT_CONFIG_MACHINE}-${target}
+
             # Use first "target" as IMAGE_IMXBOOT_TARGET
             if [ "$IMAGE_IMXBOOT_TARGET" = "" ]; then
                 IMAGE_IMXBOOT_TARGET="$target"
-                echo "Set boot target as $IMAGE_IMXBOOT_TARGET"
-                ln -svf ${BOOT_CONFIG_MACHINE}-${IMAGE_IMXBOOT_TARGET} ${DEPLOYDIR}/${BOOT_NAME}
+                bbnote "Set boot target as $IMAGE_IMXBOOT_TARGET"
+                ln -snvf ${BOOT_NAME}-${type} ${DEPLOYDIR}/${BOOT_NAME}
             fi
-            install -v -m 0644 ${S}/${BOOT_CONFIG_MACHINE}-${target} ${DEPLOYDIR}
-            install -v -m 0644 ${S}/${BOOT_CONFIG_MACHINE}-${target} ${DEPLOYDIR}/${BOOT_NAME}-${MACHINE}-${type}.${UBOOT_SUFFIX}
         done
-        ln -svf ${BOOT_CONFIG_MACHINE}-${IMAGE_IMXBOOT_TARGET} ${DEPLOYDIR}/${BOOT_NAME}-${type}
     done
 }
 addtask deploy before do_build after do_compile
