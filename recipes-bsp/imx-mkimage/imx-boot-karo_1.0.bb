@@ -12,8 +12,7 @@ SECTION = "BSP"
 inherit use-imx-security-controller-firmware
 
 IMX_EXTRA_FIRMWARE      = "firmware-imx-8 imx-sc-firmware imx-seco"
-IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "firmware-imx-8m"
-IMX_EXTRA_FIRMWARE:mx8x = "imx-sc-firmware imx-seco"
+
 DEPENDS += " \
     u-boot \
     ${IMX_EXTRA_FIRMWARE} \
@@ -22,7 +21,6 @@ DEPENDS += " \
 "
 # xxd is a dependency of fspi_packer.sh
 DEPENDS += "xxd-native"
-DEPENDS:append:mx8m-nxp-bsp = " u-boot-mkimage-native dtc-native"
 BOOT_NAME = "imx-boot-karo"
 PROVIDES = "${BOOT_NAME}"
 PROVIDES += "imx-boot"
@@ -57,36 +55,9 @@ IMXBOOT_TARGETS ?= \
         bb.utils.contains('UBOOT_CONFIG', 'nand', 'flash_nand', \
                                                   'flash_multi_cores flash_dcd', d), d)}"
 
-BOOT_STAGING       = "${S}/${IMX_BOOT_SOC_TARGET}"
-BOOT_STAGING:mx8m-nxp-bsp  = "${S}/iMX8M"
+BOOT_STAGING = "${S}/${IMX_BOOT_SOC_TARGET}"
 
 REV_OPTION ?= ""
-
-compile_imx8m() {
-    bbnote 8MQ/8MM boot binary build
-
-    local t="$1"
-    UBOOT_NAME="u-boot-${MACHINE}.${UBOOT_SUFFIX}-${t}"
-
-    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        bbnote "Copy ddr_firmware: ${ddr_firmware} from ${DEPLOY_DIR_IMAGE} -> ${BOOT_STAGING}"
-        install -v "${DEPLOY_DIR_IMAGE}/${ddr_firmware}"               "${BOOT_STAGING}"
-    done
-
-    install -v "${DEPLOY_DIR_IMAGE}/signed_dp_imx8m.bin"               "${BOOT_STAGING}"
-    install -v "${DEPLOY_DIR_IMAGE}/signed_hdmi_imx8m.bin"             "${BOOT_STAGING}"
-
-    install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${UBOOT_DTB_NAME}"   "${BOOT_STAGING}"
-
-    install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/${ATF_MACHINE_NAME}" "${BOOT_STAGING}/bl31.bin"
-
-    install -v "${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
-                                                            "${BOOT_STAGING}/u-boot-spl.${UBOOT_SUFFIX}"
-    install -v "${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}/u-boot-nodtb.${UBOOT_SUFFIX}-${MACHINE}-${t}" \
-                                                            "${BOOT_STAGING}/u-boot-nodtb.${UBOOT_SUFFIX}"
-    install -v "${DEPLOY_DIR_IMAGE}/${UBOOT_NAME}" "${BOOT_STAGING}/u-boot.${UBOOT_SUFFIX}"
-}
-
 
 compile_imx93() {
     bbnote i.MX 93 boot binary build
@@ -147,29 +118,13 @@ do_install () {
     done
 }
 
-deploy_imx8m() {
-    for t in ${UBOOT_CONFIG};do
-        install -v -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.${UBOOT_SUFFIX}-${MACHINE}-${t} \
-                                                             ${DEPLOYDIR}/${BOOT_TOOLS}
-    done
-    for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
-        install -v -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
-    done
-    install -v -m 0644 ${BOOT_STAGING}/signed_dp_imx8m.bin      ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -v -m 0644 ${BOOT_STAGING}/signed_hdmi_imx8m.bin    ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -v -m 0755 ${BOOT_STAGING}/${TOOLS_NAME}            ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -v -m 0755 ${BOOT_STAGING}/mkimage_fit_atf.sh       ${DEPLOYDIR}/${BOOT_TOOLS}
-}
-
 deploy_imx93() {
-    install -d ${DEPLOYDIR}/${BOOT_TOOLS}
-
     for ddr_firmware in ${DDR_FIRMWARE_NAME}; do
         install -m 0644 ${DEPLOY_DIR_IMAGE}/${ddr_firmware}  ${DEPLOYDIR}/${BOOT_TOOLS}
     done
 
     install -m 0644 ${BOOT_STAGING}/${SECO_FIRMWARE_NAME}    ${DEPLOYDIR}/${BOOT_TOOLS}
-    install -m 0755 ${S}/${TOOLS_NAME}                       ${DEPLOYDIR}/${BOOT_TOOLS}
+#    install -m 0755 ${D}/tools/${TOOLS_NAME}         ${DEPLOYDIR}/${BOOT_TOOLS}
     for t in ${UBOOT_CONFIG};do
         if [ -e ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} ] ; then
             install -m 0644 ${DEPLOY_DIR_IMAGE}/u-boot-spl.bin-${MACHINE}-${t} \
@@ -214,4 +169,4 @@ addtask deploy before do_build after do_compile
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 FILES:${PN} = "/boot"
 
-COMPATIBLE_MACHINE = "(mx8|mx9)"
+COMPATIBLE_MACHINE = "(mx9)"
