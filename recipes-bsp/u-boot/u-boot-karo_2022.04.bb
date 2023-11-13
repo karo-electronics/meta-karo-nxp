@@ -112,7 +112,7 @@ do_configure:prepend() {
             j=0
             for type in ${UBOOT_CONFIG};do
                 j=$(expr $j + 1)
-                [ $j -lt $i ] && continue
+                [ $j = $i ] || continue
                 c="`echo "$config" | sed 's/_config/_defconfig/'`"
                 bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to 'configs/${c}'"
                 cp "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${S}/configs/${c}"
@@ -152,15 +152,17 @@ do_configure:append() {
     if [ -z "$tmpfile" ];then
         bbfatal "Failed to create tmpfile"
     fi
-    if [ -n "${KARO_BASEBOARD}" ];then
-        cat <<EOF >> "$tmpfile"
+    cat <<EOF >> "$tmpfile"
 CONFIG_DEFAULT_DEVICE_TREE="${UBOOT_DTB_NAME}"
 EOF
-        grep -q "${UBOOT_DTB_NAME}\.dtb" ${S}/arch/arm/dts/Makefile || \
-                sed -i '/^targets /i\
+    grep -q "${UBOOT_DTB_NAME}\.dtb" ${S}/arch/arm/dts/Makefile || \
+            sed -i '/^targets /i\
 dtb-y += ${UBOOT_DTB_NAME}.dtb\
 ' ${S}/arch/arm/dts/Makefile
+    if [ -n "${KARO_BASEBOARD}" ];then
         echo "CONFIG_OF_LIST=\"${UBOOT_DTB_NAME} ${DTB_BASENAME}\"" >> "$tmpfile"
+    else
+        echo "CONFIG_OF_LIST=\"${DTB_BASENAME}\"" >> "$tmpfile"
     fi
 
     bbnote "UBOOT_ENV_FILE='${UBOOT_ENV_FILE}'"
@@ -177,11 +179,11 @@ EOF
         for config in ${UBOOT_MACHINE};do
             c="${B}/${config}"
             merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
-            oe_runmake -C ${c} oldconfig
         done
+        oe_runmake -C ${c} olddefconfig
     else
         merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
-        oe_runmake -C "${B}" oldconfig
+        oe_runmake -C "${B}" olddefconfig
     fi
     rm -vf "$tmpfile"
 }
@@ -189,6 +191,7 @@ EOF
 check_cnf() {
     local src="$1"
     local cfg="$2"
+    fgrep -f "$src" "${cfg}/.config" || true
     local applied=$(fgrep -f "$src" "${cfg}/.config" | wc -l)
     local configured=$(cat "$src" | wc -l)
     if [ $applied != $configured ];then
@@ -196,6 +199,7 @@ check_cnf() {
         bbwarn ">>>$(fgrep -f "$src" "${cfg}/.config" | fgrep -vf - "$src")<<<"
         local p="$(fgrep -f "$src" "${cfg}/.config" | fgrep -vf - "$src" | \
                 sed 's/^# //;s/[= ].*$//')"
+cat "${cfg}/.config"
         local pat
         for pat in $p;do
             if grep -q "$pat" "${cfg}/.config";then
@@ -234,13 +238,20 @@ do_check_config() {
                 if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
                     bbnote "Appending '$type' specific config to '$(basename "${c}")/.config'"
                     merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${type}"
-                    check_cnf "${WORKDIR}/u-boot-cfg.${type}" "${c}"
                 fi
                 break
             done
+            oe_runmake -C ${c} olddefconfig
+            check_cnf "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${c}"
+            if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
+                check_cnf "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" "${c}"
+            fi
+            check_cnf "${WORKDIR}/u-boot-cfg.${MACHINE}" "${c}"
+            check_cnf "${WORKDIR}/u-boot-cfg.${type}" "${c}"
             for feature in ${UBOOT_FEATURES};do
                 bbnote "Appending '$feature' specific config to '$(basename "${c}")/.config'"
                 merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/${feature}.cfg"
+                oe_runmake -C ${c} olddefconfig
                 check_cnf "${WORKDIR}/${feature}.cfg" "${c}"
             done
             check_cnf "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${c}"
@@ -257,8 +268,10 @@ do_check_config() {
         cp -v "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${B}/.config"
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
             merge_config.sh -m -r -O "${B}" "${B}/.config" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+            oe_runmake -C ${B} olddefconfig
         fi
         merge_config.sh -m -r -O "${B}" "${B}/.config" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+        oe_runmake -C ${B} olddefconfig
         check_cnf "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${B}"
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
             check_cnf "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" "${B}"
