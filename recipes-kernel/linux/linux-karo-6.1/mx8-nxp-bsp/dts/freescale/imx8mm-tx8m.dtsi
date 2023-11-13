@@ -19,7 +19,7 @@
 
 &fec1 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_fec1 &pinctrl_etnphy_rst>;
+	pinctrl-0 = <&pinctrl_fec1>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy0>;
 	phy-supply = <&reg_3v3_etn>;
@@ -41,13 +41,19 @@
 	mdio {
 		#address-cells = <1>;
 		#size-cells = <0>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_etnphy_rst>;
 		reset-gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
 		reset-delay-us = <25000>;
 		reset-post-delay-us = <100>;
 
 		ethphy0: ethernet-phy@0 {
 			reg = <0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_etnphy_int>;
 			clocks = <&clk IMX8MM_CLK_ENET_REF>;
+			interrupt-parent = <&gpio1>;
+			interrupts = <28 IRQ_TYPE_EDGE_FALLING>;
 			smsc,disable-energy-detect;
 		};
 	};
