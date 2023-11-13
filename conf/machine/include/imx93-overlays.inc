@@ -31,6 +31,7 @@ DTB_OVERLAYS_generic:append:tx93 = "\
 DTB_OVERLAYS ??= ""
 
 DTB_OVERLAYS:append:tx93 = " \
+        tx93-flexcan \
         tx93-ft5x06 \
         tx93-ili2130 \
         tx93-sound \
@@ -41,6 +42,8 @@ DTB_OVERLAYS:append:qs93 = " \
         qs93-eqos-ksz9031 \
         qs93-eqos-lan8710 \
         qs93-fec-lan8710 \
+        qs93-flexcan1 \
+        qs93-flexcan2 \
         qs93-imx219 \
         qs93-qsbase93 \
         qs93-spidev \
