@@ -1,6 +1,7 @@
 SRC_URI:append = " \
     file://drm-imx-dependency-bugfix.patch \
     file://0002-imx219-driver-zeus-version.patch \
+    file://rpmsg-no-suspend-bugfix.patch \
 "
 
 SRC_URI:append:mx8-nxp-bsp = " \
