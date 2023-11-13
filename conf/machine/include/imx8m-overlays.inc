@@ -84,6 +84,7 @@ DTB_OVERLAYS:append:qsxm = "\
 
 DTB_OVERLAYS:append:qsxp = "\
         ${@ mach_overlay(d, "qsxp-cam", dist="csi-camera")} \
+        ${@ mach_overlay(d, "qsxp-mipi-lvds-bridge", dist="dsi83")} \
         karo-vpu \
         qsxp-flexcan \
         qsxp-ksz9031 \
@@ -203,6 +204,8 @@ KARO_DTB_OVERLAYS[qsbase4] += "\
         karo-gpu \
         ${@ mach_overlay(d, "qsxp-ksz9131:qs8m-ksz9131", "imx8mp")} \
         ${@ mach_overlay(d, "qsxp-raspi-display:qs8m-raspi-display", "imx8mp", "raspi-display")} \
+        ${@ mach_overlay(d, "karo-dsi83", dist="dsi83")} \
+        ${@ mach_overlay(d, "qsxp-mipi-lvds-bridge", "qsxp", "dsi83")} \
         ${@ mach_overlay(d, "qsxp-spidev:qs8m-spidev", "imx8mp")} \
 "
 
