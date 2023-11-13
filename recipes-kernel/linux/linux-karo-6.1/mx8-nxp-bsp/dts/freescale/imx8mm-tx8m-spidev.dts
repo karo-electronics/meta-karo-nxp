@@ -1,0 +1,51 @@
+// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+/*
+ * Copyright (C) 2023 Lothar Waßmann <LW@KARO-electronics.de>
+ */
+
+/dts-v1/;
+
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include "imx8mm-pinfunc.h"
+
+&{/chosen} {
+	overlays {
+		tx8m-spidev;
+	};
+};
+
+&ecspi2 {
+	status = "okay";
+
+	spidev@0 {
+		reg = <0>;
+		compatible = "karo,spidev-test";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ecspi2_cs0>;
+		cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
+	};
+
+	spidev@1 {
+		reg = <1>;
+		compatible = "karo,spidev-test";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ecspi2_cs1>;
+		cs-gpios = <&gpio4 4 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&iomuxc {
+	pinctrl_ecspi2_cs0: ecspi2-cs0grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13	0x13fe
+		>;
+	};
+
+	pinctrl_ecspi2_cs1: ecspi2-cs1grp {
+		fsl,pins = <
+			MX8MM_IOMUXC_SD2_WP_GPIO2_IO20		0x13fe
+		>;
+	};
+};

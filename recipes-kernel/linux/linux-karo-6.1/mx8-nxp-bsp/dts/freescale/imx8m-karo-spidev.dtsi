@@ -1,0 +1,26 @@
+// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+/*
+ * Copyright (C) 2023 Lothar Waßmann <LW@KARO-electronics.de>
+ */
+
+/dts-v1/;
+
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+
+&{/chosen} {
+	overlays {
+		qs93-spidev;
+	};
+};
+
+&lpspi4 {
+	status = "okay";
+
+	spidev@0 {
+		compatible = "karo,spidev-test";
+		cs-gpios = <&gpio2 18 GPIO_ACTIVE_LOW>;
+		reg = <0>;
+	};
+};
