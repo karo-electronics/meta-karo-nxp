@@ -9,11 +9,3 @@
 	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
 	cd-gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
 };
-
-&iomuxc {
-	pinctrl_usdhc2_cd: usdhc2-cdgrp {
-		fsl,pins = <
-			MX93_PAD_SD2_CD_B__GPIO3_IO00				0x31e
-		>;
-	};
-};

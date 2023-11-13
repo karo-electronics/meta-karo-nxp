@@ -4,3 +4,7 @@
  */
 
 #include "imx93-tx93-5210-u-boot.dtsi"
+
+&usdhc2 {
+	fsl,cd-data3;
+};

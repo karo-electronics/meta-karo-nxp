@@ -17,7 +17,6 @@ SRC_URI:append:mx8m-nxp-bsp = " \
     file://dts/imx8mm-karo.dtsi;subdir=git/arch/arm \
     file://dts/imx8mm-tx8m-16xx-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8mm-tx8m-16xx.dtsi;subdir=git/arch/arm \
-    file://dts/imx8mm-tx8m-mipi-mb.dtsi;subdir=git/arch/arm \
     file://dts/imx8mn-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8mn-karo.dtsi;subdir=git/arch/arm \
     file://dts/imx8mn-u-boot.dtsi;subdir=git/arch/arm \

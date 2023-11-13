@@ -32,7 +32,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV ?= "1372944df3fea40cacd5b0bfdf8585021d5cc959"
+UBOOT_REV ?= "677b36ba60e276b2b9c7e7ba3bc3e128a2307720"
 UBOOT_BRANCH ?= "lf_v2022.04-karo"
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"

@@ -5,7 +5,3 @@
  */
 
 #include "imx8mn-karo-u-boot.dtsi"
-
-&usdhc2 {
-	fsl,cd-data3;
-};

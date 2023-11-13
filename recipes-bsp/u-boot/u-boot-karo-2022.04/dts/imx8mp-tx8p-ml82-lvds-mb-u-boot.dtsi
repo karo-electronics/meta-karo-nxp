@@ -5,3 +5,7 @@
  */
 
 #include "imx8mp-tx8p-ml82-u-boot.dtsi"
+
+&usdhc2 {
+	fsl,cd-data3;
+};
