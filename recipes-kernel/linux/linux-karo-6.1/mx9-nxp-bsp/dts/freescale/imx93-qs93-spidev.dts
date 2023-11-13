@@ -19,7 +19,7 @@
 	status = "okay";
 
 	spidev@0 {
-		compatible = "spidev";
+		compatible = "karo,spidev-test";
 		cs-gpios = <&gpio2 18 GPIO_ACTIVE_LOW>;
 		reg = <0>;
 	};
