@@ -15,7 +15,7 @@
 
 &{/chosen} {
 	overlays {
-		qs93-eqos;
+		qs93-eqos-lan8710;
 	};
 };
 
