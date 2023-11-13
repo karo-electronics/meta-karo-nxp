@@ -10,9 +10,3 @@
 / {
 	model = "Ka-Ro TX8P-ML81 module on TX-MIPI-LVDS baseboard";
 };
-
-&usdhc2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usdhc2>;
-	no-mmc;
-};

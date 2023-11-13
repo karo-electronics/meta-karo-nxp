@@ -3,6 +3,7 @@
  * Copyright (C) 2020 Lothar Waßmann <LW@KARO-electronics.de>
  *
  */
+
 #include "imx8mn-karo-u-boot.dtsi"
 
 &lcdif {

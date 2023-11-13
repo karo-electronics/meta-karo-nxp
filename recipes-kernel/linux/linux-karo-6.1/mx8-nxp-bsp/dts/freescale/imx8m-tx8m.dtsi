@@ -264,10 +264,11 @@
 
 &usdhc2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
+	pinctrl-0 = <&pinctrl_usdhc2>;
 	bus-width = <4>;
 	no-1-8-v;
 	fsl,wp-controller;
+	status = "okay";
 };
 
 &usdhc3 {

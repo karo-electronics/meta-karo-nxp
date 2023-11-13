@@ -12,9 +12,3 @@
 / {
 	model = "Ka-Ro electronics QS8M-ND00 (NXP i.MX8MN) module";
 };
-
-&usdhc2 {
-        pinctrl-names = "default";
-        pinctrl-0 = <&pinctrl_usdhc2>;
-        no-mmc;
-};

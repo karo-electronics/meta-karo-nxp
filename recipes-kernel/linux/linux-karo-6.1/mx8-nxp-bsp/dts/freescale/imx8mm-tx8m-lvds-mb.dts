@@ -15,7 +15,5 @@
 };
 
 &usdhc2 {
-	no-mmc;
 	voltage-ranges = <3300 3300>;
-	status = "okay";
 };

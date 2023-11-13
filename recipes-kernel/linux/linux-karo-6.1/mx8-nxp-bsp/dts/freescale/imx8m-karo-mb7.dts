@@ -21,8 +21,7 @@
 };
 
 &usdhc2 {
-	no-mmc;
-	voltage-ranges = <3300 3300>;
+	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
 	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
-	status = "okay";
+	voltage-ranges = <3300 3300>;
 };

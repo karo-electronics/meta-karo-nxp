@@ -264,11 +264,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
 	voltage-ranges = <3300 3300>;
-	bus-width = <4>;
 	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
-	no-1-8-v;
-	fsl,wp-controller;
-	status = "okay";
 };
 
 &wdog1 {
@@ -446,12 +442,12 @@
 
 	pinctrl_usdhc2: usdhc2grp {
 		fsl,pins = <
-			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK			0x190
-			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD			0x1d0
-			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0		0x1d0
-			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x1d0
-			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x1d0
-			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x1d0
+			MX8MM_IOMUXC_SD2_CLK_USDHC2_CLK			0x010
+			MX8MM_IOMUXC_SD2_CMD_USDHC2_CMD			0x010
+			MX8MM_IOMUXC_SD2_DATA0_USDHC2_DATA0		0x010
+			MX8MM_IOMUXC_SD2_DATA1_USDHC2_DATA1		0x010
+			MX8MM_IOMUXC_SD2_DATA2_USDHC2_DATA2		0x010
+			MX8MM_IOMUXC_SD2_DATA3_USDHC2_DATA3		0x010
 		>;
 	};
 
