@@ -125,18 +125,25 @@ addtask do_compile_dtbs after do_configure before do_check_dtbs
 
 python do_check_dtbs () {
     import os
+    gov = d.getVar('DTB_OVERLAYS_generic').split()
+    ov = d.getVar('DTB_OVERLAYS').split()
 
     def get_ovname(name):
         pfx = d.getVar('SOC_PREFIX')
         fam = d.getVar('SOC_FAMILY')
         fn = []
         for n in name.split(","):
-            if os.path.exists("%s-%s.dtb" % (fam, n)):
-                fn.append("%s-%s.dtb" % (fam, n))
-            elif os.path.exists("%s-%s.dtb" % (pfx, n)):
-                fn.append("%s-%s.dtb" % (pfx, n))
+            ovn = ""
+            if n in gov:
+                ovn = "%s-%s.dtb" % (pfx, n)
+            elif n in ov:
+                ovn = "%s-%s.dtb" % (fam, n)
             else:
-                bb.fatal("Overlay file '[%s,%s]-%s.dtb' not found" % (fam, pfx, n))
+                continue
+            if os.path.exists(ovn):
+                fn.append(ovn)
+            else:
+                bb.fatal("Overlay file '%s' not found" % ovn)
         return fn
 
     def apply_overlays(infile, outfile, overlays):
@@ -147,9 +154,7 @@ python do_check_dtbs () {
         if len(ovlist) == 0:
             bb.fatal("No files found for overlays %s" % overlays)
             return
-        bb.debug(2, "ovlist=%s" % " ".join(ovlist))
         ovfiles = " ".join(map(lambda f: "'%s'" % f, ovlist))
-        bb.debug(2, "ovfiles=%s" % ovfiles)
         cmd = ("fdtoverlay -i '%s.dtb' -o '%s.dtb' %s" % (infile, outfile, ovfiles))
         bb.debug(2, "%s" % cmd)
         os.system("pwd")
