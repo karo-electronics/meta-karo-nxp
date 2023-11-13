@@ -7,10 +7,9 @@ def mach_overlay (d, overlay, mach="", dist=""):
             return ""
     if overlay.find(":") >= 0:
         alt1,alt2 = overlay.split(':')
-        if mach in d.getVar('MACHINEOVERRIDES'):
-            return alt1
-        return alt2
     else:
-        if mach == "" or mach in d.getVar('MACHINEOVERRIDES'):
-            return overlay
-    return ""
+        alt1,alt2 = (overlay,'')
+    for m in mach.split(','):
+        if m in d.getVar('MACHINEOVERRIDES'):
+            return alt1
+    return alt2
