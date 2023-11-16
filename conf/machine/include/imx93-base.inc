@@ -36,12 +36,9 @@ KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
 BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
-SECO_FIRMWARE_NAME = "mx93a0-ahab-container.img"
+SECO_FIRMWARE_NAME = "mx93a1-ahab-container.img"
 
 # Set imx-mkimage boot target
-IMXBOOT_TARGETS ?= "flash_singleboot"
-IMX_BOOT_SOC_TARGET ?= "iMX9"
-IMX_BOOT_SEEK = "32"
 ATF_PLATFORM ?= "imx93"
 ATF_LOAD_ADDR ?= "0x24e00000"
 
@@ -58,7 +55,7 @@ DDR_FIRMWARE_NAME ?= " \
         lpddr4_dmem_2d_v202201.bin \
 "
 
-IMAGE_BOOTLOADER = "imx-boot-karo"
+IMAGE_BOOTLOADER = "u-boot"
 
 LOADADDR = ""
 UBOOT_SUFFIX = "bin"
@@ -68,7 +65,6 @@ IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 PREFERRED_VERSION_linux-karo ?= "6.1"
-PREFERRED_PROVIDER_imx-boot = "imx-boot-karo"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
 

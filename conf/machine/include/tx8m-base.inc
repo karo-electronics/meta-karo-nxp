@@ -44,7 +44,6 @@ SPL_BINARY = "spl/u-boot-spl.bin"
 UBOOT_INITIAL_ENV = ""
 
 # Set imx-mkimage boot target
-IMXBOOT_TARGETS ?= "flash_tx8m"
 ATF_PLATFORM ?= "imx8mm"
 ATF_LOAD_ADDR ?= "0x920000"
 

@@ -32,7 +32,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV ?= "677b36ba60e276b2b9c7e7ba3bc3e128a2307720"
+UBOOT_REV ?= "147b07686fd902c8cf26da39ca6027f8aab2f93a"
 UBOOT_BRANCH ?= "lf_v2022.04-karo"
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
@@ -44,7 +44,7 @@ B = "${WORKDIR}/build"
 
 LOCALVERSION = "-${SRCBRANCH}-karo"
 
-IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "firmware-imx-8m"
+IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "imx-boot-firmware-files"
 IMX_EXTRA_FIRMWARE:mx9-nxp-bsp = "firmware-imx-9 firmware-sentinel"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
@@ -55,7 +55,7 @@ DEPENDS += " \
     imx-atf \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
 "
-DEPENDS:append:mx8m-nxp-bsp = " u-boot-mkimage-native"
+DEPENDS:append = " u-boot-mkimage-native"
 
 UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
 UBOOT_BOARD_DIR:mx9-nxp-bsp = "board/karo/imx93"
@@ -314,7 +314,7 @@ do_compile:prepend() {
     fi
 }
 
-do_deploy:append:mx8m-nxp-bsp () {
+do_deploy:append () {
     if [ -n "${UBOOT_CONFIG}" ];then
         i=0
         for config in ${UBOOT_MACHINE};do
@@ -331,26 +331,6 @@ do_deploy:append:mx8m-nxp-bsp () {
         unset i
     else
         install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
-    fi
-}
-
-do_deploy:append:mx9-nxp-bsp () {
-    if [ -n "${UBOOT_CONFIG}" ];then
-        i=0
-        for config in ${UBOOT_MACHINE};do
-            i=$(expr $i + 1)
-            j=0
-            for type in ${UBOOT_CONFIG};do
-                j=$(expr $j + 1)
-                [ $j = $i ] || continue
-                ln -snvf "u-boot-spl.${UBOOT_SUFFIX}-${type}" "${DEPLOYDIR}/u-boot-spl-${MACHINE}.${UBOOT_SUFFIX}-${type}"
-                break
-            done
-            unset j
-        done
-        unset i
-    else
-        ln -snvf "u-boot-spl.${UBOOT_SUFFIX}" "${DEPLOYDIR}/u-boot-spl-${MACHINE}.${UBOOT_SUFFIX}"
     fi
 }
 

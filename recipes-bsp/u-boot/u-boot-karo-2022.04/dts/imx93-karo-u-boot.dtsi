@@ -60,40 +60,34 @@
 
 #ifdef CONFIG_BINMAN
 &binman {
-	u-boot-spl-ddr {
-		align = <4>;
-		align-size = <4>;
+	 u-boot-spl-ddr {
 		filename = "u-boot-spl-ddr.bin";
 		pad-byte = <0xff>;
+		align-size = <4>;
+		align = <4>;
 
 		u-boot-spl {
 			align-end = <4>;
-			filename = "spl/u-boot-spl.bin";
-			type = "blob-ext";
 		};
 
-		ddr-1d-imem-fw {
+		blob_1: blob-ext@1 {
 			filename = "lpddr4_imem_1d_v202201.bin";
-			align-end = <4>;
-			type = "blob-ext";
+			size = <0x8000>;
 		};
 
-		ddr-1d-dmem-fw {
+		blob_2: blob-ext@2 {
 			filename = "lpddr4_dmem_1d_v202201.bin";
-			align-end = <4>;
-			type = "blob-ext";
+			size = <0x4000>;
 		};
 
-		ddr-2d-imem-fw {
+		blob_3: blob-ext@3 {
 			filename = "lpddr4_imem_2d_v202201.bin";
-			align-end = <4>;
-			type = "blob-ext";
+			size = <0x8000>;
 		};
 
-		ddr-2d-dmem-fw {
+		blob_4: blob-ext@4 {
 			filename = "lpddr4_dmem_2d_v202201.bin";
-			align-end = <4>;
-			type = "blob-ext";
+			size = <0x4000>;
 		};
 	};
 
@@ -109,76 +103,14 @@
 		};
 	};
 
-	itb {
-		filename = "u-boot.itb";
+	u-boot-container {
+		filename = "u-boot-container.bin";
 
-		fit {
-			description = "Configuration to load ATF before U-Boot";
-			fit,external-offset = <CONFIG_FIT_EXTERNAL_OFFSET>;
-			fit,fdt-list = "of-list";
-			#address-cells = <1>;
+		mkimage {
+			args = "-n u-boot-container.cfgout -T imx8image -e 0x0";
 
-			images {
-				uboot {
-					arch = "arm64";
-					compression = "none";
-					description = "U-Boot (64-bit)";
-					load = <CONFIG_SYS_TEXT_BASE>;
-					type = "standalone";
-
-					uboot-blob {
-						filename = "u-boot-nodtb.bin";
-						type = "blob-ext";
-					};
-				};
-
-				atf {
-					arch = "arm64";
-					compression = "none";
-					description = "ARM Trusted Firmware";
-					entry = <0x204e0000>;
-					load = <0x204e0000>;
-					type = "firmware";
-
-					atf-blob {
-						filename = "bl31.bin";
-						type = "atf-bl31";
-					};
-				};
-
-				seco {
-					arch = "arm64";
-					compression = "none";
-					description = "Seco Firmware";
-					type = "firmware";
-
-					seco_blob {
-						filename = "mx93a0-ahab-container.img";
-						type = "blob-ext";
-					};
-				};
-
-				@fdt-SEQ {
-					compression = "none";
-					description = "NAME";
-					type = "flat_dt";
-
-					uboot-fdt-blob {
-						filename = "u-boot.dtb";
-						type = "blob-ext";
-					};
-				};
-			};
-
-			configurations {
-				default = "@config-DEFAULT-SEQ";
-
-				binman_configuration: @config-SEQ {
-					description = "NAME";
-					fdt = "fdt-SEQ";
-					firmware = "uboot";
-					loadables = "atf";
-				};
+			blob {
+				filename = "u-boot.bin";
 			};
 		};
 	};
@@ -187,10 +119,15 @@
 		filename = "flash.bin";
 		pad-byte = <0x00>;
 
-		spl {
+		spl: blob-ext@1 {
 			filename = "spl.bin";
 			offset = <0x0>;
-			type = "blob-ext";
+			align-size = <0x400>;
+			align = <0x400>;
+		};
+
+		uboot: blob-ext@2 {
+			filename = "u-boot-container.bin";
 		};
 	};
 };
