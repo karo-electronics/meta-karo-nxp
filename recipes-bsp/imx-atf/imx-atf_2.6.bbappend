@@ -19,10 +19,9 @@ EXTRA_OEMAKE:append = " \
 
 EXTRA_OEMAKE:append:mx8-nxp-bsp = " \
         RESET_TO_BL31=1 \
-        WDOG_B_RESET=1 \
+        IMX_WDOG_B_RESET=${@ 1 if 'imx8mp' in d.getVar('MACHINEOVERRIDES').split(':') else 0} \
         IMX_BOOT_UART_BASE=${IMX_BOOT_UART_BASE} \
 "
-
 EXTRA_OEMAKE:append:mx8-nxp-bsp = " \
         ERRATA_A53_1530924=1 \
 "

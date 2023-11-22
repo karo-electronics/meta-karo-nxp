@@ -10,7 +10,6 @@ PV .= "+git${SRCPV}"
 SRC_URI = "${ATF_SRC};branch=${SRCBRANCH}"
 ATF_SRC ?= "git://github.com/nxp-imx/imx-atf.git;protocol=https"
 SRCBRANCH = "lf_v2.6"
-#SRCREV = "3c1583ba0a5d11e5116332e91065cb3740153a46"
 SRCREV = "616a4588f333522d50a55bedd2b9a90a51474a75"
 
 S = "${WORKDIR}/git"
@@ -18,10 +17,6 @@ S = "${WORKDIR}/git"
 inherit deploy
 
 ATF_PLATFORM ??= "INVALID"
-
-# FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
-# base address in source code.
-#ATF_BOOT_UART_BASE ?= ""
 
 EXTRA_OEMAKE += " \
     CROSS_COMPILE="${TARGET_PREFIX}" \
@@ -53,9 +48,6 @@ def remove_options_tail (in_string):
 EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}"'
 
 EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
-
-# Set the UART to use during the boot.
-#EXTRA_OEMAKE += 'IMX_BOOT_UART_BASE=${ATF_BOOT_UART_BASE}'
 
 do_configure[noexec] = "1"
 
