@@ -42,7 +42,7 @@ SRCREV = "${UBOOT_REV}"
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
-LOCALVERSION = "-${SRCBRANCH}-karo"
+LOCALVERSION = "-karo"
 
 IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "imx-boot-firmware-files"
 IMX_EXTRA_FIRMWARE:mx9-nxp-bsp = "firmware-imx-9 firmware-sentinel"
