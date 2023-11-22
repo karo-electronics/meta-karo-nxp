@@ -369,8 +369,16 @@ python do_env_overlays () {
         if ovlist == None:
             bb.note("No overlays defined for '%s' on baseboard '%s'" % (d.getVar('MACHINE'), baseboard))
             continue
-        ov = " ".join(map(lambda f: f, ovlist.split()))
-        overlays += ["overlays_%s=%s" % (baseboard, ov)]
+
+        ovl = "overlays_%s=" % baseboard
+        dlm = ""
+        for ov in ovlist.split():
+            ovf = ov.split(",")
+            # omit alternatively used overlays
+            if len(ovf) == 1:
+                ovl += dlm + ovf[0]
+                dlm = " "
+        overlays += [ovl]
 
     src_file = "%s/%s/%s.env" % (d.getVar('S'), d.getVar('UBOOT_BOARD_DIR'), d.getVar('UBOOT_ENV_FILE'))
     if d.getVar('UBOOT_CONFIG') != None:
