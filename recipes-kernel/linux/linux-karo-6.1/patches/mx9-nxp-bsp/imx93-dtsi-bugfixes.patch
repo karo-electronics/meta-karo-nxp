@@ -1,8 +1,8 @@
-Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
-===================================================================
---- linux-tx93.orig/arch/arm64/boot/dts/freescale/imx93.dtsi
-+++ linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
-@@ -107,6 +107,18 @@
+diff --git a/arch/arm64/boot/dts/freescale/imx93.dtsi b/arch/arm64/boot/dts/freescale/imx93.dtsi
+index 13ab4797e946..4cf48f6bcf41 100644
+--- a/arch/arm64/boot/dts/freescale/imx93.dtsi
++++ b/arch/arm64/boot/dts/freescale/imx93.dtsi
+@@ -107,6 +107,18 @@ clk_ext1: clock-ext1 {
  		clock-output-names = "clk_ext1";
  	};
  
@@ -21,7 +21,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  	pmu {
  		compatible = "arm,cortex-a55-pmu";
  		interrupts = <GIC_PPI 7 (GIC_CPU_MASK_SIMPLE(2) | IRQ_TYPE_LEVEL_HIGH)>;
-@@ -138,6 +150,18 @@
+@@ -138,6 +150,18 @@ gic: interrupt-controller@48000000 {
  		interrupt-parent = <&gic>;
  	};
  
@@ -40,7 +40,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  	thermal-zones {
  		cpu-thermal {
  			polling-delay-passive = <250>;
-@@ -190,7 +214,7 @@
+@@ -190,7 +214,7 @@ anomix_ns_gpr: syscon@44210000 {
  			};
  
  			mu1: mailbox@44230000 {
@@ -49,7 +49,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x44230000 0x10000>;
  				interrupts = <GIC_SPI 22 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_MU1_B_GATE>;
-@@ -281,6 +305,25 @@
+@@ -281,6 +305,25 @@ system_counter: timer@44290000 {
  				nxp,no-divider;
  			};
  
@@ -75,25 +75,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			i3c1: i3c-master@44330000 {
  				#address-cells = <3>;
  				#size-cells = <0>;
-@@ -295,6 +338,8 @@
- 			};
- 
- 			lpi2c1: i2c@44340000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x44340000 0x10000>;
- 				interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
-@@ -307,6 +352,8 @@
- 			};
- 
- 			lpi2c2: i2c@44350000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x44350000 0x10000>;
- 				interrupts = <GIC_SPI 14 IRQ_TYPE_LEVEL_HIGH>;
-@@ -347,7 +394,7 @@
+@@ -351,7 +398,7 @@ lpspi2: spi@44370000 {
  			};
  
  			lpuart1: serial@44380000 {
@@ -102,7 +84,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x44380000 0x1000>;
  				interrupts = <GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART1_GATE>;
-@@ -356,7 +403,7 @@
+@@ -360,7 +407,7 @@ lpuart1: serial@44380000 {
  			};
  
  			lpuart2: serial@44390000 {
@@ -111,7 +93,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x44390000 0x1000>;
  				interrupts = <GIC_SPI 20 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART2_GATE>;
-@@ -391,12 +438,6 @@
+@@ -398,12 +445,6 @@ sai1: sai@443b0000 {
  				status = "disabled";
  			};
  
@@ -124,7 +106,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			iomuxc: pinctrl@443c0000 {
  				compatible = "fsl,imx93-iomuxc";
  				reg = <0x443c0000 0x10000>;
-@@ -662,7 +703,7 @@
+@@ -669,7 +710,7 @@ wakeupmix_gpr: syscon@42420000 {
  			};
  
  			mu2: mailbox@42440000 {
@@ -133,7 +115,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x42440000 0x10000>;
  				interrupts = <GIC_SPI 24 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_MU2_B_GATE>;
-@@ -678,6 +719,14 @@
+@@ -685,6 +726,14 @@ wdog3: wdog@42490000 {
  				timeout-sec = <40>;
  			};
  
@@ -148,7 +130,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			tpm4: pwm@424f0000 {
  				compatible = "fsl,imx7ulp-pwm";
  				reg = <0x424f0000 0x1000>;
-@@ -689,6 +738,28 @@
+@@ -696,6 +745,28 @@ tpm4: pwm@424f0000 {
  				status = "disabled";
  			};
  
@@ -177,25 +159,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			i3c2: i3c-master@42520000 {
  				#address-cells = <3>;
  				#size-cells = <0>;
-@@ -703,6 +774,8 @@
- 			};
- 
- 			lpi2c3: i2c@42530000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x42530000 0x10000>;
- 				interrupts = <GIC_SPI 62 IRQ_TYPE_LEVEL_HIGH>;
-@@ -715,6 +788,8 @@
- 			};
- 
- 			lpi2c4: i2c@42540000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x42540000 0x10000>;
- 				interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>;
-@@ -751,7 +826,7 @@
+@@ -766,7 +841,7 @@ lpspi4: spi@42560000 {
  			};
  
  			lpuart3: serial@42570000 {
@@ -204,7 +168,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x42570000 0x1000>;
  				interrupts = <GIC_SPI 68 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART3_GATE>;
-@@ -760,7 +835,7 @@
+@@ -777,7 +852,7 @@ lpuart3: serial@42570000 {
  			};
  
  			lpuart4: serial@42580000 {
@@ -213,7 +177,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x42580000 0x1000>;
  				interrupts = <GIC_SPI 69 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART4_GATE>;
-@@ -769,7 +844,7 @@
+@@ -788,7 +863,7 @@ lpuart4: serial@42580000 {
  			};
  
  			lpuart5: serial@42590000 {
@@ -222,7 +186,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x42590000 0x1000>;
  				interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART5_GATE>;
-@@ -778,7 +853,7 @@
+@@ -799,7 +874,7 @@ lpuart5: serial@42590000 {
  			};
  
  			lpuart6: serial@425a0000 {
@@ -231,7 +195,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x425a0000 0x1000>;
  				interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART6_GATE>;
-@@ -841,12 +916,6 @@
+@@ -865,12 +940,6 @@ sai3: sai@42660000 {
  				status = "disabled";
  			};
  
@@ -244,7 +208,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			xcvr: xcvr@42680000 {
  				compatible = "fsl,imx93-xcvr";
  				reg = <0x42680000 0x800>,
-@@ -870,7 +939,7 @@
+@@ -894,7 +963,7 @@ xcvr: xcvr@42680000 {
  			};
  
  			lpuart7: serial@42690000 {
@@ -253,7 +217,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x42690000 0x1000>;
  				interrupts = <GIC_SPI 210 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART7_GATE>;
-@@ -879,7 +948,7 @@
+@@ -905,7 +974,7 @@ lpuart7: serial@42690000 {
  			};
  
  			lpuart8: serial@426a0000 {
@@ -262,43 +226,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x426a0000 0x1000>;
  				interrupts = <GIC_SPI 211 IRQ_TYPE_LEVEL_HIGH>;
  				clocks = <&clk IMX93_CLK_LPUART8_GATE>;
-@@ -888,6 +957,8 @@
- 			};
- 
- 			lpi2c5: i2c@426b0000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x426b0000 0x10000>;
- 				interrupts = <GIC_SPI 195 IRQ_TYPE_LEVEL_HIGH>;
-@@ -900,6 +971,8 @@
- 			};
- 
- 			lpi2c6: i2c@426c0000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x426c0000 0x10000>;
- 				interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>;
-@@ -912,6 +985,8 @@
- 			};
- 
- 			lpi2c7: i2c@426d0000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x426d0000 0x10000>;
- 				interrupts = <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>;
-@@ -924,6 +999,8 @@
- 			};
- 
- 			lpi2c8: i2c@426e0000 {
-+				#address-cells = <1>;
-+				#size-cells = <0>;
- 				compatible = "fsl,imx93-lpi2c", "fsl,imx7ulp-lpi2c";
- 				reg = <0x426e0000 0x10000>;
- 				interrupts = <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>;
-@@ -1098,7 +1175,7 @@
+@@ -1161,7 +1238,7 @@ usdhc3: mmc@428b0000 {
  			};
  
  			epxp: epxp@4ae20000 {
@@ -307,7 +235,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  				reg = <0x4ae20000 0x10000>;
  				interrupts = <GIC_SPI 173 IRQ_TYPE_LEVEL_HIGH>,
  					     <GIC_SPI 174 IRQ_TYPE_LEVEL_HIGH>;
-@@ -1117,7 +1194,7 @@
+@@ -1180,7 +1257,7 @@ cameradev: camera {
  				ranges;
  				status = "disabled";
  
@@ -316,7 +244,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  					compatible = "fsl,imx93-isi", "fsl,imx8-isi";
  					reg = <0x4ae40000 0x10000>;
  					interrupts = <GIC_SPI 172 IRQ_TYPE_LEVEL_HIGH>;
-@@ -1176,6 +1253,8 @@
+@@ -1239,6 +1316,8 @@ parallel_csi: pcsi@4ac10070 {
  		};
  
  		gpio2: gpio@43810080 {
@@ -325,7 +253,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			compatible = "fsl,imx93-gpio", "fsl,imx7ulp-gpio";
  			reg = <0x43810080 0x1000>, <0x43810040 0x40>;
  			gpio-controller;
-@@ -1313,6 +1392,7 @@
+@@ -1384,6 +1463,7 @@ ldb: ldb@4ac10020 {
  			#address-cells = <1>;
  			#size-cells = <0>;
  			compatible = "fsl,imx93-ldb";
@@ -333,7 +261,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			clocks = <&clk IMX93_CLK_LVDS_GATE>;
  			clock-names = "ldb";
  			assigned-clocks = <&clk IMX93_CLK_MEDIA_LDB>;
-@@ -1341,6 +1421,7 @@
+@@ -1412,6 +1492,7 @@ ldb_ch0: endpoint {
  
  		ldb_phy: phy@4ac10024 {
  			compatible = "fsl,imx93-lvds-phy";
@@ -341,7 +269,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			#address-cells = <1>;
  			#size-cells = <0>;
  			gpr = <&media_blk_ctrl>;
-@@ -1397,8 +1478,6 @@
+@@ -1469,8 +1550,6 @@ dsi_to_lcdif: endpoint {
  		};
  
  		lcdif: lcd-controller@4ae30000 {
@@ -350,7 +278,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  			compatible = "fsl,imx93-lcdif";
  			reg = <0x4ae30000 0x10000>;
  			interrupts = <GIC_SPI 176 IRQ_TYPE_LEVEL_HIGH>;
-@@ -1418,10 +1497,9 @@
+@@ -1490,10 +1569,9 @@ lcdif: lcd-controller@4ae30000 {
  			power-domains = <&media_blk_ctrl IMX93_MEDIABLK_PD_LCDIF>;
  			status = "disabled";
  
@@ -362,7 +290,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  
  				lcdif_to_dsi: endpoint@0 {
  					reg = <0>;
-@@ -1440,12 +1518,6 @@
+@@ -1512,12 +1590,6 @@ lcdif_to_dpi: endpoint@2 {
  			};
  		};
  
@@ -375,7 +303,7 @@ Index: linux-tx93/arch/arm64/boot/dts/freescale/imx93.dtsi
  		usbotg1: usb@4c100000 {
  			compatible = "fsl,imx8mm-usb", "fsl,imx7d-usb";
  			reg = <0x4c100000 0x200>;
-@@ -1467,12 +1539,6 @@
+@@ -1539,12 +1611,6 @@ usbmisc1: usbmisc@4c100200 {
  			reg = <0x4c100200 0x200>;
  		};
  

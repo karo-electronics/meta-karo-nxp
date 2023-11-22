@@ -7,7 +7,7 @@ DEPENDS += "lzop-native bc-native dtc-native"
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 SRCBRANCH = "lf-6.1.y-karo-2"
-SRCREV = "36213e6dd44c4a0479bda36734c266a3f90af16e"
+SRCREV = "559356621806ca09e0d98e7cb35b3b006392572c"
 KERNEL_SRC ?= "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https;branch=${SRCBRANCH}"
 SRC_URI = "${KERNEL_SRC}"
 
