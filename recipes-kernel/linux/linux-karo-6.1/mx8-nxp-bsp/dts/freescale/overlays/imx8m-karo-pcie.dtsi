@@ -19,6 +19,5 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pcie0>;
 	bus-range = <0x00 0xff>;
-	ext_osc = <0>;
 	status = "okay";
 };
