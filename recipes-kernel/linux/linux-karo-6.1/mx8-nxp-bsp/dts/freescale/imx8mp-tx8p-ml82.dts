@@ -99,6 +99,14 @@
 	status = "disabled";
 };
 
+&usb3_0 {
+	fsl,over-current-active-low;
+};
+
+&usb3_1 {
+	fsl,over-current-active-low;
+};
+
 &usb3_phy0 {
 	vbus-supply = <&reg_usb1_vbus>;
 };
@@ -110,13 +118,11 @@
 &usb_dwc3_0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb1_oc>;
-	oc-active-low;
 };
 
 &usb_dwc3_1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usb2_oc>;
-	oc-active-low;
 };
 
 &iomuxc {
