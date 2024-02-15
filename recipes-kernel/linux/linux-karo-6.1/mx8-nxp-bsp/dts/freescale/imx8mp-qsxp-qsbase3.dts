@@ -32,7 +32,7 @@
 	status = "disabled";
 };
 
-&usb_dwc3_1 {
+&usb3_phy1 {
 	vbus-supply = <&reg_usbh_vbus>;
 };
 

@@ -20,6 +20,7 @@
 
 	reg_usbh_vbus: regulator-usbh-vbus {
 		compatible = "regulator-fixed";
+		regulator-name = "usbh-vbus";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_usbh_vbus>;
 		gpios = <&gpio2 12 GPIO_ACTIVE_HIGH>;
