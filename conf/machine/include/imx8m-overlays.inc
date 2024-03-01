@@ -51,6 +51,7 @@ DTB_OVERLAYS:append:tx8m = "\
 DTB_OVERLAYS:append:tx8p = "\
         karo-lvds-panel \
         tx8p-flexcan \
+        tx8p-pcie \
         tx8p-ft5x06 \
         tx8p-lvds-mb \
         tx8p-mcp2515 \
@@ -162,6 +163,7 @@ KARO_DTB_OVERLAYS[lvds-mb] += "\
         ${@ mach_overlay(d, "tx8p-lvds-mb:tx8m-lvds-mb", "imx8mp")} \
         ${@ mach_overlay(d, "tx8p-sound:tx8m-sound", "imx8mp")} \
         ${@ mach_overlay(d, "tx8p-spidev:tx8m-spidev", "imx8mp")} \
+        ${@ mach_overlay(d, "tx8p-pcie:tx8m-pcie", "imx8mp")} \
         ${@ mach_overlay(d, "tx8m-wifi", "imx8mm", "wifi")} \
 "
 

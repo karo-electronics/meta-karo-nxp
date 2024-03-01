@@ -8,6 +8,8 @@ SRC_URI:append:mx8-nxp-bsp = " \
     file://0001-mx6s-capture-add-rggb8-video-format.patch \
     file://0003-isi-fmts.patch \
     file://0004-csi-fmts.patch \
+    file://0005-pcie-phy-regs.patch \
+    file://imx8mp-blk-ctrl.patch \
 "
 
 SRC_URI:append:mx9-nxp-bsp = " \
