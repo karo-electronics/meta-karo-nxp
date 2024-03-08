@@ -45,17 +45,12 @@ DTB_OVERLAYS:append:qs93 = " \
         qs93-flexcan1 \
         qs93-flexcan2 \
         qs93-imx219 \
-        qs93-qsbase93 \
         qs93-spidev \
 "
 
 KARO_BASEBOARDS:tx93 += "\
         lvds-mb \
         mb7 \
-"
-
-KARO_BASEBOARDS:qs93 += "\
-        qsbase93 \
 "
 
 #
@@ -87,5 +82,4 @@ KARO_DTB_OVERLAYS[qsbase93] += " \
         karo-gpu \
         qs93-eqos-lan8710 \
         qs93-fec-lan8710 \
-        qs93-qsbase93 \
 "
