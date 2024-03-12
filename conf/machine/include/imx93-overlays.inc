@@ -52,6 +52,9 @@ KARO_BASEBOARDS:tx93 += "\
         lvds-mb \
         mb7 \
 "
+KARO_BASEBOARDS:qs93 += "\
+        qsbase93 \
+"
 
 #
 # KARO_DTB_OVERLAYS[<baseboard>] lists all overlays that will be
