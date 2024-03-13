@@ -22,6 +22,7 @@
 
 &panel {
 	label = "ET057090DHU";
+	data-mapping = "jeida-24";
 	width-mm = <115>;
 	height-mm = <86>;
 	status = "okay";
