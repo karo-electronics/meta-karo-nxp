@@ -19,7 +19,6 @@
 	panel: lvds-panel {
 		compatible = "panel-lvds";
 		label = "PANEL SPECIFIC OVERLAY MISSING";
-		data-mapping = "jeida-24";
 	};
 
 	reserved-memory {

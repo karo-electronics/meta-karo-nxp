@@ -22,6 +22,7 @@
 
 &panel {
 	label = "TM101JVHG32";
+	data-mapping = "vesa-24";
 	width-mm = <217>;
 	height-mm = <136>;
 	status = "okay";
