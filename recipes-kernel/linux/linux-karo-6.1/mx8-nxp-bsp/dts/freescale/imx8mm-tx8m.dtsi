@@ -39,19 +39,19 @@
 	status = "okay";
 
 	mdio {
-		#address-cells = <1>;
-		#size-cells = <0>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_etnphy_rst>;
+		clocks = <&clk IMX8MM_CLK_ENET_REF>;
 		reset-gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
 		reset-delay-us = <25000>;
 		reset-post-delay-us = <100>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 
 		ethphy0: ethernet-phy@0 {
 			reg = <0>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_etnphy_int>;
-			clocks = <&clk IMX8MM_CLK_ENET_REF>;
 			interrupt-parent = <&gpio1>;
 			interrupts = <28 IRQ_TYPE_EDGE_FALLING>;
 			smsc,disable-energy-detect;

@@ -21,16 +21,22 @@
 
 &eqos {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_eqos_rmii &pinctrl_ethphy0_rst>;
+	pinctrl-0 = <&pinctrl_eqos_rmii>;
 	assigned-clock-rates = <100000000 50000000>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy0>;
 	status = "okay";
 
 	mdio {
+		compatible = "snps,dwmac-mdio";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ethphy0_rst>;
+		clocks = <&clk IMX93_CLK_ENET>;
 		reset-gpios = <&gpio3 4 GPIO_ACTIVE_LOW>;
 		reset-delay-us = <25000>;
 		reset-post-delay-us = <100>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 
 		ethphy0: ethernet-phy@0 {
 			reg = <0>;
@@ -38,7 +44,6 @@
 			pinctrl-0 = <&pinctrl_ethphy0_int>;
 			interrupt-parent = <&gpio3>;
 			interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
-			clocks = <&clk IMX93_CLK_ENET_QOS_GATE>;
 			eee-broken-100tx;
 			smsc,disable-energy-detect;
 		};
