@@ -99,18 +99,20 @@
 		compatible = "snps,dwmac-mdio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_ethphy0_rst>;
-		#address-cells = <1>;
-		#size-cells = <0>;
-		clock-frequency = <2500000>;
+		clocks = <&clk IMX93_CLK_ENET>;
 		reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
 		reset-delay-us = <100>;
 		reset-post-delay-us = <25000>;
+		clock-frequency = <2500000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 
 		ethphy0: ethernet-phy@0 {
 			reg = <0>;
+			pinctrl-names = "default";
+			pinctrl-0 = <&pinctrl_ethphy0_int>;
 			interrupt-parent = <&gpio4>;
 			interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
-			clocks = <&clk IMX93_CLK_ENET>;
 			eee-broken-100tx;
 			smsc,disable-energy-detect;
 		};

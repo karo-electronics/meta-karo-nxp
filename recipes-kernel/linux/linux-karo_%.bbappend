@@ -2,6 +2,7 @@ SRC_URI:append = " \
     file://0002-imx219-driver-zeus-version.patch \
     file://rpmsg-no-suspend-bugfix.patch \
     file://karo-spidev-test.patch \
+    file://smsc-phy-reset.patch \
 "
 
 SRC_URI:append:mx8-nxp-bsp = " \
@@ -15,7 +16,6 @@ SRC_URI:append:mx8-nxp-bsp = " \
 SRC_URI:append:mx9-nxp-bsp = " \
     file://imx-intmux-dependency-bugfix.patch \
     file://dont-select-imx-gpcv2.patch \
-    file://imx93-eqos-rmii-workaround.patch \
     file://imx93-tpm-bugfix.patch \
     file://imx93-dtsi-bugfixes.patch \
     file://imx93-pll-rate-bugfix.patch \

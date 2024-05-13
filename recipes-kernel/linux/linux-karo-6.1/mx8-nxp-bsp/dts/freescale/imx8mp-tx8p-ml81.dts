@@ -72,13 +72,14 @@
 	status = "okay";
 
 	mdio {
-		#address-cells = <1>;
-		#size-cells = <0>;
 		compatible = "snps,dwmac-mdio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_etnphy_rst_b>;
+		clocks = <&clk IMX8MP_CLK_ENET_QOS>;
 		reset-gpios = <&gpio4 22 GPIO_ACTIVE_LOW>;
 		reset-delay-us = <25000>;
+		#address-cells = <1>;
+		#size-cells = <0>;
 
 		ethphy0: ethernet-phy@0 {
 			reg = <0>;
@@ -86,7 +87,6 @@
 			pinctrl-0 = <&pinctrl_etnphy_int_b>;
 			interrupt-parent = <&gpio4>;
 			interrupts = <21 IRQ_TYPE_EDGE_FALLING>;
-			clocks = <&clk IMX8MP_CLK_ENET_QOS>;
 			smsc,disable-energy-detect;
 		};
 	};
