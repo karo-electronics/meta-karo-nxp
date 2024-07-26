@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright (C) 2023 Lothar Waßmann <LW@KARO-electronics.de>
+ * Copyright (C) 2024 Uwe Steinkohl <us@karo-electronics.de>
  */
+#include <dt-bindings/interrupt-controller/arm-gic.h>
+#include <dt-bindings/clock/imx93-clock.h>
 
 /dts-v1/;
 
@@ -36,7 +38,7 @@
 			no-map;
 		};
 
-		vdev1vring0: vdev1vring0@a4000000 {
+		vdev1vring0: vdev1vring0@a4010000 {
 			reg = <0 0xa4010000 0 0x8000>;
 			no-map;
 		};
@@ -46,8 +48,8 @@
 			no-map;
 		};
 
-		rsc_table: rsc_table@2021f000 {
-			reg = <0 0x2021f000 0 0x1000>;
+		rsc_table: rsc-table@2021e000 {
+			reg = <0 0x2021e000 0 0x1000>;
 			no-map;
 		};
 
@@ -60,6 +62,7 @@
 
 	cm33: imx93-cm33 {
 		compatible = "fsl,imx93-cm33";
+		clocks = <&clk IMX93_CLK_CM33_GATE>;
 		mbox-names = "tx", "rx", "rxdb";
 		mboxes = <&mu1 0 1
 			  &mu1 1 1
@@ -69,3 +72,24 @@
 		fsl,startup-delay-ms = <500>;
 	};
 };
+
+/*
+&clk {
+	init-on-array = <
+			 IMX93_CLK_M33
+			>;
+};
+*/
+
+
+
+&lpuart3 {
+	status = "disabled";
+};
+
+&mu1 {
+	compatible = "fsl,imx93-mu", "fsl,imx8ulp-mu";
+	status = "okay";
+};
+
+
