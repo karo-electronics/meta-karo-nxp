@@ -1,0 +1,12 @@
+// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+/*
+ * Copyright (C) 2023 Lothar Waßmann <LW@KARO-electronics.de>
+ */
+
+&lpi2c2 {
+	edt_ft5x06: touchpanel@38 {
+		compatible = "edt,edt-ft5x06";
+		reg = <0x38>;
+		wakeup-source;
+	};
+};

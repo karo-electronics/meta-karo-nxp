@@ -1,11 +1,20 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}:${THISDIR}/${BP}/patches:${THISDIR}/${BP}/env:"
 SRC_URI:append = " \
+    file://u-boot-version.patch \
+"
+
+SRC_URI:append = " \
     file://karo.bmp;subdir=git/tools/logos \
 "
 
-SRC_URI:append:mx9-nxp-bsp = " \
+SRC_URI:append:mx93-nxp-bsp = " \
     file://dts/imx93-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx93-karo.dtsi;subdir=git/arch/arm \
+"
+
+SRC_URI:append:mx91-nxp-bsp = " \
+    file://dts/imx91-karo-u-boot.dtsi;subdir=git/arch/arm \
+    file://dts/imx91-karo.dtsi;subdir=git/arch/arm \
 "
 
 SRC_URI:append:mx8m-nxp-bsp = " \

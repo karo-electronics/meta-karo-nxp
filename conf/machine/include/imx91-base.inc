@@ -1,7 +1,7 @@
 KBUILD_BUILD_USER := "support"
 KBUILD_BUILD_HOST := "karo-electronics.de"
 
-MACHINEOVERRIDES =. "mx93:"
+MACHINEOVERRIDES =. "mx91:"
 
 BUILD_REPRODUCIBLE_BINARIES ?= "0"
 INHERIT:remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARIES') == '0' else ''}"
@@ -9,7 +9,7 @@ INHERIT:remove = "${@'reproducible_build' if d.getVar('BUILD_REPRODUCIBLE_BINARI
 require conf/machine/include/imx-base.inc
 require conf/machine/include/arm/armv8-2a/tune-cortexa55.inc
 
-SOC_PREFIX = "imx93"
+SOC_PREFIX = "imx91"
 
 SOC_FAMILY ??= "${SOC_PREFIX}"
 MACHINEOVERRIDES =. "${@ "${SOC_FAMILY}:" if "${SOC_FAMILY}" != "${SOC_PREFIX}" else ""}"
@@ -29,7 +29,6 @@ SOC_DEFAULT_IMAGE_FSTYPES = "tar.bz2"
 # Set U-Boot DTB
 KARO_BASEBOARD ??= ""
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
-UBOOT_DTB_NAME:mx93-generic-bsp = "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
@@ -37,10 +36,12 @@ KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
 BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
-SECO_FIRMWARE_NAME = "mx93a1-ahab-container.img"
+IMX_SOC_REV:mx91 ?= "A0"
+IMX_SOC_REV_LOWER:mx91 ?= "a0"
+SECO_FIRMWARE_NAME = "mx91a0-ahab-container.img"
 
 # Set imx-mkimage boot target
-ATF_PLATFORM ?= "imx93"
+ATF_PLATFORM ?= "imx91"
 ATF_LOAD_ADDR ?= "0x24e00000"
 
 # Set Serial console
@@ -65,7 +66,7 @@ UBOOT_MAKE_TARGET = ""
 IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
-PREFERRED_VERSION_linux-karo ?= "6.6"
+PREFERRED_VERSION_linux-karo ?= "6.1"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
 
@@ -73,9 +74,9 @@ PREFERRED_PROVIDER_ptpd = "ptpd"
 KERNEL_MODULE_PROBECONF += "evbug"
 module_conf_evbug = "blacklist evbug"
 
-PREFERRED_VERSION_isp-imx                 = "4.2.2.24+basler"
-PREFERRED_VERSION_basler-camera           = "4.2.2.24+basler"
-PREFERRED_VERSION_kernel-module-isp-vvcam = "4.2.2.24+basler"
+PREFERRED_VERSION_isp-imx                 = "4.2.2.14+basler"
+PREFERRED_VERSION_basler-camera           = "4.2.2.14+basler"
+PREFERRED_VERSION_kernel-module-isp-vvcam = "4.2.2.14+basler"
 
 PREFERRED_PROVIDER_opencl-headers:imxgpu = "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-icd-loader:imxgpu = "imx-gpu-viv"
@@ -89,3 +90,5 @@ DEFAULTTUNE:mx9-nxp-bsp    ?= "cortexa55"
 
 PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
 PACKAGECONFIG:append:pn-systemd = " unmanaged-network"
+MACHINEOVERRIDES_EXTENDER:mx91:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx91-generic-bsp:mx91-nxp-bsp"
+MACHINEOVERRIDES_EXTENDER:mx91:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx91-generic-bsp:mx91-mainline-bsp"

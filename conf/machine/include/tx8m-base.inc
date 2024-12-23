@@ -67,32 +67,13 @@ UBOOT_MAKE_TARGET = ""
 IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
-PREFERRED_VERSION_linux-karo ?= "6.1"
+PREFERRED_VERSION_linux-karo ?= "6.6"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
 
 # Blacklist evbug kernel module
 KERNEL_MODULE_PROBECONF += "evbug"
 module_conf_evbug = "blacklist evbug"
-
-# settings taken from fsl-imx-preferred-env.inc
-PREFERRED_VERSION_gstreamer1.0              = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-base = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad  = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly = "1.22.%"
-PREFERRED_VERSION_gstreamer1.0-libav        = "1.22.%"
-PREFERRED_VERSION_gstreamer1.0-rtsp-server  = "1.22.%"
-
-PREFERRED_VERSION_gstreamer1.0:mx8-nxp-bsp              = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-base:mx8-nxp-bsp = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-good:mx8-nxp-bsp = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-bad:mx8-nxp-bsp  = "1.22.0.imx"
-PREFERRED_VERSION_gstreamer1.0-plugins-ugly:mx8-nxp-bsp = "1.22.%"
-PREFERRED_VERSION_gstreamer1.0-libav:mx8-nxp-bsp        = "1.22.%"
-PREFERRED_VERSION_gstreamer1.0-rtsp-server:mx8-nxp-bsp  = "1.22.%"
-
-BBMASK += "meta-freescale/recipes-multimedia/gstreamer"
 
 PREFERRED_VERSION_opengl-es-cts:aarch64 = "3.2.8.0"
 

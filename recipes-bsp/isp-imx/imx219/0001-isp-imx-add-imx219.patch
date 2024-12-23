@@ -2283,11 +2283,15 @@
 +
 +# create calib data targets
 +add_subdirectory(calib)
---- isp-imx-4.2.2.20.0/units/isi/CMakeLists.txt.orig	2023-03-03 11:14:32.000000000 +0800
-+++ isp-imx-4.2.2.20.0/units/isi/CMakeLists.txt	2023-04-10 10:50:11.362736642 +0800
-@@ -75,3 +75,4 @@ include(${UNITS_TOP_DIRECTORY}/targets.cmake)
- 
- # add sensor driver modules here
+diff --git a/units/isi/CMakeLists.txt.orig b/units/isi/CMakeLists.txt
+index a91699b..129adb2 100755
+--- a/units/isi/CMakeLists.txt.orig
++++ b/units/isi/CMakeLists.txt
+@@ -69,6 +69,7 @@ endif( DEFINED APPSHELL_TOP_COMPILE)
+ add_subdirectory( drv/OV2775 )
  add_subdirectory( drv/OS08a20 )
+ add_subdirectory( drv/AR1335 )
 +add_subdirectory( drv/IMX219 )
- 
+ #add_subdirectory( drv/OV5630 )
+ ###add_subdirectory( drv/OV8810 )
+ #add_subdirectory( drv/OV14825 )

@@ -31,6 +31,7 @@ PROVIDES += "u-boot"
 LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
+#change after dev
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 UBOOT_REV ?= "935e38cc5ff2fb0f1de428c313c07a9981b56032"
 UBOOT_BRANCH ?= "lf_v2022.04-karo"
@@ -45,7 +46,7 @@ B = "${WORKDIR}/build"
 LOCALVERSION = "-karo"
 
 IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "imx-boot-firmware-files"
-IMX_EXTRA_FIRMWARE:mx9-nxp-bsp = "firmware-imx-9 firmware-sentinel"
+IMX_EXTRA_FIRMWARE:mx9-nxp-bsp = "imx-boot-firmware-files firmware-ele-imx"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
@@ -58,7 +59,8 @@ DEPENDS += " \
 DEPENDS:append = " u-boot-mkimage-native"
 
 UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
-UBOOT_BOARD_DIR:mx9-nxp-bsp = "board/karo/imx93"
+UBOOT_BOARD_DIR:mx93-nxp-bsp = "board/karo/imx93"
+UBOOT_BOARD_DIR:mx91-nxp-bsp = "board/karo/imx91"
 
 UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
                        "-" + d.getVar('KARO_BASEBOARD') \
@@ -403,4 +405,4 @@ addtask do_env_overlays before do_compile after do_configure
 do_env_overlays[vardeps] += "KARO_BASEBOARDS KARO_DTB_OVERLAYS"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx93)"
+COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx9)"

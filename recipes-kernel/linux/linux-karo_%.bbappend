@@ -1,30 +1,6 @@
 SRC_URI:append = " \
-    file://0002-imx219-driver-zeus-version.patch \
-    file://rpmsg-no-suspend-bugfix.patch \
+    file://imx219-driver.patch \
     file://karo-spidev-test.patch \
-    file://smsc-phy-reset.patch \
-"
-
-SRC_URI:append:mx8-nxp-bsp = " \
-    file://0001-mx6s-capture-add-rggb8-video-format.patch \
-    file://0003-isi-fmts.patch \
-    file://0004-csi-fmts.patch \
-    file://0005-pcie-phy-regs.patch \
-    file://imx8mp-blk-ctrl.patch \
-"
-
-SRC_URI:append:mx9-nxp-bsp = " \
-    file://imx-intmux-dependency-bugfix.patch \
-    file://dont-select-imx-gpcv2.patch \
-    file://imx93-tpm-bugfix.patch \
-    file://imx93-dtsi-bugfixes.patch \
-    file://imx93-pll-rate-bugfix.patch \
-    file://wdog-nowayout.patch \
-"
-
-SRC_URI:append:qs93 = " \
-    file://0001-imx93-add-support-for-raw-format-cameras-based-on-L6.patch \
-    file://0002-imx219-test-enable-embedded-data-support-and-MSB-ali.patch \
 "
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/overlays/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"

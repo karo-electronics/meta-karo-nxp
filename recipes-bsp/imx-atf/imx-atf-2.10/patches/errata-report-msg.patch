@@ -1,0 +1,26 @@
+diff --git a/lib/cpus/errata_report.c b/lib/cpus/errata_report.c
+index 4e9bdfc56..c7dd7cb30 100644
+--- a/lib/cpus/errata_report.c
++++ b/lib/cpus/errata_report.c
+@@ -29,7 +29,7 @@
+ #endif
+ 
+ /* Errata format: BL stage, CPU, errata ID, message */
+-#define ERRATA_FORMAT	"%s: %s: CPU workaround for %s was %s\n"
++#define ERRATA_FORMAT	"%s: %s: CPU workaround for %s %s\n"
+ 
+ #define CVE_FORMAT	"%s: %s: CPU workaround for CVE %u_%u was %s\n"
+ #define ERRATUM_FORMAT	"%s: %s: CPU workaround for erratum %u was %s\n"
+@@ -193,9 +193,9 @@ void __unused errata_print_msg(unsigned int status, const char *cpu, const char
+ {
+ 	/* Errata status strings */
+ 	static const char *const errata_status_str[] = {
+-		[ERRATA_NOT_APPLIES] = "not applied",
+-		[ERRATA_APPLIES] = "applied",
+-		[ERRATA_MISSING] = "missing!"
++		[ERRATA_NOT_APPLIES] = "is not applicable",
++		[ERRATA_APPLIES] = "was applied",
++		[ERRATA_MISSING] = "is missing!"
+ 	};
+ 	static const char *const __unused bl_str = BL_STRING;
+ 	const char *msg __unused;
