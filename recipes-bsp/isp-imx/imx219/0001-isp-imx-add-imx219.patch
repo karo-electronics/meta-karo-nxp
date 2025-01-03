@@ -2175,9 +2175,11 @@
 +    .pIsiHalQuerySensor = IMX219_IsiHalQuerySensorIss,
 +    .pfIsiGetSensorIss = IMX219_IsiGetSensorIss,
 +};
---- isp-imx-4.2.2.20.0/units/isi/drv/IMX219.orig/CMakeLists.txt	1970-01-01 08:00:00.000000000 +0800
-+++ isp-imx-4.2.2.20.0/units/isi/drv/IMX219/CMakeLists.txt	2023-02-14 10:45:17.469178666 +0800
-@@ -0,0 +1,105 @@
+diff --git a/units/isi/drv/IMX219.orig/CMakeLists.txt b/units/isi/drv/IMX219/CMakeLists.txt
+index e69de29..cfb9bc2 100644
+--- a/units/isi/drv/IMX219.orig/CMakeLists.txt
++++ b/units/isi/drv/IMX219/CMakeLists.txt
+@@ -0,0 +1,97 @@
 +cmake_minimum_required(VERSION 2.6)
 +
 +# define module name & interface version
@@ -2228,14 +2230,6 @@
 +                  )
 +endif()
 +
-+if(${APPMODE} STREQUAL NATIVE)
-+add_custom_target(${module}.init
-+                  ALL
-+		  DEPENDS ${module}_shared
-+                  COMMENT "Copying ${module} init files"
-+                  )
-+endif (${APPMODE} STREQUAL NATIVE)
-+
 +# define lib dependencies
 +#target_link_libraries(${module}_static
 +#                      ${platform_libs}
@@ -2284,7 +2278,7 @@
 +# create calib data targets
 +add_subdirectory(calib)
 diff --git a/units/isi/CMakeLists.txt.orig b/units/isi/CMakeLists.txt
-index a91699b..129adb2 100755
+index a91699b..a3d5f18 100755
 --- a/units/isi/CMakeLists.txt.orig
 +++ b/units/isi/CMakeLists.txt
 @@ -69,6 +69,7 @@ endif( DEFINED APPSHELL_TOP_COMPILE)
@@ -2295,3 +2289,11 @@ index a91699b..129adb2 100755
  #add_subdirectory( drv/OV5630 )
  ###add_subdirectory( drv/OV8810 )
  #add_subdirectory( drv/OV14825 )
+@@ -87,6 +88,7 @@ include_directories(
+     )
+ 
+ add_subdirectory( drv/OS08a20 )
++add_subdirectory( drv/IMX219 )
+ 
+ add_custom_target(copy_shell_libs_${module} ALL
+        COMMENT "##Copy isi drv cfg to shell libs"
