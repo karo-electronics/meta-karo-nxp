@@ -39,6 +39,9 @@ SRC_URI:append:tx8p-ml82 = " \
     file://dts/imx8mp-tx8p-ml81-lvds-mb-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/arch/arm \
 "
+SRC_URI:append:mx9-nxp-bsp = " \
+    file://imx93-makefile-bugfix.patch \
+"
 
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
