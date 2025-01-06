@@ -60,7 +60,7 @@
 
 #ifdef CONFIG_BINMAN
 &binman {
-	 u-boot-spl-ddr {
+	u-boot-spl-ddr {
 		filename = "u-boot-spl-ddr.bin";
 		pad-byte = <0xff>;
 		align-size = <4>;
