@@ -16,6 +16,18 @@
 	};
 };
 
+&ecspi1 {
+	status = "okay";
+
+	spidev@0 {
+		reg = <0>;
+		compatible = "karo,spidev-test";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ecspi1_cs>;
+		cs-gpios = <&gpio5 9 GPIO_ACTIVE_LOW>;
+	};
+};
+
 &ecspi2 {
 	status = "okay";
 
@@ -29,9 +41,15 @@
 };
 
 &iomuxc {
+	pinctrl_ecspi1_cs: ecspi1-csgrp {
+		fsl,pins = <
+			MX8MM_IOMUXC_ECSPI1_SS0_GPIO5_IO9		0x140
+		>;
+	};
+
 	pinctrl_ecspi2_cs: ecspi2-csgrp {
 		fsl,pins = <
-			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13		0x13fe
+			MX8MM_IOMUXC_ECSPI2_SS0_GPIO5_IO13		0x156
 		>;
 	};
 };

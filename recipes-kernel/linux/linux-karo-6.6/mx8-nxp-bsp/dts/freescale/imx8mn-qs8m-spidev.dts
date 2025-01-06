@@ -17,6 +17,7 @@
 };
 
 &ecspi2 {
+	pinctrl-names = "default";
 	status = "okay";
 
 	spidev@0 {

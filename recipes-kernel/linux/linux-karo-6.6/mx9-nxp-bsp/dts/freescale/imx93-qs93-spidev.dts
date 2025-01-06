@@ -16,6 +16,7 @@
 };
 
 &lpspi4 {
+	pinctrl-names = "default";
 	status = "okay";
 
 	spidev@0 {
