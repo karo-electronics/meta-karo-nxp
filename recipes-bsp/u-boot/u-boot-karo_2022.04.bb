@@ -403,5 +403,19 @@ python do_env_overlays () {
 addtask do_env_overlays before do_compile after do_configure
 do_env_overlays[vardeps] += "KARO_BASEBOARDS KARO_DTB_OVERLAYS"
 
+uboot_install_config() {
+    config=$1
+    type=$2
+
+    # Install the uboot-initial-env
+    if [ -n "${UBOOT_INITIAL_ENV}" -a "$type" = "default" ]; then
+        install -D -m 644 ${B}/${config}/u-boot-initial-env-${type} ${D}${sysconfdir}/${UBOOT_INITIAL_ENV}
+    fi
+}
+
+uboot_install_spl_config() {
+    : nothing to be seen here
+}
+
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx9)"
