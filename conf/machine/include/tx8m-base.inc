@@ -41,7 +41,6 @@ KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
 BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
-UBOOT_INITIAL_ENV = ""
 
 # Set imx-mkimage boot target
 ATF_PLATFORM ?= "imx8mm"
