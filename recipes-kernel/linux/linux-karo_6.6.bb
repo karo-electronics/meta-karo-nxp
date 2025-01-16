@@ -16,7 +16,6 @@ KERNEL_SRC ?= "${KERNEL_SRC_DEFAULT}"
 
 SRCBRANCH = "${KERNEL_BRANCH}"
 SRCREV = "${KERNEL_REV}"
-
 SRC_URI = "${KERNEL_SRC};branch=${SRCBRANCH}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
@@ -42,7 +41,6 @@ SRC_URI:append:mx93-nxp-bsp = " \
 SRC_URI:append:mx91-nxp-bsp = " \
 	file://dts/freescale/imx91-karo.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 "
-
 
 KARO_BOARD_PMIC ??= ""
 
@@ -71,6 +69,7 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','nfs-server',' 
 
 KERNEL_FEATURES:append:tx8m-1620 = " no-suspend.cfg"
 KERNEL_FEATURES:append:tx8m-1622 = " no-suspend.cfg"
+KERNEL_FEATURES:append:mx93-nxp-bsp = " lvds.cfg"
 
 COMPATIBLE_MACHINE = "(mx[89]-nxp-bsp)"
 
