@@ -7,3 +7,9 @@ inherit kernel fsl-vivante-kernel-driver-handler
 LINUX_VERSION_EXTENSION ?= "-karo"
 
 S = "${WORKDIR}/git"
+
+do_symlink_kernsrc:append () {
+    s = os.path.realpath(s)
+    b = os.path.relpath(d.getVar("B"), s)
+    os.symlink(b, os.path.join(s, 'build'))
+}
