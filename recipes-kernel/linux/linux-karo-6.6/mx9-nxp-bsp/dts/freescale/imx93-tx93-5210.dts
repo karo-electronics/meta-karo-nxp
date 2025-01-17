@@ -90,6 +90,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_eqos_rmii>;
 	assigned-clock-rates = <0>, <50000000>;
+	snps,clk-csr = <5>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy0>;
 	phy-supply = <&buck4>;
@@ -99,11 +100,9 @@
 		compatible = "snps,dwmac-mdio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_ethphy0_rst>;
-		clocks = <&clk IMX93_CLK_ENET>;
 		reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
 		reset-delay-us = <100>;
 		reset-post-delay-us = <25000>;
-		clock-frequency = <2500000>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -113,6 +112,7 @@
 			pinctrl-0 = <&pinctrl_ethphy0_int>;
 			interrupt-parent = <&gpio4>;
 			interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
+			clocks = <&clk IMX93_CLK_ENET>;
 			eee-broken-100tx;
 			smsc,disable-energy-detect;
 		};
@@ -338,33 +338,33 @@
 
 	pinctrl_eqos_rmii: eqos-rmiigrp {
 		fsl,pins = <
-			MX93_PAD_ENET1_MDC__ENET_QOS_MDC			0x01e
-			MX93_PAD_ENET1_MDIO__ENET_QOS_MDIO			0x01e
-			MX93_PAD_ENET1_TD2__CCM_ENET_QOS_CLOCK_GENERATE_REF_CLK	0x4000009e
-			/* Strap pins: MODE0 HIGH: 0x2.. LOW: 0x4.. */
-			MX93_PAD_ENET1_RD0__ENET_QOS_RGMII_RD0			0x21e
+			MX93_PAD_ENET1_MDC__ENET_QOS_MDC			0x00e
+			MX93_PAD_ENET1_MDIO__ENET_QOS_MDIO			0x40e
+			MX93_PAD_ENET1_TD2__CCM_ENET_QOS_CLOCK_GENERATE_REF_CLK	0x4000011e
+			/* Strap pins: MODE0 HIGH: 0x[23].. LOW: 0x[45].. */
+			MX93_PAD_ENET1_RD0__ENET_QOS_RGMII_RD0			0x300
 			/* MODE1 */
-			MX93_PAD_ENET1_RD1__ENET_QOS_RGMII_RD1			0x21e
+			MX93_PAD_ENET1_RD1__ENET_QOS_RGMII_RD1			0x300
 			/* MODE2 (external pullup) */
-			MX93_PAD_ENET1_RX_CTL__ENET_QOS_RGMII_RX_CTL		0x21e
-			/* PHYAD0 */
-			MX93_PAD_ENET1_RXC__ENET_QOS_RX_ER			0x41e
+			MX93_PAD_ENET1_RX_CTL__ENET_QOS_RGMII_RX_CTL		0x300
+			/* PHYAD0/RXER */
+			MX93_PAD_ENET1_RXC__GPIO4_IO09 /* unused */		0x400
 
-			MX93_PAD_ENET1_TD0__ENET_QOS_RGMII_TD0			0x41e
-			MX93_PAD_ENET1_TD1__ENET_QOS_RGMII_TD1			0x41e
-			MX93_PAD_ENET1_TX_CTL__ENET_QOS_RGMII_TX_CTL		0x41e
+			MX93_PAD_ENET1_TD0__ENET_QOS_RGMII_TD0			0x51e
+			MX93_PAD_ENET1_TD1__ENET_QOS_RGMII_TD1			0x51e
+			MX93_PAD_ENET1_TX_CTL__ENET_QOS_RGMII_TX_CTL		0x51e
 		>;
 	};
 
 	pinctrl_ethphy0_int: ethphy0-intgrp {
 		fsl,pins = <
-			MX93_PAD_ENET1_RD2__GPIO4_IO12				0x21e
+			MX93_PAD_ENET1_RD2__GPIO4_IO12				0x200
 		>;
 	};
 
 	pinctrl_ethphy0_rst: ethphy0-rstgrp {
 		fsl,pins = <
-			MX93_PAD_ENET1_RD3__GPIO4_IO13				0x21e
+			MX93_PAD_ENET1_RD3__GPIO4_IO13				0x206
 		>;
 	};
 
