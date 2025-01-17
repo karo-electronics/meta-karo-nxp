@@ -6,9 +6,9 @@ DEPENDS += "lzop-native bc-native dtc-native"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-KERNEL_BRANCH_DEFAULT = "lf-6.6.y-karo"
-KERNEL_REV_DEFAULT = "1561e8d0d1a0a3950fb3cd2d64860efea6dc6942"
-KERNEL_SRC_DEFAULT ?= "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https;branch=${SRCBRANCH}"
+KERNEL_BRANCH_DEFAULT = "lf-6.6.y-karo-2"
+KERNEL_REV_DEFAULT = "35f9dcf602c0f4f8c4ffeb325630957d94b43abf"
+KERNEL_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 
 KERNEL_BRANCH ?= "${KERNEL_BRANCH_DEFAULT}"
 KERNEL_REV ?= "${KERNEL_REV_DEFAULT}"

@@ -1,8 +1,8 @@
-diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
-index d13dc15cc191..acd7cd89d359 100644
---- a/drivers/spi/spidev.c
-+++ b/drivers/spi/spidev.c
-@@ -714,35 +714,24 @@ static const struct spi_device_id spidev_spi_ids[] = {
+Index: linux-tx93-5210/drivers/spi/spidev.c
+===================================================================
+--- linux-tx93-5210.orig/drivers/spi/spidev.c
++++ linux-tx93-5210/drivers/spi/spidev.c
+@@ -715,36 +715,25 @@ static const struct spi_device_id spidev
  	{ .name = "spi-authenta" },
  	{ .name = "em3581" },
  	{ .name = "si3210" },
@@ -31,6 +31,7 @@ index d13dc15cc191..acd7cd89d359 100644
 -	{ .compatible = "lwn,bk4", .data = &spidev_of_check },
 -	{ .compatible = "menlo,m53cpld", .data = &spidev_of_check },
 -	{ .compatible = "micron,spi-authenta", .data = &spidev_of_check },
+-	{ .compatible = "rohm,bh2228fv", .data = &spidev_of_check },
 -	{ .compatible = "rohm,dh2228fv", .data = &spidev_of_check },
 -	{ .compatible = "semtech,sx1301", .data = &spidev_of_check },
 -	{ .compatible = "silabs,em3581", .data = &spidev_of_check },
@@ -42,6 +43,7 @@ index d13dc15cc191..acd7cd89d359 100644
 +	{ .compatible = "lwn,bk4", },
 +	{ .compatible = "menlo,m53cpld", },
 +	{ .compatible = "micron,spi-authenta", },
++	{ .compatible = "rohm,bh2228fv", },
 +	{ .compatible = "rohm,dh2228fv", },
 +	{ .compatible = "semtech,sx1301", },
 +	{ .compatible = "silabs,em3581", },
@@ -51,7 +53,7 @@ index d13dc15cc191..acd7cd89d359 100644
  };
  MODULE_DEVICE_TABLE(of, spidev_dt_ids);
  
-@@ -763,7 +752,7 @@ static const struct acpi_device_id spidev_acpi_ids[] = {
+@@ -765,7 +754,7 @@ static const struct acpi_device_id spide
  	{ "SPT0001", (kernel_ulong_t)&spidev_acpi_check },
  	{ "SPT0002", (kernel_ulong_t)&spidev_acpi_check },
  	{ "SPT0003", (kernel_ulong_t)&spidev_acpi_check },
