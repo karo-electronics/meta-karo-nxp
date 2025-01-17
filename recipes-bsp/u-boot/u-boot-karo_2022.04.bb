@@ -32,7 +32,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV ?= "935e38cc5ff2fb0f1de428c313c07a9981b56032"
+UBOOT_REV ?= "6cdc421bd4d275b78f6d541bd231fba298e0d694"
 UBOOT_BRANCH ?= "lf_v2022.04-karo"
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
@@ -43,9 +43,6 @@ S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
 LOCALVERSION = "-karo"
-
-IMX_EXTRA_FIRMWARE:mx8m-nxp-bsp = "imx-boot-firmware-files"
-IMX_EXTRA_FIRMWARE:mx9-nxp-bsp = "imx-boot-firmware-files firmware-ele-imx"
 
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
