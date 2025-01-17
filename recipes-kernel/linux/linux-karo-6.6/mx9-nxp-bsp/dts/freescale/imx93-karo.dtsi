@@ -8,10 +8,6 @@
 
 #include "imx93.dtsi"
 
-&ele_fw2 {
-	memory-region = <&ele_reserved>;
-};
-
 / {
 	chosen {
 		stdout-path = "serial0:115200n8";
@@ -44,4 +40,8 @@
 			no-map;
 		};
 	};
+};
+
+&ele_fw2 {
+	memory-region = <&ele_reserved>;
 };
