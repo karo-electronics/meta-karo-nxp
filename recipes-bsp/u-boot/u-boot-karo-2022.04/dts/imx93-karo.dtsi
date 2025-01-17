@@ -12,6 +12,7 @@
 		ethernet0 = &eqos;
 		ethernet1 = &fec;
 		mmc0 = &usdhc1;
+		serial0 = &lpuart1;
 		serial1 = &lpuart3;
 		serial2 = &lpuart5;
 		serial3 = &lpuart4;
@@ -160,12 +161,16 @@
 &lpuart3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart3>;
+	clocks = <&clk IMX93_CLK_LPUART3_GATE>, <&clk IMX93_CLK_LPUART3_GATE>;
+	clock-names = "ipg", "per";
 	status = "okay";
 };
 
 &lpuart5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart5 &pinctrl_uart5_rtscts>;
+	clocks = <&clk IMX93_CLK_LPUART5_GATE>, <&clk IMX93_CLK_LPUART5_GATE>;
+	clock-names = "ipg", "per";
 	uart-has-rtscts;
 };
 

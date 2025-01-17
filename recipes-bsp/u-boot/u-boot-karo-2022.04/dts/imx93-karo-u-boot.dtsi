@@ -169,6 +169,14 @@
 	u-boot,dm-spl;
 };
 
+&lpuart3 {
+	u-boot,dm-spl;
+};
+
+&lpuart5 {
+	u-boot,dm-spl;
+};
+
 &lpi2c1 {
 	u-boot,dm-spl;
 };
@@ -185,7 +193,19 @@
 	u-boot,dm-spl;
 };
 
+&pinctrl_pmic {
+	u-boot,dm-spl;
+};
+
 &pinctrl_uart1 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_uart3 {
+	u-boot,dm-spl;
+};
+
+&pinctrl_uart5 {
 	u-boot,dm-spl;
 };
 
