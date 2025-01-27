@@ -79,6 +79,8 @@
 	pinctrl-0 = <&pinctrl_usdhc1>;
 	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
+	assigned-clocks = <&clk IMX8MN_CLK_USDHC1_ROOT>;
+	assigned-clock-rates = <400000000>;
 	bus-width = <8>;
 	vmmc-supply = <&reg_3v3>;
 	vqmmc-supply = <&reg_1v8>;
