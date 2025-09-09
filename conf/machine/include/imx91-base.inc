@@ -41,7 +41,11 @@ IMX_DEFAULT_BOOTLOADER = "u-boot-karo"
 SPL_BINARY = "spl/u-boot-spl.bin"
 
 ATF_PLATFORM ?= "imx91"
-ATF_LOAD_ADDR ?= "0x24e00000"
+
+ATF_BL31_BASE ??= "0x204c0000"
+ATF_BL31_SIZE ??= "0x20000"
+
+UBOOT_SAVED_DRAM_TIMING_BASE ??= "0x20490000"
 
 # Set Serial console
 # The :${MACHINE} override is required to overrule the 'SERIAL_CONSOLES = ...' setting in

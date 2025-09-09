@@ -1,8 +1,7 @@
-diff --git a/plat/imx/common/include/plat_params.h b/plat/imx/common/include/plat_params.h
-new file mode 100644
-index 000000000..0e799c6b3
+Index: imx-atf-tx93/plat/imx/common/include/plat_params.h
+===================================================================
 --- /dev/null
-+++ b/plat/imx/common/include/plat_params.h
++++ imx-atf-tx93/plat/imx/common/include/plat_params.h
 @@ -0,0 +1,13 @@
 +/*
 + * Copyright (c) 2016-2019, ARM Limited and Contributors. All rights reserved.
@@ -17,12 +16,10 @@ index 000000000..0e799c6b3
 +
 +
 +#endif /* PLAT_PARAMS_H */
-\ No newline at end of file
-diff --git a/plat/imx/common/include/plat_private.h b/plat/imx/common/include/plat_private.h
-new file mode 100644
-index 000000000..fc40b64c6
+Index: imx-atf-tx93/plat/imx/common/include/plat_private.h
+===================================================================
 --- /dev/null
-+++ b/plat/imx/common/include/plat_private.h
++++ imx-atf-tx93/plat/imx/common/include/plat_private.h
 @@ -0,0 +1,23 @@
 +/*
 + * Copyright (C) Lothar Waßmann <LW@KARO-electronics.de>
@@ -47,13 +44,11 @@ index 000000000..fc40b64c6
 +#endif /* __ASSEMBLER__ */
 +
 +#endif /* PLAT_PRIVATE_H */
-\ No newline at end of file
-diff --git a/plat/imx/common/params_setup.c b/plat/imx/common/params_setup.c
-new file mode 100644
-index 000000000..9ae37631b
+Index: imx-atf-tx93/plat/imx/common/params_setup.c
+===================================================================
 --- /dev/null
-+++ b/plat/imx/common/params_setup.c
-@@ -0,0 +1,307 @@
++++ imx-atf-tx93/plat/imx/common/params_setup.c
+@@ -0,0 +1,306 @@
 +/*
 + * Copyright (c) 2016-2019, ARM Limited and Contributors. All rights reserved.
 + *
@@ -303,8 +298,8 @@ index 000000000..9ae37631b
 +		return;
 +	}
 +
-+	INFO("%s@%d: setting uart_base=%08x from FDT\n", __func__, __LINE__,
-+	     uart_base);
++	VERBOSE("%s@%d: setting uart_base=%08x from FDT\n", __func__, __LINE__,
++		uart_base);
 +	imx_uart_base = uart_base;
 +
 +	if (!separator)
@@ -339,7 +334,6 @@ index 000000000..9ae37631b
 +
 +uint32_t imx_get_uart_base(void)
 +{
-+	INFO("%s@%d: UART_BASE=%08x\n", __func__, __LINE__, imx_uart_base);
 +	return imx_uart_base;
 +}
 +
@@ -362,10 +356,10 @@ index 000000000..9ae37631b
 +	dt_process_fdt(plat_param_from_bl2);
 +}
 \ No newline at end of file
-diff --git a/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c b/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
-index 179b6226f..44ce5c1eb 100644
---- a/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
-+++ b/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
++++ imx-atf-tx93/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
 @@ -19,6 +19,7 @@
  #include <lib/el3_runtime/context_mgmt.h>
  #include <lib/mmio.h>
@@ -374,7 +368,7 @@ index 179b6226f..44ce5c1eb 100644
  #include <plat/common/platform.h>
  
  #include <dram.h>
-@@ -211,9 +212,23 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
+@@ -211,9 +212,20 @@ void bl31_early_platform_setup2(u_regist
  
  	console_imx_uart_register(console_base, IMX_BOOT_UART_CLK_IN_HZ,
  		IMX_CONSOLE_BAUDRATE, &console);
@@ -390,19 +384,16 @@ index 179b6226f..44ce5c1eb 100644
  	console_set_scope(&console, CONSOLE_FLAG_BOOT);
 -
 +#endif
-+	INFO("uart_base=%08x clock=%uMHz baudrate=%u\n",
-+	     IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
-+	     IMX_CONSOLE_BAUDRATE);
-+	INFO("%s@%d: args=%08lx %08lx %08lx %08lx\n", __func__, __LINE__,
-+	     arg0, arg1, arg2, arg3);
-+	INFO("ATF_LOAD_ADDR=%08x\n", BL31_BASE);
++	VERBOSE("uart_base=%08x clock=%uMHz baudrate=%u\n",
++		IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
++		IMX_CONSOLE_BAUDRATE);
  	imx8m_caam_init();
  
  	/*
-diff --git a/plat/imx/imx8m/imx8mm/include/platform_def.h b/plat/imx/imx8m/imx8mm/include/platform_def.h
-index 430164d2c..b4691747e 100644
---- a/plat/imx/imx8m/imx8mm/include/platform_def.h
-+++ b/plat/imx/imx8m/imx8mm/include/platform_def.h
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mm/include/platform_def.h
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mm/include/platform_def.h
++++ imx-atf-tx93/plat/imx/imx8m/imx8mm/include/platform_def.h
 @@ -186,7 +186,6 @@
  #define IMX_SEPARATE_NOBITS_BASE	U(0x910000)
  #define IMX_SEPARATE_NOBITS_LIMIT	U(0x920000)
@@ -411,10 +402,10 @@ index 430164d2c..b4691747e 100644
  
  #define MAX_IO_HANDLES			3U
  #define MAX_IO_DEVICES			2U
-diff --git a/plat/imx/imx8m/imx8mm/platform.mk b/plat/imx/imx8m/imx8mm/platform.mk
-index 0a8f12a26..58e0b0970 100644
---- a/plat/imx/imx8m/imx8mm/platform.mk
-+++ b/plat/imx/imx8m/imx8mm/platform.mk
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mm/platform.mk
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mm/platform.mk
++++ imx-atf-tx93/plat/imx/imx8m/imx8mm/platform.mk
 @@ -6,6 +6,7 @@
  #
  # Translation tables library
@@ -423,7 +414,7 @@ index 0a8f12a26..58e0b0970 100644
  
  PLAT_INCLUDES		:=	-Iplat/imx/common/include		\
  				-Iplat/imx/imx8m/include		\
-@@ -47,6 +48,7 @@ BL31_SOURCES		+=	plat/imx/common/imx8_helpers.S			\
+@@ -47,6 +48,7 @@ BL31_SOURCES		+=	plat/imx/common/imx8_he
  				plat/imx/common/imx_sip_handler.c		\
  				plat/imx/common/imx_sip_svc.c			\
  				plat/imx/common/imx_uart_console.S		\
@@ -443,10 +434,10 @@ index 0a8f12a26..58e0b0970 100644
  EL3_EXCEPTION_HANDLING := $(SDEI_SUPPORT)
  ifeq (${SDEI_SUPPORT}, 1)
  BL31_SOURCES 		+= 	plat/imx/common/imx_ehf.c	\
-diff --git a/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c b/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
-index 312eb32d1..686937c09 100644
---- a/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
-+++ b/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
++++ imx-atf-tx93/plat/imx/imx8m/imx8mn/imx8mn_bl31_setup.c
 @@ -7,6 +7,8 @@
  #include <assert.h>
  #include <stdbool.h>
@@ -472,7 +463,7 @@ index 312eb32d1..686937c09 100644
  #include <plat_imx8.h>
  
  #define TRUSTY_PARAMS_LEN_BYTES      (4096*2)
-@@ -219,9 +221,23 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
+@@ -219,9 +221,20 @@ void bl31_early_platform_setup2(u_regist
  
  	console_imx_uart_register(console_base, IMX_BOOT_UART_CLK_IN_HZ,
  		IMX_CONSOLE_BAUDRATE, &console);
@@ -488,19 +479,16 @@ index 312eb32d1..686937c09 100644
  	console_set_scope(&console, CONSOLE_FLAG_BOOT);
 -
 +#endif
-+	INFO("uart_base=%08x clock=%uMHz baudrate=%u\n",
-+	     IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
-+	     IMX_CONSOLE_BAUDRATE);
-+	INFO("%s@%d: args=%08lx %08lx %08lx %08lx\n", __func__, __LINE__,
-+	     arg0, arg1, arg2, arg3);
-+	INFO("ATF_LOAD_ADDR=%08x\n", BL31_BASE);
++	VERBOSE("uart_base=%08x clock=%uMHz baudrate=%u\n",
++		IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
++		IMX_CONSOLE_BAUDRATE);
  	imx8m_caam_init();
  
  	/*
-diff --git a/plat/imx/imx8m/imx8mn/include/platform_def.h b/plat/imx/imx8m/imx8mn/include/platform_def.h
-index 0d5424c6d..91934f796 100644
---- a/plat/imx/imx8m/imx8mn/include/platform_def.h
-+++ b/plat/imx/imx8m/imx8mn/include/platform_def.h
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mn/include/platform_def.h
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mn/include/platform_def.h
++++ imx-atf-tx93/plat/imx/imx8m/imx8mn/include/platform_def.h
 @@ -166,7 +166,6 @@
  #define FORCE_INCR_OFFSET		U(0x4044)
  #define FORCE_INCR_BIT_MASK		U(0x2)
@@ -509,11 +497,11 @@ index 0d5424c6d..91934f796 100644
  
  #define GIC_MAP		MAP_REGION_FLAT(IMX_GIC_BASE, IMX_GIC_SIZE, MT_DEVICE | MT_RW)
  #define AIPS_MAP	MAP_REGION_FLAT(IMX_AIPS_BASE, IMX_AIPS_SIZE, MT_DEVICE | MT_RW) /* AIPS map */
-diff --git a/plat/imx/imx8m/imx8mn/platform.mk b/plat/imx/imx8m/imx8mn/platform.mk
-index da4e40aa3..c0b00b977 100644
---- a/plat/imx/imx8m/imx8mn/platform.mk
-+++ b/plat/imx/imx8m/imx8mn/platform.mk
-@@ -9,6 +9,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/include		\
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mn/platform.mk
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mn/platform.mk
++++ imx-atf-tx93/plat/imx/imx8m/imx8mn/platform.mk
+@@ -9,6 +9,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/incl
  				-Iplat/imx/imx8m/imx8mn/include
  # Translation tables library
  include lib/xlat_tables_v2/xlat_tables.mk
@@ -521,7 +509,7 @@ index da4e40aa3..c0b00b977 100644
  
  # Include GICv3 driver files
  include drivers/arm/gic/v3/gicv3.mk
-@@ -42,6 +43,7 @@ BL31_SOURCES		+=	plat/imx/common/imx8_helpers.S			\
+@@ -42,6 +43,7 @@ BL31_SOURCES		+=	plat/imx/common/imx8_he
  				plat/imx/common/imx_sip_handler.c		\
  				plat/imx/common/imx_sip_svc.c			\
  				plat/imx/common/imx_uart_console.S		\
@@ -541,10 +529,10 @@ index da4e40aa3..c0b00b977 100644
  EL3_EXCEPTION_HANDLING := $(SDEI_SUPPORT)
  ifeq (${SDEI_SUPPORT}, 1)
  BL31_SOURCES 		+= 	plat/imx/common/imx_ehf.c	\
-diff --git a/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c b/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
-index 1eefdaa81..74a02d033 100644
---- a/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
-+++ b/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
++++ imx-atf-tx93/plat/imx/imx8m/imx8mp/imx8mp_bl31_setup.c
 @@ -7,6 +7,8 @@
  #include <assert.h>
  #include <stdbool.h>
@@ -570,7 +558,7 @@ index 1eefdaa81..74a02d033 100644
  #include <plat_imx8.h>
  
  #if defined(LPA_ENABLE)
-@@ -237,9 +239,23 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
+@@ -237,9 +239,20 @@ void bl31_early_platform_setup2(u_regist
  
  	console_imx_uart_register(console_base, IMX_BOOT_UART_CLK_IN_HZ,
  		IMX_CONSOLE_BAUDRATE, &console);
@@ -586,19 +574,16 @@ index 1eefdaa81..74a02d033 100644
  	console_set_scope(&console, CONSOLE_FLAG_BOOT);
 -
 +#endif
-+	INFO("uart_base=%08x clock=%uMHz baudrate=%u\n",
-+	     IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
-+	     IMX_CONSOLE_BAUDRATE);
-+	INFO("%s@%d: args=%08lx %08lx %08lx %08lx\n", __func__, __LINE__,
-+	     arg0, arg1, arg2, arg3);
-+	INFO("ATF_LOAD_ADDR=%08x\n", BL31_BASE);
++	VERBOSE("uart_base=%08x clock=%uMHz baudrate=%u\n",
++		IMX_BOOT_UART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
++		IMX_CONSOLE_BAUDRATE);
  	imx8m_caam_init();
  
  	/*
-diff --git a/plat/imx/imx8m/imx8mp/include/platform_def.h b/plat/imx/imx8m/imx8mp/include/platform_def.h
-index 3b2329196..5399aea67 100644
---- a/plat/imx/imx8m/imx8mp/include/platform_def.h
-+++ b/plat/imx/imx8m/imx8mp/include/platform_def.h
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mp/include/platform_def.h
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mp/include/platform_def.h
++++ imx-atf-tx93/plat/imx/imx8m/imx8mp/include/platform_def.h
 @@ -200,7 +200,6 @@
  
  #define COUNTER_FREQUENCY		8000000 /* 8MHz */
@@ -607,11 +592,11 @@ index 3b2329196..5399aea67 100644
  
  #define MAX_IO_HANDLES			3U
  #define MAX_IO_DEVICES			2U
-diff --git a/plat/imx/imx8m/imx8mp/platform.mk b/plat/imx/imx8m/imx8mp/platform.mk
-index 7982a6a4f..209dd4802 100644
---- a/plat/imx/imx8m/imx8mp/platform.mk
-+++ b/plat/imx/imx8m/imx8mp/platform.mk
-@@ -11,6 +11,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/include		\
+Index: imx-atf-tx93/plat/imx/imx8m/imx8mp/platform.mk
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx8m/imx8mp/platform.mk
++++ imx-atf-tx93/plat/imx/imx8m/imx8mp/platform.mk
+@@ -11,6 +11,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/incl
  				-Iinclude/common/tbbr
  # Translation tables library
  include lib/xlat_tables_v2/xlat_tables.mk
@@ -619,7 +604,7 @@ index 7982a6a4f..209dd4802 100644
  
  # Include GICv3 driver files
  include drivers/arm/gic/v3/gicv3.mk
-@@ -43,6 +44,7 @@ BL31_SOURCES		+=	plat/imx/common/imx8_helpers.S			\
+@@ -43,6 +44,7 @@ BL31_SOURCES		+=	plat/imx/common/imx8_he
  				plat/imx/common/imx_sip_handler.c		\
  				plat/imx/common/imx_sip_svc.c			\
  				plat/imx/common/imx_uart_console.S		\
@@ -639,10 +624,10 @@ index 7982a6a4f..209dd4802 100644
  EL3_EXCEPTION_HANDLING := $(SDEI_SUPPORT)
  ifeq (${SDEI_SUPPORT}, 1)
  BL31_SOURCES 		+= 	plat/imx/common/imx_ehf.c	\
-diff --git a/plat/imx/imx91/imx91_bl31_setup.c b/plat/imx/imx91/imx91_bl31_setup.c
-index 91e80c1ef..3a3fe4efa 100644
---- a/plat/imx/imx91/imx91_bl31_setup.c
-+++ b/plat/imx/imx91/imx91_bl31_setup.c
+Index: imx-atf-tx93/plat/imx/imx91/imx91_bl31_setup.c
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx91/imx91_bl31_setup.c
++++ imx-atf-tx93/plat/imx/imx91/imx91_bl31_setup.c
 @@ -17,6 +17,7 @@
  #include <lib/el3_runtime/context_mgmt.h>
  #include <lib/mmio.h>
@@ -651,7 +636,34 @@ index 91e80c1ef..3a3fe4efa 100644
  #include <plat/common/platform.h>
  
  #include <ele_api.h>
-@@ -78,8 +79,23 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
+@@ -25,7 +26,7 @@
+ #include <plat_imx8.h>
+ #include <platform_def.h>
+ 
+-#define TRUSTY_PARAMS_LEN_BYTES      (4096*2)
++#define TRUSTY_PARAMS_LEN_BYTES      (4096 * 2)
+ 
+ static const mmap_region_t imx_mmap[] = {
+ 	/* APIS2 mapping */
+@@ -47,7 +48,7 @@ static const mmap_region_t imx_mmap[] =
+ 	MAP_REGION_FLAT(GPIO_BASE, GPIO_SIZE, MT_DEVICE | MT_RW),
+ 	MAP_REGION_FLAT(NIC_MAIN_GPV_BASE, 0x200000, MT_DEVICE | MT_RW),
+ 
+-	{0},
++	{}
+ };
+ 
+ static entry_point_info_t bl32_image_ep_info;
+@@ -64,7 +65,7 @@ static uint32_t get_spsr_for_bl33_entry(
+ 	el_status = read_id_aa64pfr0_el1() >> ID_AA64PFR0_EL2_SHIFT;
+ 	el_status &= ID_AA64PFR0_ELX_MASK;
+ 
+-	mode = (el_status) ? MODE_EL2 : MODE_EL1;
++	mode = el_status ? MODE_EL2 : MODE_EL1;
+ 
+ 	spsr = SPSR_64(mode, MODE_SP_ELX, DISABLE_ALL_EXCEPTIONS);
+ 	return spsr;
+@@ -78,8 +79,20 @@ void bl31_early_platform_setup2(u_regist
  	console_lpuart_register(IMX_LPUART_BASE, IMX_BOOT_UART_CLK_IN_HZ,
  		     IMX_CONSOLE_BAUDRATE, &console);
  
@@ -666,16 +678,13 @@ index 91e80c1ef..3a3fe4efa 100644
  	/* This console is only used for boot stage */
  	console_set_scope(&console, CONSOLE_FLAG_BOOT);
 +#endif
-+	INFO("uart_base=%08x clock=%uMHz baudrate=%u\n",
-+	     IMX_LPUART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
-+	     IMX_CONSOLE_BAUDRATE);
-+	INFO("%s@%d: args=%08lx %08lx %08lx %08lx\n", __func__, __LINE__,
-+	     arg0, arg1, arg2, arg3);
-+	INFO("ATF_LOAD_ADDR=%08x\n", BL31_BASE);
++	VERBOSE("uart_base=%08x clock=%uMHz baudrate=%u\n",
++		IMX_LPUART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
++		IMX_CONSOLE_BAUDRATE);
  
  	/*
  	 * tell BL3-1 where the non-secure software image is located
-@@ -169,14 +185,6 @@ void bl31_platform_setup(void)
+@@ -169,14 +182,6 @@ void bl31_platform_setup(void)
  	plat_gic_init();
  }
  
@@ -690,11 +699,11 @@ index 91e80c1ef..3a3fe4efa 100644
  entry_point_info_t *bl31_plat_get_next_image_ep_info(unsigned int type)
  {
  	if (type == NON_SECURE) {
-diff --git a/plat/imx/imx91/platform.mk b/plat/imx/imx91/platform.mk
-index 520304019..43f6fc15e 100644
---- a/plat/imx/imx91/platform.mk
-+++ b/plat/imx/imx91/platform.mk
-@@ -10,6 +10,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/include		\
+Index: imx-atf-tx93/plat/imx/imx91/platform.mk
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx91/platform.mk
++++ imx-atf-tx93/plat/imx/imx91/platform.mk
+@@ -10,6 +10,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/incl
  				-Iplat/imx/common
  # Translation tables library
  include lib/xlat_tables_v2/xlat_tables.mk
@@ -702,7 +711,7 @@ index 520304019..43f6fc15e 100644
  
  GICV3_SUPPORT_GIC600  :=      1
  GICV3_OVERRIDE_DISTIF_PWR_OPS	:=	1
-@@ -37,6 +38,7 @@ BL31_SOURCES		+=	plat/common/aarch64/crash_console_helpers.S   \
+@@ -37,6 +38,7 @@ BL31_SOURCES		+=	plat/common/aarch64/cra
  				plat/imx/imx91/imx91_psci.c			\
  				plat/imx/common/imx_sip_svc.c			\
  				plat/imx/common/imx_sip_handler.c			\
@@ -710,10 +719,10 @@ index 520304019..43f6fc15e 100644
  				plat/imx/common/ele_api.c			\
  				lib/cpus/aarch64/cortex_a55.S			\
  				drivers/delay_timer/delay_timer.c		\
-diff --git a/plat/imx/imx93/imx93_bl31_setup.c b/plat/imx/imx93/imx93_bl31_setup.c
-index 7b7aa30f3..24cfb05a1 100644
---- a/plat/imx/imx93/imx93_bl31_setup.c
-+++ b/plat/imx/imx93/imx93_bl31_setup.c
+Index: imx-atf-tx93/plat/imx/imx93/imx93_bl31_setup.c
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx93/imx93_bl31_setup.c
++++ imx-atf-tx93/plat/imx/imx93/imx93_bl31_setup.c
 @@ -17,6 +17,7 @@
  #include <lib/el3_runtime/context_mgmt.h>
  #include <lib/mmio.h>
@@ -722,7 +731,61 @@ index 7b7aa30f3..24cfb05a1 100644
  #include <plat/common/platform.h>
  
  #include <ele_api.h>
-@@ -72,9 +73,23 @@ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
+@@ -25,15 +26,15 @@
+ #include <plat_imx8.h>
+ #include <platform_def.h>
+ 
+-#define MAP_BL31_TOTAL										   \
++#define MAP_BL31_TOTAL							   \
+ 	MAP_REGION_FLAT(BL31_BASE, BL31_LIMIT - BL31_BASE, MT_MEMORY | MT_RW | MT_SECURE)
+-#define MAP_BL31_RO										   \
++#define MAP_BL31_RO							   \
+ 	MAP_REGION_FLAT(BL_CODE_BASE, BL_CODE_END - BL_CODE_BASE, MT_MEMORY | MT_RO | MT_SECURE)
+ 
+-#define MAP_BL32_TOTAL										   \
++#define MAP_BL32_TOTAL							   \
+ 	MAP_REGION_FLAT(BL32_BASE, BL32_SIZE, MT_MEMORY | MT_RW)
+ 
+-#define TRUSTY_PARAMS_LEN_BYTES      (4096*2)
++#define TRUSTY_PARAMS_LEN_BYTES      (4096 * 2)
+ 
+ static const mmap_region_t imx_mmap[] = {
+ 	AIPS1_MAP, AIPS2_MAP, AIPS4_MAP, GIC_MAP,
+@@ -41,7 +42,7 @@ static const mmap_region_t imx_mmap[] =
+ 	TRDC_N_MAP, DDRMIX_MAP, GPIO_MAP,
+ 	S400_MU_MAP, NIC_GPV_MAP, AIPS3_MAP,
+ 	FSB_MAP,
+-	{0},
++	{ 0 }
+ };
+ 
+ static entry_point_info_t bl32_image_ep_info;
+@@ -58,22 +59,44 @@ static uint32_t get_spsr_for_bl33_entry(
+ 	el_status = read_id_aa64pfr0_el1() >> ID_AA64PFR0_EL2_SHIFT;
+ 	el_status &= ID_AA64PFR0_ELX_MASK;
+ 
+-	mode = (el_status) ? MODE_EL2 : MODE_EL1;
++	mode = el_status ? MODE_EL2 : MODE_EL1;
+ 
+ 	spsr = SPSR_64(mode, MODE_SP_ELX, DISABLE_ALL_EXCEPTIONS);
+ 	return spsr;
+ }
+ 
++static void bl31_unmask_wdog_reset(void)
++{
++	/* unmask WDOG3-5 Reset */
++INFO("%s@%d: SRC_MASK=%08x\n", __func__, __LINE__, mmio_read_32(SRC_BASE + 0x18));
++	mmio_clrbits_32(SRC_BASE + 0x18, 0x1c);
++INFO("%s@%d: \n", __func__, __LINE__);
++}
++
+ void bl31_early_platform_setup2(u_register_t arg0, u_register_t arg1,
+ 		u_register_t arg2, u_register_t arg3)
+ {
+ 	static console_t console;
+ 
++	bl31_unmask_wdog_reset();
++
  	console_lpuart_register(IMX_LPUART_BASE, IMX_BOOT_UART_CLK_IN_HZ,
  		     IMX_CONSOLE_BAUDRATE, &console);
  
@@ -736,18 +799,14 @@ index 7b7aa30f3..24cfb05a1 100644
 +#else
  	/* This console is only used for boot stage */
  	console_set_scope(&console, CONSOLE_FLAG_BOOT);
--
 +#endif
-+	INFO("uart_base=%08x clock=%uMHz baudrate=%u\n",
-+	     IMX_LPUART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
-+	     IMX_CONSOLE_BAUDRATE);
-+	INFO("%s@%d: args=%08lx %08lx %08lx %08lx\n", __func__, __LINE__,
-+	     arg0, arg1, arg2, arg3);
-+	INFO("ATF_LOAD_ADDR=%08x\n", BL31_BASE);
++	VERBOSE("uart_base=%08x clock=%uMHz baudrate=%u\n",
++		IMX_LPUART_BASE, IMX_BOOT_UART_CLK_IN_HZ / 1000000,
++		IMX_CONSOLE_BAUDRATE);
+ 
  	/*
  	 * tell BL3-1 where the non-secure software image is located
- 	 * and the entry state information.
-@@ -160,11 +175,6 @@ void bl31_platform_setup(void)
+@@ -160,11 +183,6 @@ void bl31_platform_setup(void)
  	plat_gic_init();
  }
  
@@ -759,11 +818,11 @@ index 7b7aa30f3..24cfb05a1 100644
  entry_point_info_t *bl31_plat_get_next_image_ep_info(unsigned int type)
  {
  	if (type == NON_SECURE) {
-diff --git a/plat/imx/imx93/platform.mk b/plat/imx/imx93/platform.mk
-index a43d3c4f5..a13e82e60 100644
---- a/plat/imx/imx93/platform.mk
-+++ b/plat/imx/imx93/platform.mk
-@@ -10,6 +10,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/include		\
+Index: imx-atf-tx93/plat/imx/imx93/platform.mk
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx93/platform.mk
++++ imx-atf-tx93/plat/imx/imx93/platform.mk
+@@ -10,6 +10,7 @@ PLAT_INCLUDES		:=	-Iplat/imx/common/incl
  				-Iplat/imx/common
  # Translation tables library
  include lib/xlat_tables_v2/xlat_tables.mk
@@ -771,7 +830,7 @@ index a43d3c4f5..a13e82e60 100644
  
  GICV3_SUPPORT_GIC600  :=      1
  GICV3_OVERRIDE_DISTIF_PWR_OPS	:=	1
-@@ -38,6 +39,7 @@ BL31_SOURCES		+=	plat/common/aarch64/crash_console_helpers.S   \
+@@ -38,6 +39,7 @@ BL31_SOURCES		+=	plat/common/aarch64/cra
  				plat/imx/imx93/src.c			\
  				plat/imx/common/imx_sip_svc.c			\
  				plat/imx/common/imx_sip_handler.c			\
@@ -779,3 +838,59 @@ index a43d3c4f5..a13e82e60 100644
  				plat/imx/common/ele_api.c			\
  				lib/cpus/aarch64/cortex_a55.S			\
  				drivers/delay_timer/delay_timer.c		\
+Index: imx-atf-tx93/plat/imx/imx91/include/platform_def.h
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx91/include/platform_def.h
++++ imx-atf-tx93/plat/imx/imx91/include/platform_def.h
+@@ -38,7 +38,7 @@
+ /* non-secure uboot base */
+ /* TODO */
+ #define PLAT_NS_IMAGE_OFFSET		U(0x80200000)
+-#define BL32_FDT_OVERLAY_ADDR           (PLAT_NS_IMAGE_OFFSET + 0x3000000)
++#define BL32_FDT_OVERLAY_ADDR		(PLAT_NS_IMAGE_OFFSET + 0x3000000)
+ 
+ /* GICv4 base address */
+ #define PLAT_GICD_BASE			U(0x48000000)
+@@ -55,7 +55,9 @@
+ #define MAX_MMAP_REGIONS		17
+ #endif
+ 
++#ifndef IMX_LPUART_BASE
+ #define IMX_LPUART_BASE			0x44380000
++#endif
+ #define IMX_BOOT_UART_CLK_IN_HZ		24000000 /* Select 24MHz oscillator */
+ #define IMX_CONSOLE_BAUDRATE		115200
+ 
+Index: imx-atf-tx93/plat/imx/imx93/include/platform_def.h
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx93/include/platform_def.h
++++ imx-atf-tx93/plat/imx/imx93/include/platform_def.h
+@@ -53,7 +53,9 @@
+ #define MAX_MMAP_REGIONS		16
+ #endif
+ 
++#ifndef IMX_LPUART_BASE
+ #define IMX_LPUART_BASE			U(0x44380000)
++#endif
+ #define IMX_BOOT_UART_CLK_IN_HZ		U(24000000) /* Select 24MHz oscillator */
+ #define IMX_CONSOLE_BAUDRATE		115200
+ 
+Index: imx-atf-tx93/plat/imx/imx95/include/platform_def.h
+===================================================================
+--- imx-atf-tx93.orig/plat/imx/imx95/include/platform_def.h
++++ imx-atf-tx93/plat/imx/imx95/include/platform_def.h
+@@ -52,11 +52,13 @@
+ #define MAX_MMAP_REGIONS		32
+ #endif
+ 
++#ifndef IMX_LPUART_BASE
+ #ifdef IMX_EMU
+ #define IMX_LPUART_BASE			0x42570000
+ #else
+ #define IMX_LPUART_BASE			0x44380000
+-#endif
++#endif /* IMX_EMU */
++#endif /* IMX_LPUART_BASE */
+ 
+ #define IMX_BOOT_UART_CLK_IN_HZ		24000000 /* Select 24MHz oscillator */
+ #define IMX_CONSOLE_BAUDRATE		115200

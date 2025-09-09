@@ -37,17 +37,20 @@ KERNEL_DEVICETREE += "freescale/${DTB_BASENAME}.dtb"
 BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
+#SECO_FIRMWARE_NAME = "mx93a1-ahab-container.img"
 
-# Set imx-mkimage boot target
 ATF_PLATFORM ?= "imx93"
-ATF_LOAD_ADDR ?= "0x24e00000"
+
+ATF_BL31_BASE ??= "0x204e0000"
+ATF_BL31_SIZE ??= "0x25000"
+
+UBOOT_SAVED_DRAM_TIMING_BASE ??= "0x2051c000"
 
 # Set Serial console
 # The :${MACHINE} override is required to overrule the 'SERIAL_CONSOLES = ...' setting in
 # meta-freescale/conf/machine/include/imx-base.inc
 SERIAL_CONSOLES:${MACHINE} ?= "115200;ttyLP0 115200;ttyLP1 115200;ttyLP2"
-# for imx-atf
-IMX_LPUART_BASE ?= "0x44380000"
+IMX_BOOT_UART_BASE ??= "0x44380000"
 
 # Set DDR FIRMWARE
 DDR_FIRMWARE_NAME ?= " \

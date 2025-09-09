@@ -42,9 +42,11 @@ BOOT_TOOLS = "imx-boot-tools"
 
 SPL_BINARY = "spl/u-boot-spl.bin"
 
-# Set imx-mkimage boot target
-ATF_PLATFORM ?= "imx8mm"
-ATF_LOAD_ADDR ?= "0x920000"
+UBOOT_SAVED_DRAM_TIMING_BASE ??= "0x180000"
+
+ATF_PLATFORM ?= "${SOC_FAMILY}"
+
+ATF_BL31_SIZE ??= "0x20000"
 
 # Set Serial console
 # The :${MACHINE} override is required to overrule the 'SERIAL_CONSOLES = ...' setting in

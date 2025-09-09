@@ -1,0 +1,80 @@
+Index: imx-atf-qs91/plat/imx/imx91/include/platform_def.h
+===================================================================
+--- imx-atf-qs91.orig/plat/imx/imx91/include/platform_def.h
++++ imx-atf-qs91/plat/imx/imx91/include/platform_def.h
+@@ -30,11 +30,8 @@
+ #define PLAT_MAX_OFF_STATE		U(4)
+ #define PLAT_MAX_RET_STATE		U(2)
+ 
+-#define BL31_BASE			U(0x204C0000)
+ #define BL31_LIMIT			U(0x204E0000)
+ 
+-#define SAVED_DRAM_TIMING_BASE		U(0x2049C000)
+-
+ /* non-secure uboot base */
+ /* TODO */
+ #define PLAT_NS_IMAGE_OFFSET		U(0x80200000)
+Index: imx-atf-qs91/plat/imx/imx91/platform.mk
+===================================================================
+--- imx-atf-qs91.orig/plat/imx/imx91/platform.mk
++++ imx-atf-qs91/plat/imx/imx91/platform.mk
+@@ -62,3 +62,22 @@ BL32_BASE               ?=      0x960000
+ BL32_SIZE               ?=      0x02000000
+ $(eval $(call add_define,BL32_BASE))
+ $(eval $(call add_define,BL32_SIZE))
++
++BL31_BASE		?=	0x204C0000
++BL31_SIZE		?=	0x1D000
++$(eval $(call add_define,BL31_BASE))
++$(eval $(call add_define,BL31_SIZE))
++
++SAVED_DRAM_TIMING_BASE	?=	0x2049C000
++$(eval $(call add_define,SAVED_DRAM_TIMING_BASE))
++
++IMX_LPUART_BASE	?=	0x44380000
++ifeq (${IMX_LPUART_BASE},auto)
++    override IMX_LPUART_BASE	:=	0
++endif
++$(eval $(call add_define,IMX_LPUART_BASE))
++
++IMX_WDOG_B_RESET	?=	1
++ifeq ($(IMX_WDOG_B_RESET),1)
++$(eval $(call add_define,IMX_WDOG_B_RESET))
++endif
+Index: imx-atf-qs91/plat/imx/imx93/include/platform_def.h
+===================================================================
+--- imx-atf-qs91.orig/plat/imx/imx93/include/platform_def.h
++++ imx-atf-qs91/plat/imx/imx93/include/platform_def.h
+@@ -28,15 +28,12 @@
+ #define PLAT_MAX_OFF_STATE		U(4)
+ #define PLAT_MAX_RET_STATE		U(2)
+ 
+-#define BL31_BASE			U(0x204E0000)
+ #define BL31_LIMIT			U(0x20520000)
+ 
+-#define SAVED_DRAM_TIMING_BASE		U(0x2051c000)
+-
+ /* non-secure uboot base */
+ /* TODO */
+ #define PLAT_NS_IMAGE_OFFSET		U(0x80200000)
+-#define BL32_FDT_OVERLAY_ADDR           (PLAT_NS_IMAGE_OFFSET + 0x3000000)
++#define BL32_FDT_OVERLAY_ADDR		(PLAT_NS_IMAGE_OFFSET + 0x3000000)
+ 
+ /* GICv4 base address */
+ #define PLAT_GICD_BASE			U(0x48000000)
+Index: imx-atf-qs91/plat/imx/imx93/platform.mk
+===================================================================
+--- imx-atf-qs91.orig/plat/imx/imx93/platform.mk
++++ imx-atf-qs91/plat/imx/imx93/platform.mk
+@@ -63,3 +63,11 @@ BL32_BASE               ?=      0x960000
+ BL32_SIZE               ?=      0x02000000
+ $(eval $(call add_define,BL32_BASE))
+ $(eval $(call add_define,BL32_SIZE))
++
++BL31_BASE		?=	0x204E0000
++BL31_SIZE		?=	0x25000
++$(eval $(call add_define,BL31_BASE))
++$(eval $(call add_define,BL31_SIZE))
++
++SAVED_DRAM_TIMING_BASE	?=	0x2051C000
++$(eval $(call add_define,SAVED_DRAM_TIMING_BASE))

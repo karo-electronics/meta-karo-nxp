@@ -18,13 +18,44 @@ inherit deploy
 
 ATF_PLATFORM ??= "INVALID"
 
-# FIXME: We should return INVALID here but currently only i.MX8M has support to override the UART
-# base address in source code.
-#ATF_BOOT_UART_BASE ?= ""
-
-EXTRA_OEMAKE += " \
+EXTRA_OEMAKE:append = " \
     CROSS_COMPILE="${TARGET_PREFIX}" \
     PLAT=${ATF_PLATFORM} \
+"
+
+EXTRA_OEMAKE:append = " \
+    CRASH_REPORTING=1 \
+    LOG_LEVEL=${@ 50 if d.getVar('ATF_DEBUG') == "1" else 30} \
+    V=0 \
+"
+
+EXTRA_OEMAKE:append:mx8-nxp-bsp = " \
+    IMX_BOOT_UART_BASE=${IMX_BOOT_UART_BASE} \
+    IMX_WDOG_B_RESET=${@ 1 if 'imx8mp' in d.getVar('MACHINEOVERRIDES').split(':') else 0} \
+    RESET_TO_BL31=1 \
+    ERRATA_A53_1530924=1 \
+"
+
+EXTRA_OEMAKE:append:mx9-nxp-bsp = " \
+    IMX_LPUART_BASE=${IMX_BOOT_UART_BASE} \
+    IMX_WDOG_B_RESET=1 \
+"
+EXTRA_OEMAKE:append:mx9-nxp-bsp = " \
+    ERRATA_DSU_798953=1 \
+    ERRATA_DSU_936184=1 \
+    ERRATA_A55_768277=1 \
+    ERRATA_A55_778703=1 \
+    ERRATA_A55_798797=1 \
+    ERRATA_A55_846532=1 \
+    ERRATA_A55_903758=1 \
+    ERRATA_A55_1221012=1 \
+    ERRATA_A55_1530923=1 \
+"
+
+EXTRA_OEMAKE:append = " \
+    BL31_BASE=${ATF_BL31_BASE} \
+    BL31_SIZE=${ATF_BL31_SIZE} \
+    SAVED_DRAM_TIMING_BASE=${UBOOT_SAVED_DRAM_TIMING_BASE} \
 "
 
 # Let the Makefile handle setting up the CFLAGS and LDFLAGS as it is a standalone application
@@ -53,20 +84,18 @@ EXTRA_OEMAKE += 'LD="${@remove_options_tail(d.getVar('LD'))}"'
 
 EXTRA_OEMAKE += 'CC="${@remove_options_tail(d.getVar('CC'))}"'
 
-# Set the UART to use during the boot.
-#EXTRA_OEMAKE += 'IMX_BOOT_UART_BASE=${ATF_BOOT_UART_BASE}'
-
 # Set to 1 for debugging
-#ATF_DEBUG ?= "1"
-#EXTRA_OEMAKE += 'DEBUG=${ATF_DEBUG}'
-#OUTPUT_FOLDER = "${@bb.utils.contains('ATF_DEBUG', '0', 'release', 'debug', d)}"
+ATF_DEBUG ?= "0"
+EXTRA_OEMAKE += 'DEBUG=${ATF_DEBUG}'
 
-do_configure[noexec] = "1"
+do_configure() {
+    oe_runmake clean
+}
+do_configure[vardeps] += "ATF_BL31_BASE ATF_BL31_SIZE UBOOT_SAVED_DRAM_TIMING_BASE"
 
 do_compile() {
-    # 'make clean' before compiling because atf build system does not recognise
+    # 'make clean' before compiling because atf build system does not recognise parameter changes
     # Clear LDFLAGS to avoid the option -Wl recognize issue
-    oe_runmake clean
     oe_runmake bl31
     if ${BUILD_OPTEE}; then
         oe_runmake clean BUILD_BASE=build-optee
@@ -76,16 +105,17 @@ do_compile() {
 
 do_install[noexec] = "1"
 
-#BOOT_TOOLS = "imx-boot-tools"
+BOOT_TOOLS = "imx-boot-tools"
 
 addtask deploy after do_compile
 do_deploy() {
-     builddir="${@ bb.utils.contains('EXTRA_OEMAKE','DEBUG=1',"debug", "release", d)}"
+    builddir="${@ "debug" if d.getVar('ATF_DEBUG') == "1" else "release"}"
+    if ${BUILD_OPTEE}; then
+        install -vDm 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin-optee
+        install -vDm 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${ATF_PLATFORM}.bin-optee
+    else
     install -vDm 0644 ${S}/build/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin
     install -vDm 0644 ${S}/build/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${ATF_PLATFORM}.bin
-    if ${BUILD_OPTEE}; then
-        install -vm 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/bl31-${ATF_PLATFORM}.bin-optee
-        install -vm 0644 ${S}/build-optee/${ATF_PLATFORM}/${builddir}/bl31.bin ${DEPLOYDIR}/${BOOT_TOOLS}/bl31-${ATF_PLATFORM}.bin-optee
     fi
 }
 
