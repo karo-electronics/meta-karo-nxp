@@ -54,6 +54,7 @@ KARO_BASEBOARDS:tx93 += "\
         mb7 \
 "
 KARO_BASEBOARDS:qs93 += "\
+        qsbase4 \
         qsbase93 \
 "
 
@@ -79,6 +80,13 @@ KARO_DTB_OVERLAYS[lvds-mb] += " \
         karo-lvds-panel \
         karo-panel-tm101jvhg32 \
         karo-rtc \
+"
+
+KARO_DTB_OVERLAYS[qsbase4] += " \
+        ${@ mach_overlay(d, "karo-copro", dist="copro")} \
+        qs93-eqos-ksz9131 \
+        ${@ mach_overlay(d, "qs93-flexcan1", dist="flexcan")} \
+        ${@ mach_overlay(d, "qs93-flexcan2", dist="flexcan")} \
 "
 
 KARO_DTB_OVERLAYS[qsbase93] += " \
