@@ -63,7 +63,7 @@ KARO_BASEBOARDS:qs93 += "\
 # baseboard.
 #
 KARO_DTB_OVERLAYS[mb7] += " \
-        ${@ mach_overlay(d, "karo-copro:", dist="copro")} \
+        ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         karo-lcd-panel \
         karo-mb7 \
@@ -73,7 +73,7 @@ KARO_DTB_OVERLAYS[mb7] += " \
 "
 
 KARO_DTB_OVERLAYS[lvds-mb] += " \
-        ${@ mach_overlay(d, "karo-copro:", dist="copro")} \
+        ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         karo-lvds-mb \
         karo-lvds-panel \
@@ -82,7 +82,7 @@ KARO_DTB_OVERLAYS[lvds-mb] += " \
 "
 
 KARO_DTB_OVERLAYS[qsbase93] += " \
-        ${@ mach_overlay(d, "karo-copro:", dist="copro")} \
+        ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         qs93-eqos-lan8710 \
         qs93-fec-lan8710 \

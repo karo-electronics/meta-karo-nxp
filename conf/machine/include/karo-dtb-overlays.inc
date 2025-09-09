@@ -7,6 +7,9 @@ def mach_overlay (d, overlay, mach="", dist=""):
             return ""
     if overlay.find(":") >= 0:
         alt1,alt2 = overlay.split(':')
+        if mach == "":
+            bb.warn("Alternative overlays '%s' specified, but no machine name(s) provided" % overlay)
+            return alt1
     else:
         alt1,alt2 = (overlay,'')
     for m in mach.split(','):
