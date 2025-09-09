@@ -1,0 +1,151 @@
+// SPDX-License-Identifier: (GPL-2.0 or MIT)
+/*
+ * Copyright 2025 Lothar Waßmann <LW@KARO-electronics.de>
+ */
+
+#include "imx91-tx91-3110.dts"
+
+/ {
+	model = "Ka-Ro electronics GmbH TX91-3110 (NXP i.MX91) module on MB7 baseboard";
+#if 0
+	aliases {
+		display = &lcd_panel;
+		lcdif = &lcdif;
+	};
+
+	backlight: backlight {
+		compatible = "gpio-backlight";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_backlight>;
+		gpios = <&gpio1 2 GPIO_ACTIVE_LOW>;
+	};
+
+	lcd_panel: panel {
+		compatible = "simple-panel";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_lcd_reset>;
+		backlight = <&backlight>;
+		enable-gpios = <&gpio4 14 GPIO_ACTIVE_HIGH>;
+		power-supply = <&reg_lcd_pwr>;
+
+		port {
+			panel_from_lcdif: endpoint {
+				remote-endpoint = <&lcdif_to_panel>;
+			};
+		};
+
+		display-timings {
+			native-mode = <&timing0>;
+
+			timing0: timing0 {
+				clock-frequency = <30000000>;
+				hactive = <800>;
+				vactive = <480>;
+				hfront-porch = <40>;
+				hback-porch = <40>;
+				hsync-len = <48>;
+				vback-porch = <29>;
+				vfront-porch = <13>;
+				vsync-len = <3>;
+				vsync-active = <0>;
+				hsync-active = <0>;
+			};
+		};
+	};
+
+	reg_lcd_pwr: regulator-lcd-pwr {
+		compatible = "regulator-fixed";
+		regulator-name = "LCD_PWR";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		vin-supply = <&reg_vdd_3v3>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_lcd_pwr>;
+		gpios = <&gpio4 15 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+};
+
+#define PIXCLK 33264000
+
+&lcdif {
+	status = "okay";
+	assigned-clock-rates = <(PIXCLK * 7)>, <PIXCLK>, <400000000>, <133333333>;
+};
+
+&parallel_disp_fmt {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lcdif>;
+	fsl,interface-pix-fmt = "rgb888";
+	status = "okay";
+
+	ports {
+		port@1 {
+			lcdif_to_panel: endpoint {
+				remote-endpoint = <&panel_from_lcdif>;
+			};
+		};
+	};
+};
+
+&usdhc2 {
+	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
+	cd-gpios = <&gpio3 0 GPIO_ACTIVE_LOW>;
+};
+
+&iomuxc {
+	pinctrl_backlight: backlightgrp {
+		fsl,pins = <
+			MX91_PAD_I2C2_SCL__GPIO1_IO02			0x20e
+		>;
+	};
+
+	pinctrl_lcdif: lcdifgrp {
+		fsl,pins = <
+			MX91_PAD_GPIO_IO00__MEDIAMIX_DISP_CLK		0x20e
+			MX91_PAD_GPIO_IO01__MEDIAMIX_DISP_DE		0x20e
+			MX91_PAD_GPIO_IO02__MEDIAMIX_DISP_VSYNC		0x20e
+			MX91_PAD_GPIO_IO03__MEDIAMIX_DISP_HSYNC		0x20e
+			/* BLUE */
+			MX91_PAD_GPIO_IO04__MEDIAMIX_DISP_DATA00	0x20e
+			MX91_PAD_GPIO_IO05__MEDIAMIX_DISP_DATA01	0x20e
+			MX91_PAD_GPIO_IO06__MEDIAMIX_DISP_DATA02	0x20e
+			MX91_PAD_GPIO_IO07__MEDIAMIX_DISP_DATA03	0x20e
+			MX91_PAD_GPIO_IO08__MEDIAMIX_DISP_DATA04	0x20e
+			MX91_PAD_GPIO_IO09__MEDIAMIX_DISP_DATA05	0x20e
+			MX91_PAD_GPIO_IO10__MEDIAMIX_DISP_DATA06	0x20e
+			MX91_PAD_GPIO_IO11__MEDIAMIX_DISP_DATA07	0x20e
+			/* GREEN */
+			MX91_PAD_GPIO_IO12__MEDIAMIX_DISP_DATA08	0x20e
+			MX91_PAD_GPIO_IO13__MEDIAMIX_DISP_DATA09	0x20e
+			MX91_PAD_GPIO_IO14__MEDIAMIX_DISP_DATA10	0x20e
+			MX91_PAD_GPIO_IO15__MEDIAMIX_DISP_DATA11	0x20e
+			MX91_PAD_GPIO_IO16__MEDIAMIX_DISP_DATA12	0x20e
+			MX91_PAD_GPIO_IO17__MEDIAMIX_DISP_DATA13	0x20e
+			MX91_PAD_GPIO_IO18__MEDIAMIX_DISP_DATA14	0x20e
+			MX91_PAD_GPIO_IO19__MEDIAMIX_DISP_DATA15	0x20e
+			/* RED */
+			MX91_PAD_GPIO_IO20__MEDIAMIX_DISP_DATA16	0x20e
+			MX91_PAD_GPIO_IO21__MEDIAMIX_DISP_DATA17	0x20e
+			MX91_PAD_GPIO_IO22__MEDIAMIX_DISP_DATA18	0x20e
+			MX91_PAD_GPIO_IO23__MEDIAMIX_DISP_DATA19	0x20e
+			MX91_PAD_GPIO_IO24__MEDIAMIX_DISP_DATA20	0x20e
+			MX91_PAD_GPIO_IO25__MEDIAMIX_DISP_DATA21	0x20e
+			MX91_PAD_GPIO_IO26__MEDIAMIX_DISP_DATA22	0x20e
+			MX91_PAD_GPIO_IO27__MEDIAMIX_DISP_DATA23	0x20e
+		>;
+	};
+
+	pinctrl_lcd_pwr: lcd-pwrgrp {
+		fsl,pins = <
+			MX91_PAD_ENET2_MDIO__GPIO4_IO15			0x40e
+		>;
+	};
+
+	pinctrl_lcd_reset: lcd-resetgrp {
+		fsl,pins = <
+			MX91_PAD_ENET2_MDC__GPIO4_IO14			0x40e
+		>;
+	};
+#endif
+};
