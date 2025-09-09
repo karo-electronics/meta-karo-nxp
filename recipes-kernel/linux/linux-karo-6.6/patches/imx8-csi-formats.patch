@@ -1,0 +1,355 @@
+Index: linux-qs8m-mq00/drivers/media/platform/mxc/capture/mx6s_capture.c
+===================================================================
+--- linux-qs8m-mq00.orig/drivers/media/platform/mxc/capture/mx6s_capture.c
++++ linux-qs8m-mq00/drivers/media/platform/mxc/capture/mx6s_capture.c
+@@ -266,6 +266,18 @@ static struct mx6s_fmt formats[] = {
+ 		.pixelformat	= V4L2_PIX_FMT_SBGGR8,
+ 		.mbus_code	= MEDIA_BUS_FMT_SBGGR8_1X8,
+ 		.bpp		= 1,
++	}, {
++		.name		= "RAWRGB8 (SRGGB8)",
++		.fourcc		= V4L2_PIX_FMT_SRGGB8,
++		.pixelformat	= V4L2_PIX_FMT_SRGGB8,
++		.mbus_code	= MEDIA_BUS_FMT_SRGGB8_1X8,
++		.bpp		= 1,
++	}, {
++		.name		= "RAWRGB10 (SRGGB10)",
++		.fourcc		= V4L2_PIX_FMT_SRGGB10,
++		.pixelformat	= V4L2_PIX_FMT_SRGGB10,
++		.mbus_code	= MEDIA_BUS_FMT_SRGGB10_1X10,
++		.bpp		= 1,
+ 	}
+ };
+ 
+@@ -838,6 +850,7 @@ static int mx6s_configure_csi(struct mx6
+ 	switch (csi_dev->fmt->pixelformat) {
+ 	case V4L2_PIX_FMT_YUV32:
+ 	case V4L2_PIX_FMT_SBGGR8:
++	case V4L2_PIX_FMT_SRGGB8:
+ 		width = pix->width;
+ 		break;
+ 	case V4L2_PIX_FMT_UYVY:
+@@ -869,6 +882,7 @@ static int mx6s_configure_csi(struct mx6
+ 			cr18 |= BIT_MIPI_DATA_FORMAT_YUV422_8B;
+ 			break;
+ 		case V4L2_PIX_FMT_SBGGR8:
++		case V4L2_PIX_FMT_SRGGB8:
+ 			cr18 |= BIT_MIPI_DATA_FORMAT_RAW8;
+ 			break;
+ 		default:
+Index: linux-qs8m-mq00/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
+===================================================================
+--- linux-qs8m-mq00.orig/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
++++ linux-qs8m-mq00/drivers/media/platform/mxc/capture/mxc_mipi_csi.c
+@@ -321,6 +321,14 @@ static const struct csis_pix_format mipi
+ 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
+ 		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
+ 		.data_alignment = 8,
++	}, {
++		.code = MEDIA_BUS_FMT_SRGGB8_1X8,
++		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW8,
++		.data_alignment = 8,
++	}, {
++		.code = MEDIA_BUS_FMT_SRGGB10_1X10,
++		.fmt_reg = MIPI_CSIS_ISPCFG_FMT_RAW10,
++		.data_alignment = 16,
+ 	}
+ };
+ 
+@@ -334,8 +342,7 @@ static struct csi_state *mipi_sd_to_csi_
+ 	return container_of(sdev, struct csi_state, mipi_sd);
+ }
+ 
+-static inline struct csi_state
+-				*notifier_to_mipi_dev(struct v4l2_async_notifier *n)
++static inline struct csi_state *notifier_to_mipi_dev(struct v4l2_async_notifier *n)
+ {
+ 	return container_of(n, struct csi_state, subdev_notifier);
+ }
+@@ -730,7 +737,7 @@ static int mipi_csis_enum_mbus_code(stru
+ 
+ 	csis_fmt = find_csis_format(code->code);
+ 	if (csis_fmt == NULL) {
+-		dev_err(state->dev, "format not match\n");
++		dev_err(state->dev, "unsupported format %08x\n", code->code);
+ 		return -EINVAL;
+ 	}
+ 
+@@ -1295,7 +1302,7 @@ static const struct of_device_id mipi_cs
+ 	{	.compatible = "fsl,imx8mm-mipi-csi",
+ 		.data = (void *)&mipi_csis_phy_reset_mx8mm,
+ 	},
+-	{ /* sentinel */ },
++	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, mipi_csis_of_match);
+ 
+Index: linux-qs8m-mq00/drivers/staging/media/imx/dwc-mipi-csi2.c
+===================================================================
+--- linux-qs8m-mq00.orig/drivers/staging/media/imx/dwc-mipi-csi2.c
++++ linux-qs8m-mq00/drivers/staging/media/imx/dwc-mipi-csi2.c
+@@ -385,7 +385,10 @@ struct dwc_mipi_csi2_host {
+ static const struct csi2h_pix_format dwc_csi2h_formats[] = {
+ 	{
+ 		.code = MEDIA_BUS_FMT_YUYV8_2X8,
+-		.fmt_reg = 0x18,
++		.fmt_reg = 0x1E,
++	}, {
++		.code = MEDIA_BUS_FMT_UYVY8_2X8,
++		.fmt_reg = 0x1E,
+ 	}, {
+ 		.code = MEDIA_BUS_FMT_RGB888_1X24,
+ 		.fmt_reg = 0x24,
+@@ -396,12 +399,39 @@ static const struct csi2h_pix_format dwc
+ 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
+ 		.fmt_reg = 0x2A,
+ 	}, {
++		.code = MEDIA_BUS_FMT_SRGGB8_1X8,
++		.fmt_reg = 0x2A,
++	}, {
++		.code = MEDIA_BUS_FMT_SGBRG8_1X8,
++		.fmt_reg = 0x2A,
++	}, {
++		.code = MEDIA_BUS_FMT_SGRBG8_1X8,
++		.fmt_reg = 0x2A,
++	}, {
+ 		.code = MEDIA_BUS_FMT_SBGGR10_1X10,
+ 		.fmt_reg = 0x2B,
+ 	}, {
++		.code = MEDIA_BUS_FMT_SGBRG10_1X10,
++		.fmt_reg = 0x2B,
++	}, {
++		.code = MEDIA_BUS_FMT_SGRBG10_1X10,
++		.fmt_reg = 0x2B,
++	}, {
++		.code = MEDIA_BUS_FMT_SRGGB10_1X10,
++		.fmt_reg = 0x2B,
++	}, {
+ 		.code = MEDIA_BUS_FMT_SBGGR12_1X12,
+ 		.fmt_reg = 0x2C,
+ 	}, {
++		.code = MEDIA_BUS_FMT_SGBRG12_1X12,
++		.fmt_reg = 0x2C,
++	}, {
++		.code = MEDIA_BUS_FMT_SGRBG12_1X12,
++		.fmt_reg = 0x2C,
++	}, {
++		.code = MEDIA_BUS_FMT_SRGGB12_1X12,
++		.fmt_reg = 0x2C,
++	}, {
+ 		/* sentinel */
+ 	}
+ };
+@@ -702,24 +732,28 @@ static void disp_mix_gasket_config(struc
+ 		fmt_val = DT_YUV422_8;
+ 		break;
+ 	case MEDIA_BUS_FMT_SBGGR8_1X8:
++	case MEDIA_BUS_FMT_SRGGB8_1X8:
++	case MEDIA_BUS_FMT_SGBRG8_1X8:
++	case MEDIA_BUS_FMT_SGRBG8_1X8:
+ 		fmt_val = DT_RAW8;
+ 		break;
+ 	case MEDIA_BUS_FMT_SBGGR10_1X10:
+ 	case MEDIA_BUS_FMT_SGBRG10_1X10:
+ 	case MEDIA_BUS_FMT_SGRBG10_1X10:
+ 	case MEDIA_BUS_FMT_SRGGB10_1X10:
+-		fmt_val = DT_RAW10;
++		fmt_val = /*DT_RAW10*/ 0x31;
+ 		break;
+ 	case MEDIA_BUS_FMT_SBGGR12_1X12:
+ 	case MEDIA_BUS_FMT_SGBRG12_1X12:
+ 	case MEDIA_BUS_FMT_SGRBG12_1X12:
+ 	case MEDIA_BUS_FMT_SRGGB12_1X12:
+-		fmt_val = DT_RAW12;
++		fmt_val = /*DT_RAW12*/ 0x31;
+ 		break;
+ 	default:
+-		pr_err("gasket not support format %d\n", mf->code);
++		pr_err("gasket does not support format %d\n", mf->code);
+ 		return;
+ 	}
++	pr_info("code: 0x%x, camera_mux fmt: 0x%x\n", mf->code, fmt_val);
+ 
+ 	if (csi2h->ppi_pg_enable)
+ 		fmt_val = DT_RGB888;
+@@ -851,8 +885,8 @@ static int dwc_mipi_csi2_host_ipi_config
+ 		val &= ~DWC_MIPI_CSI2_IPI_VCID_VC_2;
+ 	dwc_mipi_csi2h_write(csi2h, DWC_MIPI_CSI2_IPI_VCID, val);
+ 
+-	dev_dbg(dev, "data_type:0x%x, virtual chan: %d\n",
+-		ipi_cfg->data_type, ipi_cfg->vir_chan);
++	dev_info(dev, "ipi data_type:0x%x, virtual chan: %d\n",
++		 ipi_cfg->data_type, ipi_cfg->vir_chan);
+ 
+ 	/* 1. Select the IPI mode, camera timing by default
+ 	 * 2. PPI color mode, mode16/18: 16 bits interface by default
+@@ -872,6 +906,8 @@ static int dwc_mipi_csi2_host_ipi_config
+ 	/* Configure the IPI horizontal frame information */
+ 	dwc_mipi_csi2_ipi_config_htiming(csi2h);
+ 
++	dwc_mipi_csi2h_write(csi2h, DWC_MIPI_CSI2_IPI_ADV_FEATURES, 0x1230000);
++
+ 	if (csi2h->ppi_pg_enable)
+ 		dwc_mipi_csi2h_write(csi2h, DWC_MIPI_CSI2_IPI_ADV_FEATURES,
+ 				     0x01050000);
+@@ -880,9 +916,9 @@ static int dwc_mipi_csi2_host_ipi_config
+ 	if (ipi_cfg->controller_mode || csi2h->ppi_pg_enable)
+ 		dwc_mipi_csi2_ipi_config_vtiming(csi2h);
+ 
+-	dev_dbg(dev, "ipi mode: %s, color_mode: %s\n",
+-		ipi_cfg->controller_mode ? "controller" : "camera",
+-		ipi_cfg->color_mode_16   ? "color mode 16" : "color mode 48");
++	dev_info(dev, "ipi mode: %s, color_mode: %s\n",
++		 ipi_cfg->controller_mode ? "controller" : "camera",
++		 ipi_cfg->color_mode_16   ? "color mode 16" : "color mode 48");
+ 
+ 	return 0;
+ }
+@@ -1027,7 +1063,7 @@ static int dwc_mipi_csi2_param_init(stru
+ 			ipi_cfg->vactive_lines   = 0x320;
+ 			ipi_cfg->controller_mode = 0;
+ 			ipi_cfg->color_mode_16   = 0;
+-			ipi_cfg->embeded_data    = 0;
++			ipi_cfg->embeded_data    = 1;
+ 		}
+ 	}
+ 
+@@ -1045,7 +1081,7 @@ static int dwc_mipi_csi2_param_init(stru
+ 	of_property_read_u32(node, "cfg-clk-range", &csi2h->cfgclkfreqrange);
+ 	of_property_read_u32(node, "hs-clk-range", &csi2h->hsclkfreqrange);
+ 
+-	dev_dbg(dev, "cfgclkfreqrange=%d, hsfreqrange=%d\n",
++	dev_info(dev, "cfgclkfreqrange=%d, hsfreqrange=%d\n",
+ 		 csi2h->cfgclkfreqrange, csi2h->hsclkfreqrange);
+ 	return 0;
+ }
+@@ -1110,6 +1146,39 @@ static int dwc_mipi_csi2_get_fmt(struct
+ 	}
+ 
+ 	memcpy(mf, &format->format, sizeof(struct v4l2_mbus_framefmt));
++
++	switch (mf->code) {
++	case MEDIA_BUS_FMT_YUYV8_2X8:
++	case MEDIA_BUS_FMT_UYVY8_2X8:
++		csi2h->ipi_cfg[0].data_type = DT_YUV422_8;
++		csi2h->ipi_cfg[0].color_mode_16 = 0;
++		break;
++	case MEDIA_BUS_FMT_SBGGR8_1X8:
++	case MEDIA_BUS_FMT_SGBRG8_1X8:
++	case MEDIA_BUS_FMT_SGRBG8_1X8:
++	case MEDIA_BUS_FMT_SRGGB8_1X8:
++		csi2h->ipi_cfg[0].data_type = DT_RAW8;
++		csi2h->ipi_cfg[0].color_mode_16 = 1;
++		break;
++	case MEDIA_BUS_FMT_SBGGR10_1X10:
++	case MEDIA_BUS_FMT_SGBRG10_1X10:
++	case MEDIA_BUS_FMT_SGRBG10_1X10:
++	case MEDIA_BUS_FMT_SRGGB10_1X10:
++		csi2h->ipi_cfg[0].data_type = DT_RAW10;
++		csi2h->ipi_cfg[0].color_mode_16 = 1;
++		break;
++	case MEDIA_BUS_FMT_SBGGR12_1X12:
++	case MEDIA_BUS_FMT_SGBRG12_1X12:
++	case MEDIA_BUS_FMT_SGRBG12_1X12:
++	case MEDIA_BUS_FMT_SRGGB12_1X12:
++		csi2h->ipi_cfg[0].data_type = DT_RAW12;
++		csi2h->ipi_cfg[0].color_mode_16 = 1;
++		break;
++	default:
++		v4l2_err(&csi2h->sd, "unsupported format %d\n", mf->code);
++	}
++	pr_info("code: 0x%x, csi fmt: 0x%x\n", mf->code, csi2h->ipi_cfg[0].data_type);
++
+ 	return 0;
+ }
+ 
+Index: linux-qs8m-mq00/drivers/staging/media/imx/imx8-isi-cap.c
+===================================================================
+--- linux-qs8m-mq00.orig/drivers/staging/media/imx/imx8-isi-cap.c
++++ linux-qs8m-mq00/drivers/staging/media/imx/imx8-isi-cap.c
+@@ -773,12 +773,10 @@ static int mxc_isi_capture_release(struc
+ 
+ label:
+ 	mutex_lock(&mxc_isi->lock);
+-	if (atomic_read(&mxc_isi->usage_count) == 0) {
+-		mxc_isi->cap_enabled = false;
+-		pm_runtime_put(dev);
+-	}
++	mxc_isi->cap_enabled = false;
+ 	mutex_unlock(&mxc_isi->lock);
+ 
++	pm_runtime_put(dev);
+ 	return (ret) ? ret : 0;
+ }
+ 
+@@ -973,6 +971,7 @@ static int mxc_isi_source_fmt_init(struc
+ 	src_fmt.pad = source_pad->index;
+ 	src_fmt.which = V4L2_SUBDEV_FORMAT_ACTIVE;
+ 	ret = v4l2_subdev_call(src_sd, pad, get_fmt, NULL, &src_fmt);
++	src_fmt.format.code = MEDIA_BUS_FMT_UYVY8_1X16;
+ 	if (ret < 0 && ret != -ENOIOCTLCMD) {
+ 		v4l2_err(&isi_cap->sd, "get remote fmt fail!\n");
+ 		return ret;
+Index: linux-qs8m-mq00/drivers/staging/media/imx/imx8-isi-fmt.c
+===================================================================
+--- linux-qs8m-mq00.orig/drivers/staging/media/imx/imx8-isi-fmt.c
++++ linux-qs8m-mq00/drivers/staging/media/imx/imx8-isi-fmt.c
+@@ -42,7 +42,7 @@ struct mxc_isi_fmt mxc_isi_out_formats[]
+ 		.memplanes	= 1,
+ 		.colplanes	= 1,
+ 		.align		= 3,
+-		.mbus_code	= MEDIA_BUS_FMT_YUYV8_1X16,
++		.mbus_code	= /*MEDIA_BUS_FMT_YUYV8_1X16*/MEDIA_BUS_FMT_UYVY8_2X8,
+ 	}, {
+ 		.name		= "YUV32 (X-Y-U-V)",
+ 		.fourcc		= V4L2_PIX_FMT_YUV32,
+@@ -97,6 +97,49 @@ struct mxc_isi_fmt mxc_isi_out_formats[]
+ 		.colplanes	= 1,
+ 		.align		= 2,
+ 		.mbus_code	= MEDIA_BUS_FMT_RGB888_1X24,
++	}, {
++		.name		= "BA10",
++		.fourcc		= V4L2_PIX_FMT_SRGGB10,
++		.depth		= { 16 },
++		.color		= MXC_ISI_OUT_FMT_RAW16,
++		.memplanes	= 1,
++		.colplanes	= 1,
++		.mbus_code	= MEDIA_BUS_FMT_SRGGB10_1X10,
++	}, {
++		.name		= "BA8",
++		.fourcc		= V4L2_PIX_FMT_SRGGB8,
++		.depth		= { 8 },
++		.color		= MXC_ISI_OUT_FMT_RAW8,
++		.memplanes	= 1,
++		.colplanes	= 1,
++		.mbus_code	= MEDIA_BUS_FMT_SRGGB8_1X8,
++	}, {
++		.name		= "RAW8 (SGRBG8)",
++		.fourcc		= V4L2_PIX_FMT_SGRBG8,
++		.depth		= { 8 },
++		.color		= MXC_ISI_OUT_FMT_RAW8,
++		.memplanes	= 1,
++		.colplanes	= 1,
++		.align		= 1,
++		.mbus_code	= MEDIA_BUS_FMT_SGRBG8_1X8,
++	}, {
++		.name		= "RAW10 (SRGGB10)",
++		.fourcc		= V4L2_PIX_FMT_SRGGB10,
++		.depth		= { 16 },
++		.color		= MXC_ISI_OUT_FMT_RAW10,
++		.memplanes	= 1,
++		.colplanes	= 1,
++		.align		= 2,
++		.mbus_code	= MEDIA_BUS_FMT_SRGGB10_1X10,
++	}, {
++		.name		= "RAW12 (SGRBG12)",
++		.fourcc		= V4L2_PIX_FMT_SGRBG12,
++		.depth		= { 16 },
++		.color		= MXC_ISI_OUT_FMT_RAW12,
++		.memplanes	= 1,
++		.colplanes	= 1,
++		.align		= 2,
++		.mbus_code	= MEDIA_BUS_FMT_SGRBG12_1X12,
+ 	}
+ };
+ 

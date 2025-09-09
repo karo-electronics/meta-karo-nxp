@@ -1,5 +1,6 @@
 SRC_URI:append = " \
     file://imx219-driver.patch \
+    file://imx8-csi-formats.patch \
     file://karo-spidev-test.patch \
     file://rpmsg-no-suspend-bugfix.patch \
     file://imx-fracn-gppll-rate-bugfix.patch \
