@@ -44,7 +44,9 @@ ATF_PLATFORM ?= "imx91"
 ATF_LOAD_ADDR ?= "0x24e00000"
 
 # Set Serial console
-SERIAL_CONSOLES:mx9-nxp-bsp ?= "115200;ttyLP0 115200;ttyLP1 115200;ttyLP2"
+# The :${MACHINE} override is required to overrule the 'SERIAL_CONSOLES = ...' setting in
+# meta-freescale/conf/machine/include/imx-base.inc
+SERIAL_CONSOLES:${MACHINE} ?= "115200;ttyLP0 115200;ttyLP1 115200;ttyLP2"
 # for imx-atf
 IMX_LPUART_BASE ?= "0x44380000"
 

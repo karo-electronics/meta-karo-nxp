@@ -47,7 +47,9 @@ ATF_PLATFORM ?= "imx8mm"
 ATF_LOAD_ADDR ?= "0x920000"
 
 # Set Serial console
-SERIAL_CONSOLES ?= "115200;ttymxc0 115200;ttymxc1 115200;ttymxc2"
+# The :${MACHINE} override is required to overrule the 'SERIAL_CONSOLES = ...' setting in
+# meta-freescale/conf/machine/include/imx-base.inc
+SERIAL_CONSOLES:${MACHINE} ?= "115200;ttymxc0 115200;ttymxc1 115200;ttymxc2"
 # for imx-atf
 IMX_BOOT_UART_BASE ??= "0x30860000"
 
