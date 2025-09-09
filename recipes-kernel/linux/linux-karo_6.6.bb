@@ -179,7 +179,7 @@ python do_check_dtbs () {
         os.system("ls -lH *.dtb | grep -v `date +%Y%m%d`")
         if os.system("%s" % cmd):
             bb.fatal("Failed to apply overlays %s for baseboard '%s' to '%s.dtb'" %
-                     (",".join(ovfiles.split()), baseboard, infile))
+                     (" ".join(ovfiles.split()), baseboard, infile))
             return
         bb.note("FDT overlays %s for '%s' successfully applied to '%s.dtb'" %
             (ovfiles, baseboard, infile))
@@ -197,10 +197,12 @@ python do_check_dtbs () {
     for baseboard in baseboards.split():
         bb.debug(2, "creating %s-%s.dtb from %s.dtb" % (basename, baseboard, basename))
         outfile = "%s-%s" % (basename, baseboard)
-        overlays = " ".join(map(lambda f: f, d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True).split()))
+        ovlist = d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True)
+        if ovlist == None or len(ovlist.split()) == 0:
+            bb.warn("%s: No overlays specified for %s" % (d.getVar('MACHINE'), baseboard))
+            continue
+        overlays = " ".join(map(lambda f: f, ovlist.split()))
         bb.note("overlays_%s=%s" % (baseboard, overlays))
-        if overlays == None or len(overlays.split()) == 0:
-            bb.fatal("%s: No overlays specified for %s" % (d.getVar('MACHINE'), baseboard))
         bb.debug(2, "overlays for %s-%s='%s'" %
                  (basename, baseboard, "','".join(overlays.split())))
         apply_overlays(basename, outfile, overlays)
