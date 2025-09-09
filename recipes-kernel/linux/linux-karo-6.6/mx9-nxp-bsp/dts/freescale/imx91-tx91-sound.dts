@@ -9,7 +9,7 @@
 /plugin/;
 
 #include "overlays/imx91-karo-sound.dtsi"
-#include "imx93-pinfunc.h"
+#include "imx91-pinfunc.h"
 
 &{/chosen} {
 	overlays {
@@ -25,10 +25,10 @@
 &iomuxc {
 	pinctrl_sai1: sai1grp {
 		fsl,pins = <
-			MX93_PAD_SAI1_RXD0__SAI1_RX_DATA00		0x131e
-			MX93_PAD_SAI1_TXD0__SAI1_TX_DATA00		0x131e
-			MX93_PAD_SAI1_TXC__SAI1_TX_BCLK			0x131e
-			MX93_PAD_SAI1_TXFS__SAI1_TX_SYNC		0x131e
+			MX91_PAD_SAI1_RXD0__SAI1_RX_DATA0		0x131e
+			MX91_PAD_SAI1_TXD0__SAI1_TX_DATA0		0x131e
+			MX91_PAD_SAI1_TXC__SAI1_TX_BCLK			0x131e
+			MX91_PAD_SAI1_TXFS__SAI1_TX_SYNC		0x131e
 		>;
 	};
 };

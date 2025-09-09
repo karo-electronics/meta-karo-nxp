@@ -8,7 +8,7 @@
 
 /plugin/;
 
-#include "imx93-pinfunc.h"
+#include "imx91-pinfunc.h"
 
 &{/chosen} {
 	overlays {
@@ -26,8 +26,8 @@
 &iomuxc {
 	pinctrl_flexcan1: flexcan1grp {
 		fsl,pins = <
-			MX93_PAD_PDM_BIT_STREAM0__CAN1_RX	0x139e
-			MX93_PAD_PDM_CLK__CAN1_TX		0x139e
+			    MX91_PAD_PDM_BIT_STREAM0__CAN1_RX	0x139e
+			    MX91_PAD_PDM_CLK__CAN1_TX		0x139e
 		>;
 	};
 };

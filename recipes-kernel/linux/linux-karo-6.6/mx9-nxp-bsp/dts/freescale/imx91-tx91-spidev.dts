@@ -20,7 +20,6 @@
 
 	spidev@0 {
 		compatible = "karo,spidev-test";
-		cs-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
 		reg = <0>;
 	};
 };

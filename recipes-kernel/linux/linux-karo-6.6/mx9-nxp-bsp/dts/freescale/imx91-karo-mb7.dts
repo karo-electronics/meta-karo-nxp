@@ -9,7 +9,7 @@
 /plugin/;
 
 #include <dt-bindings/gpio/gpio.h>
-#include "imx93-pinfunc.h"
+#include "imx91-pinfunc.h"
 
 &{/} {
 	chosen {
@@ -28,7 +28,7 @@
 &iomuxc {
 	pinctrl_usdhc2_cd: usdhc2-cdgrp {
 		fsl,pins = <
-			MX93_PAD_SD2_CD_B__GPIO3_IO00				0x31e
+			    MX91_PAD_SD2_CD_B__GPIO3_IO0		0x31e
 		>;
 	};
 };

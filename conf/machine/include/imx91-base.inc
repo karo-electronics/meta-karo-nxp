@@ -23,6 +23,7 @@ KARO_BOARD_PMIC ?= "pca9450"
 UBOOT_CONFIG ??= "default mfg noenv"
 UBOOT_FEATURES ??= ""
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
+UBOOT_FEATURES:append = "${@ " optee" if 'optee' in d.getVar('MACHINE_FEATURES').split() else ""}"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "tar.bz2"
 
@@ -31,16 +32,14 @@ KARO_BASEBOARD ??= ""
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
 UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
-KERNEL_DEVICETREE:append = " freescale/${DTB_BASENAME}.dtb"
+KERNEL_DEVICETREE += "freescale/${DTB_BASENAME}.dtb"
 
 BOOT_TOOLS = "imx-boot-tools"
 
-SPL_BINARY = "spl/u-boot-spl.bin"
-IMX_SOC_REV:mx91 ?= "A0"
-IMX_SOC_REV_LOWER:mx91 ?= "a0"
-SECO_FIRMWARE_NAME = "mx91a0-ahab-container.img"
+IMX_DEFAULT_BOOTLOADER = "u-boot-karo"
 
-# Set imx-mkimage boot target
+SPL_BINARY = "spl/u-boot-spl.bin"
+
 ATF_PLATFORM ?= "imx91"
 ATF_LOAD_ADDR ?= "0x24e00000"
 
@@ -66,7 +65,7 @@ UBOOT_MAKE_TARGET = ""
 IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
-PREFERRED_VERSION_linux-karo ?= "6.1"
+PREFERRED_VERSION_linux-karo ?= "6.6"
 PREFERRED_VERSION_uboot-karo ?= "2025.07"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
@@ -87,9 +86,7 @@ PREFERRED_VERSION_opengl-es-cts:aarch64 = "3.2.7.0"
 
 # Set a more generic tuning for code reuse across parts
 # taken from fsl-imx-base.inc
-DEFAULTTUNE:mx9-nxp-bsp    ?= "cortexa55"
+DEFAULTTUNE    ?= "cortexa55"
 
 PACKAGECONFIG:append:pn-gstreamer1.0-plugins-ugly = " x264"
 PACKAGECONFIG:append:pn-systemd = " unmanaged-network"
-MACHINEOVERRIDES_EXTENDER:mx91:use-nxp-bsp  = "imx-generic-bsp:imx-nxp-bsp:imxdrm:imxpxp:mx9-generic-bsp:mx9-nxp-bsp:mx91-generic-bsp:mx91-nxp-bsp"
-MACHINEOVERRIDES_EXTENDER:mx91:use-mainline-bsp  = "imx-generic-bsp:imx-mainline-bsp:mx9-generic-bsp:mx9-mainline-bsp:mx91-generic-bsp:mx91-mainline-bsp"

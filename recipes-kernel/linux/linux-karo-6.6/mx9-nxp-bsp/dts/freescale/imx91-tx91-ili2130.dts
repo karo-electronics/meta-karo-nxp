@@ -11,7 +11,7 @@
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/interrupt-controller/irq.h>
 #include "overlays/imx91-karo-ili2130.dtsi"
-#include "imx93-pinfunc.h"
+#include "imx91-pinfunc.h"
 
 &{/chosen} {
 	overlays {
@@ -31,9 +31,9 @@
 &iomuxc {
 	pinctrl_ili2130: ili2130grp {
 		fsl,pins = <
-			MX93_PAD_ENET1_TXC__GPIO4_IO07		0x27e /* Interrupt */
-			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x27e /* Reset */
-			MX93_PAD_GPIO_IO27__GPIO2_IO27		0x27e /* Wake */
+			    MX91_PAD_ENET1_TXC__GPIO4_IO7		0x27e /* Interrupt */
+			    MX91_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x27e /* Reset */
+			    MX91_PAD_GPIO_IO27__GPIO2_IO27		0x27e /* Wake */
 		>;
 	};
 };
