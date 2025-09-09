@@ -36,18 +36,6 @@
 	arm-supply = <&reg_vdd_arm>;
 };
 
-&ecspi1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_ecspi1>;
-	status = "okay";
-};
-
-&ecspi2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_ecspi2>;
-	status = "okay";
-};
-
 &i2c1 {
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_i2c1>;
@@ -172,11 +160,11 @@
 };
 
 &resmem {
-       /* overwrite freescale cma setting since it's not allocatable */
-       linux,cma {
-               size = <0 0xf000000>;
-               /delete-property/ alloc-ranges;
-       };
+	/* overwrite freescale cma setting since it's not allocatable */
+	linux,cma {
+		size = <0 0xf000000>;
+		/delete-property/ alloc-ranges;
+	};
 };
 
 &uart1 { /* console */

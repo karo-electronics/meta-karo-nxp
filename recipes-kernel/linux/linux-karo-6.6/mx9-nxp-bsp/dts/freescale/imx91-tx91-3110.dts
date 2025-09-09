@@ -246,6 +246,7 @@
 &lpspi3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpspi3 &pinctrl_lpspi3_cs>;
+	cs-gpios = <&gpio1 11 GPIO_ACTIVE_LOW>;
 	spi-max-frequency = <25000000>;
 };
 
@@ -472,7 +473,7 @@
 
 	pinctrl_lpspi3_cs: lpspi3-csgrp {
 		fsl,pins = <
-			MX93_PAD_SAI1_TXFS__GPIO1_IO11				0x4000121e
+			MX93_PAD_SAI1_TXFS__GPIO1_IO11				0x4000021e
 		>;
 	};
 

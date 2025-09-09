@@ -12,27 +12,35 @@
 
 &{/chosen} {
 	overlays {
-		tx8m-spidev;
+		qs8m-spidev;
 	};
 };
 
 &ecspi2 {
 	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_ecspi2 &pinctrl_ecspi2_cs>;
+	cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
 	status = "okay";
 
 	spidev@0 {
 		reg = <0>;
 		compatible = "karo,spidev-test";
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_ecspi2_cs>;
-		cs-gpios = <&gpio5 13 GPIO_ACTIVE_LOW>;
 	};
 };
 
 &iomuxc {
+	pinctrl_ecspi2: ecspi2grp {
+		fsl,pins = <
+			MX8MN_IOMUXC_ECSPI2_SCLK_ECSPI2_SCLK		0x140
+			MX8MN_IOMUXC_ECSPI2_MOSI_ECSPI2_MOSI		0x140
+			MX8MN_IOMUXC_ECSPI2_MISO_ECSPI2_MISO		0x140
+			MX8MN_IOMUXC_ECSPI2_SS0_GPIO5_IO13		0x140
+		>;
+	};
+
 	pinctrl_ecspi2_cs: ecspi2-csgrp {
 		fsl,pins = <
-			MX8MN_IOMUXC_ECSPI2_SS0_GPIO5_IO13		0x13fe
+			MX8MN_IOMUXC_ECSPI2_SS0_GPIO5_IO13		0x3fe
 		>;
 	};
 };
