@@ -1,7 +1,12 @@
 SRC_URI:append = " \
     file://imx219-driver.patch \
     file://karo-spidev-test.patch \
+    file://rpmsg-no-suspend-bugfix.patch \
     file://imx-fracn-gppll-rate-bugfix.patch \
+"
+
+SRC_URI:append:mx9-nxp-bsp = " \
+    file://imx93-tpm-bugfix.patch \
 "
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/overlays/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"

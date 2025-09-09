@@ -1,8 +1,8 @@
-diff --git a/drivers/soc/imx/rpmsg_life_cycle.c b/drivers/soc/imx/rpmsg_life_cycle.c
-index d4e91c9c0f70..c8a12340776a 100644
---- a/drivers/soc/imx/rpmsg_life_cycle.c
-+++ b/drivers/soc/imx/rpmsg_life_cycle.c
-@@ -1,6 +1,10 @@
+Index: linux-tx93/drivers/soc/imx/rpmsg_life_cycle.c
+===================================================================
+--- linux-tx93.orig/drivers/soc/imx/rpmsg_life_cycle.c
++++ linux-tx93/drivers/soc/imx/rpmsg_life_cycle.c
+@@ -12,6 +12,10 @@
  #include <linux/rpmsg.h>
  #include <linux/suspend.h>
  
@@ -13,7 +13,7 @@ index d4e91c9c0f70..c8a12340776a 100644
  #define RPMSG_TIMEOUT 1000
  
  #define PM_RPMSG_TYPE		0
-@@ -106,11 +106,11 @@ static int rpmsg_life_cycle_probe(struct rpmsg_device *rpdev)
+@@ -106,11 +110,11 @@ static int rpmsg_life_cycle_probe(struct
  
  static struct rpmsg_device_id rpmsg_life_cycle_id_table[] = {
  	{ .name = "rpmsg-life-cycle-channel" },
@@ -27,7 +27,7 @@ index d4e91c9c0f70..c8a12340776a 100644
  	.drv.owner	= THIS_MODULE,
  	.id_table	= rpmsg_life_cycle_id_table,
  	.probe		= rpmsg_life_cycle_probe,
-@@ -177,7 +177,7 @@ static int rpmsg_lifecycle_probe(struct platform_device *pdev)
+@@ -179,7 +183,7 @@ static int rpmsg_lifecycle_probe(struct
  
  static const struct of_device_id rpmsg_lifecycle_id[] = {
  	{ "nxp,rpmsg-lifecycle", },

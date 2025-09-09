@@ -2,7 +2,7 @@ Index: linux-tx93/drivers/pwm/pwm-imx-tpm.c
 ===================================================================
 --- linux-tx93.orig/drivers/pwm/pwm-imx-tpm.c
 +++ linux-tx93/drivers/pwm/pwm-imx-tpm.c
-@@ -422,8 +422,9 @@ static int __maybe_unused pwm_imx_tpm_re
+@@ -429,8 +429,9 @@ static int __maybe_unused pwm_imx_tpm_re
  	return ret;
  }
  
