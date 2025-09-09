@@ -69,6 +69,8 @@ UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
                        "-" + d.getVar('KARO_BASEBOARD') \
                        if d.getVar('KARO_BASEBOARD') != "" else "")}"
 
+UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
+
 SRC_URI:append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
 
 SRC_URI:append = "${@ " file://%s.env;subdir=git/%s" % \
@@ -87,11 +89,8 @@ SRC_URI:append = " file://u-boot-cfg.${SOC_PREFIX}"
 SRC_URI:append = " file://u-boot-cfg.${SOC_FAMILY}"
 SRC_URI:append = " file://u-boot-cfg.${MACHINE}"
 SRC_URI:append = "${@ "".join(map(lambda f: " file://u-boot-cfg.%s" % f, d.getVar('UBOOT_CONFIG').split()))}"
-SRC_URI:append = "${@ bb.utils.contains('IMAGE_INSTALL', 'u-boot-fw-utils', " file://fw_env.config", "", d)}"
 
 EXTRA_OEMAKE:append = " V=0"
-EXTRA_OEMAKE:append = " BL31_BASE=${ATF_BL31_BASE} BL31_SIZE=${ATF_BL31_SIZE}"
-EXTRA_OEMAKE:append = " UBOOT_CFG_MALLOC_F_ADDR=${UBOOT_CFG_MALLOC_F_ADDR}"
 
 FILES:${PN} += "${@ "".join(map(lambda f: " u-boot-%s-%s.%s" % (d.getVar('MACHINE'), \
                                 f, d.getVar('UBOOT_SUFFIX')), \
@@ -124,18 +123,15 @@ do_configure:prepend() {
                 c="`echo "$config" | sed 's/_config/_defconfig/'`"
                 bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to 'configs/${c}'"
                 cp "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${S}/configs/${c}"
-                grep 'SPL_.*STACK' "${S}/configs/${c}"
                 if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
                     bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to 'configs/${c}'"
                     cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${c}"
-                    grep 'SPL_.*STACK' "${S}/configs/${c}"
                 fi
                 bbnote "Appending 'u-boot-cfg.${MACHINE}' to 'configs/${c}'"
                 cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${S}/configs/${c}"
                 if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
                     bbnote "Appending 'u-boot-cfg.${type}' to 'configs/${c}'"
                     cat "${WORKDIR}/u-boot-cfg.${type}" >> "${S}/configs/${c}"
-                    grep 'SPL_.*STACK' "${S}/configs/${c}"
                 fi
                 break
             done
@@ -148,23 +144,17 @@ do_configure:prepend() {
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
             bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to 'configs/${c}'"
             cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${c}"
-            grep 'SPL_.*STACK' "${S}/configs/${c}"
         fi
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
             bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to 'configs/${c}'"
             cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${S}/configs/${c}"
-            grep 'SPL_.*STACK' "${S}/configs/${c}"
         fi
         bbnote "Appending 'u-boot-cfg.${MACHINE}' to 'configs/${c}'"
         cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${S}/configs/${c}"
-        grep 'SPL_.*STACK' "${S}/configs/${c}"
     fi
-    (cd ${S}; egrep '(TARGET|CONFIG)_KARO_' configs/${MACHINE}*config)
-    (cd ${S}; grep 'SPL_.*STACK' configs/${MACHINE}*config)
 }
 
 do_configure:append() {
-    (cd ${B}; egrep '(TARGET|CONFIG)_KARO_' */.config)
     tmpfile="`mktemp cfg-XXXXXX.tmp`"
     if [ -z "$tmpfile" ];then
         bbfatal "Failed to create tmpfile"
@@ -173,7 +163,7 @@ do_configure:append() {
         [ $# = 2 ] || return 0
         echo "$1=$2" >> "$tmpfile"
     }
-    add_conf CONFIG_BL31_BASE ${ATF_BL31_BASE}
+
     add_conf CONFIG_DEFAULT_DEVICE_TREE "\"${UBOOT_DTB_NAME}\""
 
     if [ -n "${KARO_BASEBOARD}" ];then
@@ -191,29 +181,25 @@ do_configure:append() {
     fi
 
     # convey common settings for imx-atf and U-Boot to U-Boot config
+    add_conf CONFIG_BL31_BASE              ${ATF_BL31_BASE}
+    add_conf CONFIG_BL31_SIZE              ${ATF_BL31_SIZE}
     add_conf CONFIG_SAVED_DRAM_TIMING_BASE ${UBOOT_SAVED_DRAM_TIMING_BASE}
-    add_conf CONFIG_SPL_STACK              ${UBOOT_SPL_STACK}
-    add_conf CONFIG_SPL_TEXT_BASE          ${UBOOT_SPL_TEXT_BASE}
-    add_conf CONFIG_SPL_BSS_START_ADDR     ${UBOOT_SPL_BSS_START_ADDR}
 
     if [ -n "${UBOOT_CONFIG}" ];then
         for config in ${UBOOT_MACHINE};do
             c="${B}/${config}"
-	    echo "before ${config} olddefconfig"
-	    grep 'SPL_.*STACK' "${c}/.config"
-            oe_runmake -C ${c} olddefconfig
-	    echo "after ${config} olddefconfig"
-	    grep 'SPL_.*STACK' "${c}/.config"
+            oe_runmake -C "${c}" olddefconfig
             merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
-	    echo "after ${config} mergeconfig"
-	    grep 'SPL_.*STACK' "${c}/.config"
+            oe_runmake -C "${c}" oldconfig
         done
     else
         c=${B}
         oe_runmake -C "${B}" olddefconfig
         merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
+        oe_runmake -C "${B}" oldconfig
     fi
     rm -vf "$tmpfile"
+
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
         env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
         env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
@@ -350,19 +336,6 @@ do_compile:prepend() {
     fi
 }
 
-uboot_install_config () {
-    config=$1
-    type=$2
-
-    if [ -z "${UBOOT_INITIAL_ENV}" ]; then
-        return
-    fi
-    if [ "$type" != ${@ d.getVarFlag('UBOOT_CONFIG', 'default')}" ];then
-        return
-    fi
-    install -D -m 644 ${B}/${config}/u-boot-initial-env-${type} ${D}/${sysconfdir}/${UBOOT_INITIAL_ENV}
-}
-
 do_deploy:append () {
     if [ -n "${UBOOT_CONFIG}" ];then
         i=0
@@ -381,6 +354,9 @@ do_deploy:append () {
     else
         install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
     fi
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
+        install -v "${WORKDIR}/fw_env.config" fw_env.config
+    fi    
 }
 
 do_savedefconfig() {
@@ -402,15 +378,16 @@ addtask savedefconfig after do_configure
 addtask do_configure before do_devshell
 
 do_updatedefconfig() {
+    baseboard="${@ "-" + d.getVar('KARO_BASEBOARD') if d.getVar('KARO_BASEBOARD') != "" else ""}"
     if [ -n "${UBOOT_CONFIG}" ];then
         for config in ${UBOOT_MACHINE};do
-            defconfig="`echo "$config" | sed 's/_config/_defconfig/'`"
+            defconfig="`echo "${config}" | sed "s/_config/${baseboard}_defconfig/"`"
             bbplain "Saving defconfig to:\n${S}/configs/${defconfig}"
-            cp -av ${B}/${config}/defconfig ${S}/configs/${defconfig}
+            cp -av "${B}/${config}/defconfig" "${S}/configs/${defconfig}"
         done
     else
-        bbplain "Saving defconfig to:\n${S}/configs/${MACHINE}_defconfig"
-        cp -av ${B}/${config}/defconfig ${S}/configs/${MACHINE}_defconfig
+        bbplain "Saving defconfig to:\n${S}/configs/${MACHINE}${baseboard}_defconfig"
+        cp -av ${B}/${config}/defconfig ${S}/configs/${MACHINE}${baseboard}_defconfig
     fi
 }
 addtask updatedefconfig after do_savedefconfig
@@ -458,8 +435,6 @@ python do_env_overlays () {
         for ov in overlays:
             bb.note("Adding '%s' to '%s'" % (ov, env_file))
             f.write("%s\n" % ov)
-        if config.find('mfg_config') > 0:
-            f.write("preboot=fastboot 0\n")
         f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
         f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
         f.close()
