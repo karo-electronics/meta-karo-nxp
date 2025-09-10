@@ -184,6 +184,13 @@
 		no-map;
 		reg = <0 0x55800000 0 0x800000>;
 	};
+
+	gpu_reserved: gpu-reserved@b0000000 {
+		no-map;
+		reg = <0x0 0xb0000000 0 0x10000000>;
+	};
+
+	/delete-node/ gpu_reserved@100000000;
 };
 
 &sdma2 {
