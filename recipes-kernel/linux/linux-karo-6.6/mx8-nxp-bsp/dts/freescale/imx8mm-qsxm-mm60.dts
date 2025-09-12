@@ -18,6 +18,8 @@
 		i2c2 = &i2c3;
 		mmc0 = &usdhc1;
 		mmc1 = &usdhc2;
+		serial1 = &uart3;
+		serial2 = &uart2;
 		usb-host = &usbotg2;
 		usbotg = &usbotg1;
 	};
@@ -209,33 +211,35 @@
 };
 
 &resmem {
-       /* overwrite freescale cma setting since it's not allocatable */
-       linux,cma {
-               size = <0 0x1e000000>;
-               /delete-property/ alloc-ranges;
-       };
+	/* overwrite freescale cma setting since it's not allocatable */
+	linux,cma {
+		size = <0 0x1e000000>;
+	};
 };
 
 &uart1 { /* console */
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart1 &pinctrl_uart1_rtscts>;
-	uart-has-rtscts;
+	pinctrl-0 = <&pinctrl_uart1>;
 	status = "okay";
 };
 
 &uart2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart2 &pinctrl_uart2_rtscts>;
+	pinctrl-0 = <&pinctrl_uart2>;
 	dmas = <&sdma1 24 4 0>, <&sdma1 25 4 0>;
 	dma-names = "rx", "tx";
-	uart-has-rtscts;
 	status = "okay";
 };
 
 &uart3 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart3 &pinctrl_uart3_rtscts>;
-	uart-has-rtscts;
+	pinctrl-0 = <&pinctrl_uart3>;
+	status = "okay";
+};
+
+&uart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
 	status = "okay";
 };
 
@@ -354,13 +358,6 @@
 		>;
 	};
 
-	pinctrl_uart1_rtscts: uart1-rtsctsgrp {
-		fsl,pins = <
-			MX8MM_IOMUXC_UART3_TXD_UART1_DCE_RTS_B		0x140
-			MX8MM_IOMUXC_UART3_RXD_UART1_DCE_CTS_B		0x140
-		>;
-	};
-
 	pinctrl_uart2: uart2grp {
 		fsl,pins = <
 			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX		0x140
@@ -368,24 +365,17 @@
 		>;
 	};
 
-	pinctrl_uart2_rtscts: uart2-rtsctsgrp {
-		fsl,pins = <
-			MX8MM_IOMUXC_UART4_TXD_UART2_DCE_RTS_B		0x140
-			MX8MM_IOMUXC_UART4_RXD_UART2_DCE_CTS_B		0x140
-		>;
-	};
-
 	pinctrl_uart3: uart3grp {
 		fsl,pins = <
-			MX8MM_IOMUXC_ECSPI1_SCLK_UART3_DCE_RX		0x140
-			MX8MM_IOMUXC_ECSPI1_MOSI_UART3_DCE_TX		0x140
+			MX8MM_IOMUXC_UART3_RXD_UART3_DCE_RX		0x140
+			MX8MM_IOMUXC_UART3_TXD_UART3_DCE_TX		0x140
 		>;
 	};
 
-	pinctrl_uart3_rtscts: uart3-rtsctsgrp {
+	pinctrl_uart4: uart4grp {
 		fsl,pins = <
-			MX8MM_IOMUXC_ECSPI1_SS0_UART3_DCE_RTS_B		0x140
-			MX8MM_IOMUXC_ECSPI1_MISO_UART3_DCE_CTS_B	0x140
+			MX8MM_IOMUXC_UART4_RXD_UART4_DCE_RX		0x140
+			MX8MM_IOMUXC_UART4_TXD_UART4_DCE_TX		0x140
 		>;
 	};
 

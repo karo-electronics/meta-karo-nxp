@@ -214,11 +214,10 @@
 };
 
 &resmem {
-       /* overwrite freescale cma setting since it's not allocatable */
-       linux,cma {
-               size = <0 0xf000000>;
-               /delete-property/ alloc-ranges;
-       };
+	/* overwrite freescale cma setting since it's not allocatable */
+	linux,cma {
+		size = <0 0xf000000>;
+	};
 };
 
 &uart1 { /* console */
