@@ -2,7 +2,7 @@ SRC_URI:append = " \
     file://karo-spidev-test.patch \
 "
 
-SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/overlays/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
+SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/includes/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
 
 def get_overlays(d):
     ovlist = []
@@ -10,7 +10,7 @@ def get_overlays(d):
     o = d.getVar('DTB_OVERLAYS') or ""
     for ov in g.split():
         for fn in ov.split(","):
-            fn = " freescale/%s-%s.dtb" % (d.getVar('SOC_PREFIX'), fn)
+            fn = " freescale/%s-%s.dtbo" % (d.getVar('SOC_PREFIX'), fn)
             if fn in ovlist:
                 bb.debug(2, "'%s' is already in overlays" % fn)
             else:
@@ -19,7 +19,7 @@ def get_overlays(d):
 
     for ov in o.split():
         for fn in ov.split(","):
-            fn = " freescale/%s-%s.dtb" % (d.getVar('SOC_FAMILY'), fn)
+            fn = " freescale/%s-%s.dtbo" % (d.getVar('SOC_FAMILY'), fn)
             if fn in ovlist:
                 bb.debug(2, "'%s' is already in overlays" % fn)
             else:

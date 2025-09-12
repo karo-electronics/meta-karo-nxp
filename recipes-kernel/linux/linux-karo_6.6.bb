@@ -136,6 +136,10 @@ do_configure:prepend() {
 }
 addtask do_configure before do_devshell
 
+do_configure:append() {
+    oe_runmake -C ${B} oldconfig
+}
+
 do_compile_dtbs() {
     oe_runmake -C ${B} DTC_FLAGS="${KERNEL_DTC_FLAGS}" ${KERNEL_DEVICETREE}
 }
@@ -153,9 +157,9 @@ python do_check_dtbs () {
         for n in name.split(","):
             ovn = ""
             if n in gov:
-                ovn = "%s-%s.dtb" % (pfx, n)
+                ovn = "%s-%s.dtbo" % (pfx, n)
             elif n in ov:
-                ovn = "%s-%s.dtb" % (fam, n)
+                ovn = "%s-%s.dtbo" % (fam, n)
             else:
                 continue
             if os.path.exists(ovn):
@@ -176,7 +180,7 @@ python do_check_dtbs () {
         cmd = ("fdtoverlay -i '%s.dtb' -o '%s.dtb' %s" % (infile, outfile, ovfiles))
         bb.debug(2, "%s" % cmd)
         os.system("pwd")
-        os.system("ls -lH *.dtb | grep -v `date +%Y%m%d`")
+        os.system("ls -lH *.dtb{,o} | grep -v `date +%Y%m%d`")
         if os.system("%s" % cmd):
             bb.fatal("Failed to apply overlays %s for baseboard '%s' to '%s.dtb'" %
                      (" ".join(ovfiles.split()), baseboard, infile))

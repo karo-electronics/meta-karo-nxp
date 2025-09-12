@@ -20,7 +20,6 @@ DTB_OVERLAYS_generic = "\
         ${@ mach_overlay(d, "karo-mb7", "tx8m,tx8p")} \
         karo-rtc \
         ${@ mach_overlay(d, "qs8m-tc358867", "qs8m,qsxm", "tc358867")} \
-        tx8m-wifi \
         ${@ mach_overlay(d, ":karo-panel-et0570", "qs8m,qsxm,tx8m-1622")} \
         ${@ mach_overlay(d, ":karo-panel-etm0350", "qs8m,qsxm,tx8m-1622")} \
         ${@ mach_overlay(d, ":karo-panel-etm0430", "qs8m,qsxm,tx8m-1622")} \
@@ -31,6 +30,7 @@ DTB_OVERLAYS_generic = "\
 DTB_OVERLAYS:append = "\
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         ${@ mach_overlay(d, ":karo-vpu", "imx8mn")} \
+        ${@ mach_overlay(d, ":tx8m-wifi", "imx8mn")} \
 "
 
 DTB_OVERLAYS:append:imx8mp = "\
