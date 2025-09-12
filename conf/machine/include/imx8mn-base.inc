@@ -1,0 +1,2 @@
+SOC_FAMILY = "imx8mn"
+ATF_BL31_BASE ??= "0x960000"
