@@ -78,8 +78,8 @@ SRC_URI:append = "${@ " file://%s.env;subdir=git/%s" % \
                       if d.getVar('UBOOT_ENV_FILE') != None else ""} \
 "
 
-SRC_URI:append = " ${@ " file://dts/%s.dts;subdir=git/arch/arm" %  d.getVar('UBOOT_DTB_NAME')}"
-SRC_URI:append = " ${@ " file://dts/%s-u-boot.dtsi;subdir=git/arch/arm" % d.getVar('UBOOT_DTB_NAME')}"
+SRC_URI:append = " ${@ " file://dts/%s.dts;subdir=git/arch/arm" %  d.getVar('U_BOOT_DTB_NAME')}"
+SRC_URI:append = " ${@ " file://dts/%s-u-boot.dtsi;subdir=git/arch/arm" % d.getVar('U_BOOT_DTB_NAME')}"
 SRC_URI:append = " \
     file://dts/${DTB_BASENAME}-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
@@ -164,10 +164,10 @@ do_configure:append() {
         echo "$1=$2" >> "$tmpfile"
     }
 
-    add_conf CONFIG_DEFAULT_DEVICE_TREE "\"${UBOOT_DTB_NAME}\""
+    add_conf CONFIG_DEFAULT_DEVICE_TREE "\"${U_BOOT_DTB_NAME}\""
 
     if [ -n "${KARO_BASEBOARD}" ];then
-        add_conf CONFIG_OF_LIST "\"${UBOOT_DTB_NAME} ${DTB_BASENAME}\""
+        add_conf CONFIG_OF_LIST "\"${U_BOOT_DTB_NAME} ${DTB_BASENAME}\""
     else
         add_conf CONFIG_OF_LIST "\"${DTB_BASENAME}\""
     fi
