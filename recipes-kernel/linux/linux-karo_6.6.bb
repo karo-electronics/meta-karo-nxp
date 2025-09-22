@@ -62,7 +62,6 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','lvds',' lvds.c
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','raspi-display',' raspi-display.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','systemd',' systemd.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','wifi',' wifi.cfg','',d)}"
-KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','lwb-wifi',' lwb-wifi.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','pcie',' pcie.cfg','',d)}"
 KERNEL_FEATURES:append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_PMIC') != '' else ''}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' flexcan.cfg','',d)}"
@@ -72,9 +71,6 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES',"rauc"," rauc.c
 KERNEL_FEATURES:append:tx8m-1620 = " no-suspend.cfg"
 KERNEL_FEATURES:append:tx8m-1622 = " no-suspend.cfg"
 KERNEL_FEATURES:append:mx93-nxp-bsp = " lvds.cfg"
-
-KERNEL_FEATURES:remove = "${@bb.utils.contains('DISTRO_FEATURES','lwb-wifi','wifi.cfg','',d)}"
-KERNEL_FEATURES:remove = "${@bb.utils.contains('DISTRO_FEATURES','lwb-bluetooth','bluetooth.cfg','',d)}"
 
 COMPATIBLE_MACHINE = "(mx[89]-nxp-bsp)"
 
