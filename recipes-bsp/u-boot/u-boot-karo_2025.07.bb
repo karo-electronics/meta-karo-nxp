@@ -39,7 +39,7 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 # local source
 KARO_UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 UBOOT_SRC = "${KARO_UBOOT_SRC}"
-UBOOT_REV ?= "a979640c90604697f8999dceb507f2aee0a1bb3a"
+UBOOT_REV ?= "13f16b1675b6816fdb483fb7f5b758853b2fbd3d"
 UBOOT_BRANCH ?= "u-boot-denx"
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
