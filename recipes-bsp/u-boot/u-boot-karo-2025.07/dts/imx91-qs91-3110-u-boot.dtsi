@@ -17,6 +17,10 @@
 	bootph-all;
 };
 
+&lpuart8 {
+	bootph-all;
+};
+
 &pinctrl_lpuart5 {
 	bootph-all;
 };
@@ -25,10 +29,10 @@
 	bootph-all;
 };
 
-&lpuart8 {
+&pinctrl_lpuart8 {
 	bootph-all;
 };
 
-&pinctrl_lpuart8 {
-	bootph-all;
+&usdhc3 {
+	fsl,cd-data3;
 };
