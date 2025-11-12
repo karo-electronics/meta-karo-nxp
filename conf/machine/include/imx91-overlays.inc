@@ -11,7 +11,6 @@ DTB_OVERLAY_INCLUDES = " \
 "
 
 DTB_OVERLAYS_generic = "\
-        karo-lvds-mb \
         karo-panel-et0570 \
         karo-panel-etm0430 \
         karo-panel-etm0350 \
@@ -20,6 +19,7 @@ DTB_OVERLAYS_generic = "\
 "
 
 DTB_OVERLAYS_generic:append:tx91 = "\
+        karo-lvds-mb \
         karo-mb7 \
 "
 
@@ -30,6 +30,7 @@ DTB_OVERLAYS:append:qs91 = " \
         qs91-eqos-ksz9131 \
         qs91-ft5x06 \
         qs91-i2c-rtc \
+        qs91-ili2130 \
         qs91-lcd-panel \
         qs91-qsbase1 \
         qs91-sound \
@@ -42,6 +43,7 @@ DTB_OVERLAYS:append:tx91 = " \
         tx91-ili2130 \
         tx91-lcd-panel \
         tx91-matrix-keypad \
+        tx91-sound \
         tx91-spidev \
 "
 
@@ -62,7 +64,6 @@ KARO_BASEBOARDS:tx91 += "\
 #
 KARO_DTB_OVERLAYS[lvds-mb] += " \
         karo-lvds-mb \
-        karo-panel-tm101jvhg32 \
         tx91-i2c-rtc \
 "
 
@@ -73,6 +74,7 @@ KARO_DTB_OVERLAYS[mb7] += " \
         ${@ mach_overlay(d, "tx91-flexcan", dist="flexcan")} \
         tx91-ft5x06,tx91-ili2130 \
         tx91-matrix-keypad \
+        tx91-sound \
 "
 
 KARO_DTB_OVERLAYS[qsbase4] += " \
@@ -80,9 +82,9 @@ KARO_DTB_OVERLAYS[qsbase4] += " \
 "
 
 KARO_DTB_OVERLAYS[qsbase1] += " \
+        qs91-eqos-ksz9031 \
         qs91-lcd-panel \
         karo-panel-et0570,karo-panel-etm0430,karo-panel-etm0350,karo-panel-etm0700,karo-panel-tm101jvhg32 \
         qs91-qsbase1 \
         qs91-ft5x06,qs91-ili2130 \
-        qs91-eqos-ksz9031 \
 "
