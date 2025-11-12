@@ -214,9 +214,7 @@ do_configure() {
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
         env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
         env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
-        cat > ${WORKDIR}/fw_env.config <<EOF
-/dev/mmcblk0boot0	$env_offset	$env_size
-EOF
+        printf "/dev/mmcblk0boot0\t0x%08x\t0x%08x" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
     fi
 }
 addtask do_configure before do_devshell
@@ -372,7 +370,7 @@ do_deploy:append () {
         install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
     fi
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
-        install -v "${WORKDIR}/fw_env.config" fw_env.config
+        install -vD "${WORKDIR}/fw_env.config" u-boot/fw_env.config
     fi    
 }
 
