@@ -40,6 +40,7 @@ DTB_OVERLAYS:append:tx93 = " \
 "
 
 DTB_OVERLAYS:append:qs93 = " \
+        qs93-eqos-ksz9031 \
         qs93-eqos-ksz9131 \
         qs93-eqos-lan8710 \
         qs93-fec-lan8710 \
@@ -47,6 +48,7 @@ DTB_OVERLAYS:append:qs93 = " \
         qs93-flexcan2 \
         qs93-imx219 \
         qs93-lvds-panel \
+        qs93-sound \
         qs93-spidev \
 "
 
