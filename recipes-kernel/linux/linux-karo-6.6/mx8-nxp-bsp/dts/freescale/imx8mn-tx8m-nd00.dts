@@ -33,7 +33,6 @@
 	mdio {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_etnphy_rst>;
-		clocks = <&clk IMX8MN_CLK_ENET_REF>;
 		reset-gpios = <&gpio1 29 GPIO_ACTIVE_LOW>;
 		reset-delay-us = <25000>;
 		reset-post-delay-us = <100>;
@@ -44,6 +43,7 @@
 			reg = <0>;
 			pinctrl-names = "default";
 			pinctrl-0 = <&pinctrl_etnphy_int>;
+			clocks = <&clk IMX8MN_CLK_ENET_PHY_REF>;
 			interrupt-parent = <&gpio1>;
 			interrupts = <28 IRQ_TYPE_EDGE_FALLING>;
 			smsc,disable-energy-detect;

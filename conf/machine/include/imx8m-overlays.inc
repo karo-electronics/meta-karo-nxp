@@ -2,7 +2,6 @@ require karo-dtb-overlays.inc
 
 DTB_OVERLAY_INCLUDES = "\
         karo-backlight \
-        karo-dsi83 \
         karo-ksz9031 \
         karo-ksz9131 \
         karo-mcp2515 \
@@ -72,6 +71,7 @@ DTB_OVERLAYS:append:tx8m-1620 = "\
 
 DTB_OVERLAYS:append:qs8m = "\
         ${@ mach_overlay(d, "qs8m-cam", dist="csi-camera")} \
+        qs8m-rmii-phy \
         qs8m-ksz9031 \
         qs8m-ksz9131 \
         qs8m-raspi-display \
