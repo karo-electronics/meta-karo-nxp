@@ -13,7 +13,6 @@ DTB_OVERLAYS_generic = "\
         karo-copro \
         karo-gpu \
         karo-lcd-panel \
-        karo-lvds-mb \
         karo-panel-et0570 \
         karo-panel-etm0430 \
         karo-panel-etm0350 \
@@ -24,6 +23,7 @@ DTB_OVERLAYS_generic = "\
 "
 
 DTB_OVERLAYS_generic:append:tx93 = "\
+        karo-lvds-mb \
         karo-mb7 \
 "
 
