@@ -31,6 +31,7 @@ DTB_OVERLAYS:append:qs91 = " \
         qs91-ft5x06 \
         qs91-i2c-rtc \
         qs91-lcd-panel \
+        qs91-qsbase1 \
         qs91-sound \
 "
 
@@ -81,6 +82,7 @@ KARO_DTB_OVERLAYS[qsbase4] += " \
 KARO_DTB_OVERLAYS[qsbase1] += " \
         qs91-lcd-panel \
         karo-panel-et0570,karo-panel-etm0430,karo-panel-etm0350,karo-panel-etm0700,karo-panel-tm101jvhg32 \
+        qs91-qsbase1 \
         qs91-ft5x06,qs91-ili2130 \
         qs91-eqos-ksz9031 \
 "
