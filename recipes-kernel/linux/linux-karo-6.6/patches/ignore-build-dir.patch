@@ -1,0 +1,11 @@
+Index: linux-tx8p-ml81/.gitignore
+===================================================================
+--- linux-tx8p-ml81.orig/.gitignore
++++ linux-tx8p-ml81/.gitignore
+@@ -170,3 +170,6 @@ sphinx_*/
+ 
+ # Rust analyzer configuration
+ /rust-project.json
++
++# symlink created by yocto recipe
++/build

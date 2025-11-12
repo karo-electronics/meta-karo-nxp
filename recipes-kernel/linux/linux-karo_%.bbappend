@@ -7,3 +7,7 @@ SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/includes/%s-%
 #FILES:${KERNEL_PACKAGE_NAME}-devicetree += "${@ " ".join(map(lambda f: f.replace("freescale/", "/boot/"), "${KERNEL_DEVICETREE}".split()))}"
 
 require conf/machine/include/${SOC_PREFIX}-overlays.inc
+
+SRC_URI:append = " \
+    file://ignore-build-dir.patch \
+"
