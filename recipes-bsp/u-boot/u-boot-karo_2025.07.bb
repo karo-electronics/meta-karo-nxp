@@ -376,24 +376,39 @@ do_savedefconfig() {
     fi
 }
 do_savedefconfig[nostamp] = "1"
-addtask savedefconfig after do_configure
-
-addtask do_configure before do_devshell
+addtask do_savedefconfig after do_configure
 
 do_updatedefconfig() {
-    baseboard="${@ "-" + d.getVar('KARO_BASEBOARD') if d.getVar('KARO_BASEBOARD') != "" else ""}"
-    if [ -n "${UBOOT_CONFIG}" ];then
-        for config in ${UBOOT_MACHINE};do
-            defconfig="`echo "${config}" | sed "s/_config/${baseboard}_defconfig/"`"
-            bbplain "Saving defconfig to:\n${S}/configs/${defconfig}"
-            cp -av "${B}/${config}/defconfig" "${S}/configs/${defconfig}"
-        done
+    if [ -n "${KARO_BASEBOARD}" ];then
+        mach="${MACHINE}-${KARO_BASEBOARD}"
     else
-        bbplain "Saving defconfig to:\n${S}/configs/${MACHINE}${baseboard}_defconfig"
-        cp -av ${B}/${config}/defconfig ${S}/configs/${MACHINE}${baseboard}_defconfig
+        mach="${MACHINE}"
+    fi
+    if [ -n "${UBOOT_CONFIG}" ];then
+        i=0
+        for config in ${UBOOT_MACHINE};do
+            i=$(expr $i + 1)
+            j=0
+            for type in ${UBOOT_CONFIG};do
+                j=$(expr $j + 1)
+                [ $j = $i ] || continue
+                if [ "$type" = "default" ];then
+                    bbplain "Saving defconfig to:\n${S}/configs/${mach}_defconfig"
+                    install -v "${B}/${config}/defconfig" "${S}/configs/${mach}_defconfig"
+                else
+                    bbplain "Saving defconfig to:\n${S}/configs/${mach}_${type}_defconfig"
+                    install -v "${B}/${config}/defconfig" "${S}/configs/${mach}_${type}_defconfig"
+                fi
+                break
+            done
+            unset j
+        done
+        unset i
+    else
+        install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
     fi
 }
-addtask updatedefconfig after do_savedefconfig
+addtask do_updatedefconfig after do_savedefconfig
 
 python do_env_overlays () {
     import os
