@@ -6,17 +6,17 @@ DEPENDS += "lzop-native bc-native dtc-native"
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
-KERNEL_BRANCH_DEFAULT = "lf-6.6.y-karo-2"
-KERNEL_REV_DEFAULT = "1432b250a2decf85a4d1fdd0f4d0c184de42a920"
 KERNEL_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
+KERNEL_BRANCH_DEFAULT = "lf-6.6.y-karo-2"
+KERNEL_REV_DEFAULT = "3a729788b82f899cb0829376fe7f5c547437cc00"
 
+KERNEL_SRC ?= "${KERNEL_SRC_DEFAULT}"
 KERNEL_BRANCH ?= "${KERNEL_BRANCH_DEFAULT}"
 KERNEL_REV ?= "${KERNEL_REV_DEFAULT}"
-KERNEL_SRC ?= "${KERNEL_SRC_DEFAULT}"
 
+SRC_URI = "${KERNEL_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "${KERNEL_BRANCH}"
 SRCREV = "${KERNEL_REV}"
-SRC_URI = "${KERNEL_SRC};branch=${SRCBRANCH}"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
 
