@@ -207,6 +207,7 @@ KARO_DTB_OVERLAYS[qsbase3] += "\
 KARO_DTB_OVERLAYS[qsbase4] += "\
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
+        ${@ mach_overlay(d, "qsxp-cam:qs8m-cam", "imx8mp", "csi-camera")} \
         ${@ mach_overlay(d, "qsxp-flexcan", dist="flexcan")} \
         ${@ mach_overlay(d, "qsxp-ksz9131:qs8m-ksz9131", "imx8mp")} \
         ${@ mach_overlay(d, "qsxp-raspi-display:qs8m-raspi-display", "imx8mp", "raspi-display")} \
