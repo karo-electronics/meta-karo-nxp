@@ -51,6 +51,14 @@
 	};
 };
 
+&resmem {
+	/* overwrite freescale cma setting since it's not allocatable */
+	linux,cma {
+		size = <0 0xf000000>;
+		alloc-ranges = <0 0x40000000 0 0x20000000>;
+	};
+};
+
 &iomuxc {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_hog>;
