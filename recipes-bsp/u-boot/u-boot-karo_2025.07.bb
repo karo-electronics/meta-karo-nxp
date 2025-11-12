@@ -32,15 +32,18 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 # upstream source
-#KARO_UBOOT_SRC = "git://source.denx.de/u-boot/u-boot.git"
+#UBOOT_SRC_DEFAULT = "git://source.denx.de/u-boot/u-boot.git"
 #UBOOT_REV = "e37de002fac3895e8d0b60ae2015e17bb33e2b5b"
 #UBOOT_BRANCH = "master"
 
 # local source
-KARO_UBOOT_SRC ?= "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_SRC = "${KARO_UBOOT_SRC}"
-UBOOT_REV ?= "13f16b1675b6816fdb483fb7f5b758853b2fbd3d"
-UBOOT_BRANCH ?= "u-boot-denx"
+UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
+UBOOT_REV_DEFAULT = "13f16b1675b6816fdb483fb7f5b758853b2fbd3d"
+UBOOT_BRANCH_DEFAULT = "u-boot-denx"
+
+UBOOT_SRC ?= "${UBOOT_SRC_DEFAULT}"
+UBOOT_REV ?= "${UBOOT_REV_DEFAULT}"
+UBOOT_BRANCH ?= "${UBOOT_BRANCH_DEFAULT}"
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "${UBOOT_BRANCH}"
