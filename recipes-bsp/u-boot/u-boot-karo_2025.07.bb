@@ -371,7 +371,7 @@ do_deploy:append () {
     fi
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
         install -vD "${WORKDIR}/fw_env.config" u-boot/fw_env.config
-    fi    
+    fi
 }
 
 do_savedefconfig() {
