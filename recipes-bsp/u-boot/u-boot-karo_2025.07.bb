@@ -224,7 +224,7 @@ do_configure() {
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
         env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
         env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
-        printf "/dev/mmcblk0boot0\t0x%08x\t0x%08x" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
+        printf "/dev/mmcblk0boot0\t0x%08x\t0x%08x\n" "$env_offset" "$env_size" > ${W}/fw_env.config
     fi
 }
 addtask do_configure before do_devshell
