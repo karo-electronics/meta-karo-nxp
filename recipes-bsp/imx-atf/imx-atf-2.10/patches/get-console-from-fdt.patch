@@ -355,7 +355,6 @@ Index: imx-atf-tx93/plat/imx/common/params_setup.c
 +	 */
 +	dt_process_fdt(plat_param_from_bl2);
 +}
-\ No newline at end of file
 Index: imx-atf-tx93/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
 ===================================================================
 --- imx-atf-tx93.orig/plat/imx/imx8m/imx8mm/imx8mm_bl31_setup.c
