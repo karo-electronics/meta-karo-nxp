@@ -1,2 +1,3 @@
 SOC_FAMILY = "imx8mm"
 ATF_BL31_BASE ??= "0x920000"
+IMX_WDOG_B_RESET = "0"

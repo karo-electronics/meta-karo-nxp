@@ -25,20 +25,19 @@ EXTRA_OEMAKE:append = " \
 
 EXTRA_OEMAKE:append = " \
     CRASH_REPORTING=1 \
+    IMX_WDOG_B_RESET=${IMX_WDOG_B_RESET} \
     LOG_LEVEL=${@ 50 if d.getVar('ATF_DEBUG') == "1" else 30} \
     V=0 \
 "
 
 EXTRA_OEMAKE:append:mx8-nxp-bsp = " \
     IMX_BOOT_UART_BASE=${IMX_BOOT_UART_BASE} \
-    IMX_WDOG_B_RESET=${@ 1 if 'imx8mp' in d.getVar('MACHINEOVERRIDES').split(':') else 0} \
     RESET_TO_BL31=1 \
     ERRATA_A53_1530924=1 \
 "
 
 EXTRA_OEMAKE:append:mx9-nxp-bsp = " \
     IMX_LPUART_BASE=${IMX_BOOT_UART_BASE} \
-    IMX_WDOG_B_RESET=1 \
 "
 EXTRA_OEMAKE:append:mx9-nxp-bsp = " \
     ERRATA_DSU_798953=1 \

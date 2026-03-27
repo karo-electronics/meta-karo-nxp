@@ -1,0 +1,52 @@
+Index: imx-atf-karo/plat/imx/imx8m/imx8mm/platform.mk
+===================================================================
+--- imx-atf-karo.orig/plat/imx/imx8m/imx8mm/platform.mk
++++ imx-atf-karo/plat/imx/imx8m/imx8mm/platform.mk
+@@ -213,3 +213,8 @@ endif
+ ifeq (${IMX_ANDROID_BUILD},true)
+ $(eval $(call add_define,IMX_ANDROID_BUILD))
+ endif
++
++IMX_WDOG_B_RESET	?=	1
++ifeq ($(IMX_WDOG_B_RESET),1)
++$(eval $(call add_define,IMX_WDOG_B_RESET))
++endif
+Index: imx-atf-karo/plat/imx/imx8m/imx8mn/platform.mk
+===================================================================
+--- imx-atf-karo.orig/plat/imx/imx8m/imx8mn/platform.mk
++++ imx-atf-karo/plat/imx/imx8m/imx8mn/platform.mk
+@@ -105,3 +105,8 @@ endif
+ ifeq (${IMX_ANDROID_BUILD},true)
+ $(eval $(call add_define,IMX_ANDROID_BUILD))
+ endif
++
++IMX_WDOG_B_RESET	?=	1
++ifeq ($(IMX_WDOG_B_RESET),1)
++$(eval $(call add_define,IMX_WDOG_B_RESET))
++endif
+Index: imx-atf-karo/plat/imx/imx8m/imx8mp/platform.mk
+===================================================================
+--- imx-atf-karo.orig/plat/imx/imx8m/imx8mp/platform.mk
++++ imx-atf-karo/plat/imx/imx8m/imx8mp/platform.mk
+@@ -203,3 +203,8 @@ BL31_SOURCES            +=      plat/imx
+                                 plat/imx/imx8m/sema4.c				\
+                                 plat/imx/imx8m/imx8mp/imx8mp_lpa_psci.c
+ endif
++
++IMX_WDOG_B_RESET	?=	1
++ifeq ($(IMX_WDOG_B_RESET),1)
++$(eval $(call add_define,IMX_WDOG_B_RESET))
++endif
+Index: imx-atf-karo/plat/imx/imx91/platform.mk
+===================================================================
+--- imx-atf-karo.orig/plat/imx/imx91/platform.mk
++++ imx-atf-karo/plat/imx/imx91/platform.mk
+@@ -76,3 +76,8 @@ ifeq (${IMX_LPUART_BASE},auto)
+     override IMX_LPUART_BASE	:=	0
+ endif
+ $(eval $(call add_define,IMX_LPUART_BASE))
++
++IMX_WDOG_B_RESET	?=	1
++ifeq ($(IMX_WDOG_B_RESET),1)
++$(eval $(call add_define,IMX_WDOG_B_RESET))
++endif
