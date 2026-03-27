@@ -5,6 +5,7 @@ SRC_URI:append = " \
 "
 
 SRC_URI:append:mx8m-nxp-bsp = " \
+    file://dts/imx8m-karo-pmic-bd71847.dtsi;subdir=git/arch/arm \
     file://dts/imx8m-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8m-karo.dtsi;subdir=git/arch/arm \
     file://dts/imx8m-qs8m-u-boot.dtsi;subdir=git/arch/arm \
@@ -36,7 +37,3 @@ SRC_URI:append:mx93-nxp-bsp = " \
     file://dts/imx93-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx93-karo.dtsi;subdir=git/arch/arm \
 "
-
-UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
-UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
-UBOOT_FEATURES:append = " fastboot"

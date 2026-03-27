@@ -9,13 +9,17 @@ HOMEPAGE = "http://www.denx.de/wiki/U-Boot/WebHome"
 SECTION = "bootloaders"
 
 DEPENDS += "\
-        bc-native \
-        bison-native \
-        dtc-native \
-        flex-native \
-        gnutls-native \
-        xxd-native \
-        python3-setuptools-native \
+    bc-native \
+    bison-native \
+    dtc-native \
+    flex-native \
+    gnutls-native \
+    xxd-native \
+    python3-setuptools-native \
+    ${IMX_EXTRA_FIRMWARE} \
+    imx-atf \
+    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
+    u-boot-mkimage-native \
 "
 
 inherit use-imx-security-controller-firmware
@@ -33,17 +37,21 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 
 # upstream source
 #UBOOT_SRC_DEFAULT = "git://source.denx.de/u-boot/u-boot.git"
-#UBOOT_REV = "e37de002fac3895e8d0b60ae2015e17bb33e2b5b"
-#UBOOT_BRANCH = "master"
+#UBOOT_REV_DEFAULT = "e37de002fac3895e8d0b60ae2015e17bb33e2b5b"
+#UBOOT_BRANCH_DEFAULT = "master"
 
-# local source
+# karo fork
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "f1e580e4e592674bb8273459e11ebb02351114c4"
+UBOOT_REV_DEFAULT = "9d1d084a60dc786a990e32ee238e2a19e216da88"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
-UBOOT_SRC ?= "${UBOOT_SRC_DEFAULT}"
-UBOOT_REV ?= "${UBOOT_REV_DEFAULT}"
-UBOOT_BRANCH ?= "${UBOOT_BRANCH_DEFAULT}"
+KARO_UBOOT_SRC ?= "${UBOOT_SRC_DEFAULT}"
+KARO_UBOOT_REV ?= "${UBOOT_REV_DEFAULT}"
+KARO_UBOOT_BRANCH ?= "${UBOOT_BRANCH_DEFAULT}"
+
+UBOOT_SRC = "${KARO_UBOOT_SRC}"
+UBOOT_REV = "${KARO_UBOOT_REV}"
+UBOOT_BRANCH = "${KARO_UBOOT_BRANCH}"
 
 SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "${UBOOT_BRANCH}"
@@ -60,13 +68,6 @@ LOCALVERSION = "-karo"
 ATF_MACHINE_NAME ?= "bl31-${ATF_PLATFORM}.bin"
 ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-optee', '', d)}"
 
-DEPENDS += " \
-    ${IMX_EXTRA_FIRMWARE} \
-    imx-atf \
-    ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
-"
-DEPENDS:append = " u-boot-mkimage-native"
-
 UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
 UBOOT_BOARD_DIR:mx93-nxp-bsp = "board/karo/imx93"
 UBOOT_BOARD_DIR:mx91-nxp-bsp = "board/karo/imx91"
@@ -76,6 +77,10 @@ UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
                        if d.getVar('KARO_BASEBOARD') != "" else "")}"
 
 UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
+
+UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
+UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
+UBOOT_FEATURES:append = " fastboot"
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
 
