@@ -49,8 +49,11 @@ SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "${UBOOT_BRANCH}"
 SRCREV = "${UBOOT_REV}"
 
-S = "${WORKDIR}/git"
-B = "${WORKDIR}/build"
+SRC_URI:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', " file://rauc.env", "", d)}"
+
+W = "${WORKDIR}"
+S = "${W}/git"
+B = "${W}/build"
 
 LOCALVERSION = "-karo"
 
@@ -76,10 +79,7 @@ UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsba
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
 
-SRC_URI:append = "${@ " file://%s.env;subdir=git/%s" % \
-                      (d.getVar('UBOOT_ENV_FILE'), d.getVar('UBOOT_BOARD_DIR')) \
-                      if d.getVar('UBOOT_ENV_FILE') != None else ""} \
-"
+SRC_URI:append = "${@ " file://${UBOOT_ENV_FILE}.env" if d.getVar('UBOOT_ENV_FILE') != None else ""}"
 
 SRC_URI:append = "${@ " file://dts/%s.dts;subdir=git/arch/arm" % d.getVar('U_BOOT_DTB_NAME')}"
 SRC_URI:append = "${@ " file://dts/%s-u-boot.dtsi;subdir=git/arch/arm" % d.getVar('U_BOOT_DTB_NAME')}"
@@ -132,16 +132,16 @@ do_configure() {
                 c="${mach}_${type}_defconfig"
                 bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to '${B}/${config}/.config'"
                 mkdir -p "${B}/${config}"
-                cat "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" > "${B}/${config}/.config"
+                cat "${W}/u-boot-cfg.${SOC_PREFIX}" > "${B}/${config}/.config"
                 if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
                     bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to '${B}/${config}/.config'"
-                    cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${B}/${config}/.config"
+                    cat "${W}/u-boot-cfg.${SOC_FAMILY}" >> "${B}/${config}/.config"
                 fi
                 bbnote "Appending 'u-boot-cfg.${MACHINE}' to '${B}/${config}/.config'"
-                cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${B}/${config}/.config"
-                if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
+                cat "${W}/u-boot-cfg.${MACHINE}" >> "${B}/${config}/.config"
+                if [ -s "${W}/u-boot-cfg.${type}" ];then
                     bbnote "Appending 'u-boot-cfg.${type}' to '${B}/${config}/.config'"
-                    cat "${WORKDIR}/u-boot-cfg.${type}" >> "${B}/${config}/.config"
+                    cat "${W}/u-boot-cfg.${type}" >> "${B}/${config}/.config"
                 fi
                 oe_runmake -C ${S} O=${B}/${config} olddefconfig
                 if [ -n "${@' '.join(find_cfgs(d))}" ]; then
@@ -156,13 +156,13 @@ do_configure() {
         c="${mach}_defconfig"
         bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to '${B}/.config'"
         mkdir -p "${B}"
-        cat "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" > "${B}/.config"
+        cat "${W}/u-boot-cfg.${SOC_PREFIX}" > "${B}/.config"
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
             bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to '${B}/.config'"
-            cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${B}/.config"
+            cat "${W}/u-boot-cfg.${SOC_FAMILY}" >> "${B}/.config"
         fi
         bbnote "Appending 'u-boot-cfg.${MACHINE}' to '${B}/.config'"
-        cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${B}/.config"
+        cat "${W}/u-boot-cfg.${MACHINE}" >> "${B}/.config"
         oe_runmake -C ${S} O=${B} olddefconfig
     fi
 
@@ -187,6 +187,11 @@ do_configure() {
     if [ -n "${UBOOT_ENV_FILE}" ];then
         add_conf CONFIG_USE_DEFAULT_ENV_FILE y
         add_conf CONFIG_DEFAULT_ENV_FILE "\"board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}.env\""
+        if  ${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "true", "false", d)};then
+            LC_ALL=C sort ${W}/${UBOOT_ENV_FILE}.env ${W}/rauc.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
+        else
+            LC_ALL=C sort ${W}/${UBOOT_ENV_FILE}.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
+        fi
     else
         echo "# CONFIG_USE_DEFAULT_ENV_FILE is not set" >> "$tmpfile"
     fi
@@ -258,36 +263,36 @@ do_check_config() {
         for config in ${UBOOT_MACHINE};do
             i=$(expr $i + 1)
             c="${B}/${config}"
-            cp -v "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${c}/.config"
+            cp -v "${W}/u-boot-cfg.${SOC_PREFIX}" "${c}/.config"
             oe_runmake -C ${c} olddefconfig
             if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-                merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+                merge_config.sh -m -r -O "${c}" "${c}/.config" "${W}/u-boot-cfg.${SOC_FAMILY}"
             fi
-            merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+            merge_config.sh -m -r -O "${c}" "${c}/.config" "${W}/u-boot-cfg.${MACHINE}"
 
             j=0
             for type in ${UBOOT_CONFIG};do
                 j=$(expr $j + 1)
                 [ $j = $i ] || continue
-                if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
+                if [ -s "${W}/u-boot-cfg.${type}" ];then
                     bbnote "Appending '$type' specific config to '$(basename "${c}")/.config'"
-                    merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${type}"
-                    check_cnf "${c}" "${WORKDIR}/u-boot-cfg.${type}"
+                    merge_config.sh -m -r -O "${c}" "${c}/.config" "${W}/u-boot-cfg.${type}"
+                    check_cnf "${c}" "${W}/u-boot-cfg.${type}"
                 fi
                 break
             done
             if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-                check_cnf "${c}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" \
-                                 "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+                check_cnf "${c}" "${W}/u-boot-cfg.${SOC_PREFIX}" \
+                                 "${W}/u-boot-cfg.${SOC_FAMILY}"
             else
-                check_cnf "${c}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}"
+                check_cnf "${c}" "${W}/u-boot-cfg.${SOC_PREFIX}"
             fi
-            check_cnf "${c}" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+            check_cnf "${c}" "${W}/u-boot-cfg.${MACHINE}"
 
             for feature in ${UBOOT_FEATURES};do
                 bbnote "Appending '$feature' specific config to '$(basename "${c}")/.config'"
-                merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/${feature}.cfg"
-                check_cnf "${c}" "${WORKDIR}/${feature}.cfg"
+                merge_config.sh -m -r -O "${c}" "${c}/.config" "${W}/${feature}.cfg"
+                check_cnf "${c}" "${W}/${feature}.cfg"
             done
 
             # restore the original config
@@ -295,24 +300,24 @@ do_check_config() {
             oe_runmake -C "${c}" olddefconfig
         done
     else
-        cp -v "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" "${B}/.config"
+        cp -v "${W}/u-boot-cfg.${SOC_PREFIX}" "${B}/.config"
         oe_runmake -C ${B} olddefconfig
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-            merge_config.sh -m -r -O "${B}" "${B}/.config" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+            merge_config.sh -m -r -O "${B}" "${B}/.config" "${W}/u-boot-cfg.${SOC_FAMILY}"
         fi
-        merge_config.sh -m -r -O "${B}" "${B}/.config" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+        merge_config.sh -m -r -O "${B}" "${B}/.config" "${W}/u-boot-cfg.${MACHINE}"
         oe_runmake -C ${B} olddefconfig
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-            check_cnf "${B}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" \
-                             "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+            check_cnf "${B}" "${W}/u-boot-cfg.${SOC_PREFIX}" \
+                             "${W}/u-boot-cfg.${SOC_FAMILY}"
         else
-            check_cnf "${B}" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+            check_cnf "${B}" "${W}/u-boot-cfg.${SOC_FAMILY}"
         fi
-        check_cnf "${B}" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+        check_cnf "${B}" "${W}/u-boot-cfg.${MACHINE}"
         for feature in ${UBOOT_FEATURES};do
             bbnote "Appending '$feature' specific config to '.config'"
-            merge_config.sh -m -r -O "${c}" "${B}/.config" "${WORKDIR}/${feature}.cfg"
-            check_cnf "${B}" "${WORKDIR}/${feature}.cfg"
+            merge_config.sh -m -r -O "${c}" "${B}/.config" "${W}/${feature}.cfg"
+            check_cnf "${B}" "${W}/${feature}.cfg"
         done
 
         # restore the original config
@@ -370,7 +375,7 @@ do_deploy:append () {
         install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
     fi
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
-        install -vD "${WORKDIR}/fw_env.config" u-boot/fw_env.config
+        install -vD "${W}/fw_env.config" u-boot/fw_env.config
     fi
 }
 
