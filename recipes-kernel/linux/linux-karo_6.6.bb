@@ -67,6 +67,7 @@ KERNEL_FEATURES:append = "${@' ${KARO_BOARD_PMIC}.cfg' if d.getVar('KARO_BOARD_P
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' flexcan.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','nfs-server',' nfs-server.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES',"rauc"," rauc.cfg","",d)}"
+KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES',"edac"," edac.cfg","",d)}"
 
 KERNEL_FEATURES:append:mx93-nxp-bsp = " lvds.cfg"
 
