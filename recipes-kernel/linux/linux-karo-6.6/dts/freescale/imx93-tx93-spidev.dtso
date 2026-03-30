@@ -4,7 +4,6 @@
  */
 
 /dts-v1/;
-
 /plugin/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -21,5 +20,10 @@
 	spidev@0 {
 		compatible = "karo,spidev-test";
 		reg = <0>;
+	};
+
+	spidev@1 {
+		compatible = "karo,spidev-test";
+		reg = <1>;
 	};
 };

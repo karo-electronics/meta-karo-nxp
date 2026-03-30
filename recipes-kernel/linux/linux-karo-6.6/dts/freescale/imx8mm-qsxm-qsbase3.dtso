@@ -5,7 +5,6 @@
  */
 
 /dts-v1/;
-
 /plugin/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -34,10 +33,6 @@
 
 &usbotg2 {
 	vbus-supply = <&reg_usbh_vbus>;
-};
-
-&usdhc2 {
-	status = "disabled";
 };
 
 &iomuxc {

@@ -6,7 +6,6 @@ DTB_OVERLAY_INCLUDES = " \
         karo-ili2130 \
         karo-mcp2515 \
         karo-leds \
-        karo-pcie \
         karo-sound \
 "
 
@@ -19,7 +18,6 @@ DTB_OVERLAYS_generic = "\
 "
 
 DTB_OVERLAYS_generic:append:tx91 = "\
-        karo-lvds-mb \
         karo-mb7 \
 "
 
@@ -63,7 +61,6 @@ KARO_BASEBOARDS:tx91 += "\
 # baseboard.
 #
 KARO_DTB_OVERLAYS[lvds-mb] += " \
-        karo-lvds-mb \
         tx91-i2c-rtc \
 "
 

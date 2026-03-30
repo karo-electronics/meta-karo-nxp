@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KERNEL_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 KERNEL_BRANCH_DEFAULT = "lf-6.6.y-karo-2"
-KERNEL_REV_DEFAULT = "08a7c8468ee84c7cc5ea043b3530a1477223fbec"
+KERNEL_REV_DEFAULT = "aa1dcce2c7436c415f107825bab7aee935183f67"
 
 KERNEL_SRC ?= "${KERNEL_SRC_DEFAULT}"
 KERNEL_BRANCH ?= "${KERNEL_BRANCH_DEFAULT}"
@@ -68,8 +68,6 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','flexcan',' fle
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','nfs-server',' nfs-server.cfg','',d)}"
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES',"rauc"," rauc.cfg","",d)}"
 
-KERNEL_FEATURES:append:tx8m-1620 = " no-suspend.cfg"
-KERNEL_FEATURES:append:tx8m-1622 = " no-suspend.cfg"
 KERNEL_FEATURES:append:mx93-nxp-bsp = " lvds.cfg"
 
 COMPATIBLE_MACHINE = "(mx[89]-nxp-bsp)"

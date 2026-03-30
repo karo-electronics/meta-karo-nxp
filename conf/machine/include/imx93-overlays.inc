@@ -5,7 +5,6 @@ DTB_OVERLAY_INCLUDES = " \
         karo-ili2130 \
         karo-mcp2515 \
         karo-leds \
-        karo-pcie \
         karo-sound \
 "
 
@@ -23,7 +22,6 @@ DTB_OVERLAYS_generic = "\
 "
 
 DTB_OVERLAYS_generic:append:tx93 = "\
-        karo-lvds-mb \
         karo-mb7 \
 "
 
@@ -80,7 +78,6 @@ KARO_DTB_OVERLAYS[mb7] += " \
 KARO_DTB_OVERLAYS[lvds-mb] += " \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
-        karo-lvds-mb \
         tx93-lvds-panel karo-panel-tm101jvhg32 \
         karo-rtc \
 "

@@ -5,7 +5,6 @@
  */
 
 /dts-v1/;
-
 /plugin/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -18,10 +17,6 @@
 		overlays {
 			karo-lvds-panel;
 		};
-	};
-
-	display-subsystem {
-		status = "okay";
 	};
 
 	aliases {
@@ -65,7 +60,6 @@
 	pinctrl-0 = <&pinctrl_lcd_reset>;
 	enable-gpios = <&gpio3 29 GPIO_ACTIVE_HIGH>;
 	backlight = <&backlight>;
-	status = "okay";
 
 	port {
 		lvds_panel_from_ldb_ch0: endpoint {

@@ -5,12 +5,17 @@
  */
 
 /dts-v1/;
-
 /plugin/;
 
-&{/chosen} {
-	overlays {
-		karo-panel-etm0700;
+&{/} {
+	chosen {
+		overlays {
+			karo-panel-etm0700;
+		};
+	};
+
+	display-subsystem {
+		status = "okay";
 	};
 };
 

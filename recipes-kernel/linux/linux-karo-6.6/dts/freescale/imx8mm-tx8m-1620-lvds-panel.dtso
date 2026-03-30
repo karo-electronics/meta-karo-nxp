@@ -5,7 +5,6 @@
  */
 
 /dts-v1/;
-
 /plugin/;
 
 #include <dt-bindings/gpio/gpio.h>
@@ -31,7 +30,6 @@
 		pinctrl-0 = <&pinctrl_lvds>;
 		data-mapping = "jeida-24";
 		backlight = <&backlight>;
-		status = "okay";
 
 		port {
 			panel_from_dsi_lvds_bridge: endpoint {

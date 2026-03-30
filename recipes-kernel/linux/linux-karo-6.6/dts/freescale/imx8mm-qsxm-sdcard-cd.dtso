@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0 OR MIT)
 /*
- * Copyright 2022 Lothar Waßmann <LW@KARO-electronics.de>
+ * Copyright 2026 Lothar Waßmann <LW@KARO-electronics.de>
  *
  */
 
@@ -9,18 +9,16 @@
 
 #include <dt-bindings/gpio/gpio.h>
 
-&{/chosen} {
-	overlays {
-		karo-mb7;
+&{/} {
+	chosen {
+		overlays {
+			qsxm-sdcard-cd;
+		};
 	};
-};
-
-&i2c3 {
-	status = "disabled";
 };
 
 &usdhc2 {
 	pinctrl-0 = <&pinctrl_usdhc2 &pinctrl_usdhc2_cd>;
 	cd-gpios = <&gpio2 12 GPIO_ACTIVE_LOW>;
-	voltage-ranges = <3300 3300>;
+	status = "okay";
 };

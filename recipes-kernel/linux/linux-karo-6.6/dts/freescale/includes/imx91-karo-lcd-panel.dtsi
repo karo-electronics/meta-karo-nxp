@@ -10,10 +10,6 @@
 		lcdif = "/soc/lcd-controller@4ae30000";
 	};
 
-	display-subsystem {
-		status = "okay";
-	};
-
 	reg_lcd_pwr: regulator-lcd-pwr {
 		compatible = "regulator-fixed";
 		regulator-name = "LCD_PWR";
@@ -25,13 +21,12 @@
 };
 
 &media_blk_ctrl {
-        status = "okay";
+	status = "okay";
 };
 
 &panel {
 	power-supply = <&reg_lcd_pwr>;
 	backlight = <&backlight>;
-	status = "okay";
 
 	port {
 		panel_from_lcdif: endpoint {

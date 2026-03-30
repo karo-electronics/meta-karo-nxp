@@ -27,6 +27,11 @@ DTB_OVERLAYS_generic = "\
         ${@ mach_overlay(d, ":karo-panel-tm101jvhg32", "qs8m,qsxm,tx8m-1622,imx8mp")} \
 "
 
+DTB_OVERLAYS_generic:append:tx8m = "\
+        tx8m-sdcard1-cd \
+        tx8m-sdcard2-cd \
+"
+
 DTB_OVERLAYS:append = " \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         ${@ mach_overlay(d, ":karo-vpu", "imx8mn")} \
@@ -38,6 +43,7 @@ DTB_OVERLAYS:append:imx8mp = "\
 "
 
 DTB_OVERLAYS:append:tx8m = "\
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart:", "imx8mm")} \
         karo-lvds-panel \
         tx8m-leds \
         tx8m-mcp2515 \
@@ -66,7 +72,6 @@ DTB_OVERLAYS:append:tx8p = "\
 DTB_OVERLAYS:append:tx8m-1620 = "\
         tx8m-1620-lvds-panel \
         tx8m-ft5x06 \
-        tx8m-lvds-mb \
 "
 
 DTB_OVERLAYS:append:qs8m = "\
@@ -88,6 +93,7 @@ DTB_OVERLAYS:append:qsxm = "\
         qsxm-laird \
         qsxm-pcie \
         qsxm-qsbase3 \
+        qsxm-sdcard-cd \
 "
 
 DTB_OVERLAYS:append:qsxp = "\
@@ -147,6 +153,7 @@ KARO_BASEBOARDS:qsxp ?= "\
 
 # baseboard DTB specific overlays
 KARO_DTB_OVERLAYS[mb7] += "\
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "imx8mm")} \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         karo-mb7 \
@@ -162,6 +169,7 @@ KARO_DTB_OVERLAYS[mb7] += "\
 "
 
 KARO_DTB_OVERLAYS[lvds-mb] += "\
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "imx8mm")} \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         ${@ mach_overlay(d, "tx8m-1620-lvds-panel:karo-lvds-panel", "tx8m-1620")} \
@@ -169,13 +177,14 @@ KARO_DTB_OVERLAYS[lvds-mb] += "\
         karo-rtc \
         ${@ mach_overlay(d, "tx8m-leds", "imx8mm")} \
         ${@ mach_overlay(d, "tx8m-wifi", "imx8mm", "wifi")} \
-        ${@ mach_overlay(d, "tx8p-lvds-mb:tx8m-lvds-mb", "imx8mp")} \
+        ${@ mach_overlay(d, "tx8p-lvds-mb", "imx8mp")} \
         ${@ mach_overlay(d, "tx8p-sound:tx8m-sound", "imx8mp")} \
         ${@ mach_overlay(d, "tx8p-spidev:tx8m-spidev", "imx8mp")} \
         ${@ mach_overlay(d, "tx8p-pcie:tx8m-pcie", "imx8mp")} \
 "
 
 KARO_DTB_OVERLAYS[mipi-mb] += "\
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "imx8mm")} \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         ${@ mach_overlay(d, ":karo-dsi83", "tx8m-1622")} \
         karo-gpu \
