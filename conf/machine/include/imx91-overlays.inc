@@ -40,6 +40,7 @@ DTB_OVERLAYS:append:tx91 = " \
         tx91-i2c-rtc \
         tx91-ili2130 \
         tx91-lcd-panel \
+        tx91-ld-mode \
         tx91-matrix-keypad \
         tx91-sound \
         tx91-spidev \
