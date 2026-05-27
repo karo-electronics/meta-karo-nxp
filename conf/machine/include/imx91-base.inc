@@ -13,6 +13,8 @@ ATF_BL31_BASE ??= "0x204c0000"
 ATF_BL31_SIZE ??= "0x20000"
 IMX_WDOG_B_RESET = "1"
 
+UBOOT_CONFIG:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'edac', ' ecc', '', d)}"
+
 UBOOT_SAVED_DRAM_TIMING_BASE ??= "0x20490000"
 
 IMX_BOOT_UART_BASE ??= "0x44380000"

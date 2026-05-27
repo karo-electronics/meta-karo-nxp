@@ -79,7 +79,6 @@ UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
 UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
 
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
-UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "edac", " edac", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
 
