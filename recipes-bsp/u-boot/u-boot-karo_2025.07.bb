@@ -45,6 +45,9 @@ UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protoco
 UBOOT_REV_DEFAULT = "4443bcd2df45efcd48cc07418e6531a708bf4a6a"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
+CVE_PRODUCT = "denx:u-boot"
+CVE_VERSION = "2025.07"
+
 KARO_UBOOT_SRC ?= "${UBOOT_SRC_DEFAULT}"
 KARO_UBOOT_REV ?= "${UBOOT_REV_DEFAULT}"
 KARO_UBOOT_BRANCH ?= "${UBOOT_BRANCH_DEFAULT}"
