@@ -9,7 +9,7 @@ require conf/machine/include/imx-base.inc
 # override unconditional assignment in meta-imx/.../imx-base-extend.inc
 QEMUVERSION = "8.2.7"
 
-MACHINE_FEATURES += "emmc"
+MACHINE_FEATURES:append = " emmc"
 
 MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "0"
 
@@ -22,7 +22,7 @@ UBOOT_FEATURES ??= ""
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
 UBOOT_FEATURES:append = "${@ " optee" if 'optee' in d.getVar('MACHINE_FEATURES').split() else ""}"
 
-SOC_DEFAULT_IMAGE_FSTYPES = "tar.bz2"
+SOC_DEFAULT_IMAGE_FSTYPES = "wic.zst"
 
 # Set U-Boot DTB
 KARO_BASEBOARD ??= ""
@@ -49,11 +49,16 @@ LOADADDR = ""
 UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = ""
 
+WKS_FILE_DEPENDS:remove = "imx-boot"
+WIC_CREATE_EXTRA_ARGS:remove = "--no-fstab-update"
+
 IMX_DEFAULT_BSP = "nxp"
-PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
+
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 PREFERRED_VERSION_linux-karo ?= "6.6"
-PREFERRED_VERSION_uboot-karo ?= "2025.07"
+
+PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
+PREFERRED_VERSION_u-boot-karo ?= "2025.07"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
 
