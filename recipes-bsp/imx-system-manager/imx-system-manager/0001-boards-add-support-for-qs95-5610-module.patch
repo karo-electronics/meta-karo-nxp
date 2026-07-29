@@ -2,6 +2,7 @@ From a12b34521929ebece89757d57fb2d1cb46be8e7a Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Wed, 29 Jul 2026 13:30:06 +0000
 Subject: [PATCH] boards: add support for qs95-5610 module
+Upstream-Status: Pending
 
 ---
  boards/qs95-5610/board.c              |  616 +++++++++++

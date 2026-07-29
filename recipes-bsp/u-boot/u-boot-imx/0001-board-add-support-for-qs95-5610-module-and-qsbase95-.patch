@@ -3,6 +3,7 @@ From: Robin Lintermann <rl@karo-electronics.de>
 Date: Wed, 29 Jul 2026 13:35:10 +0000
 Subject: [PATCH] board: add support for qs95-5610 module and qsbase95
  baseboard
+Upstream-Status: Pending
 
 ---
  arch/arm/mach-imx/imx9/Kconfig    |   7 +

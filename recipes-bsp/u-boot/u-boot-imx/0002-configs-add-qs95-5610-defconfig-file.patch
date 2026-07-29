@@ -2,6 +2,7 @@ From b40b2e4f7153fbd48e2f4e31009a208b65d5d56b Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Wed, 29 Jul 2026 13:35:26 +0000
 Subject: [PATCH] configs: add qs95-5610 defconfig file
+Upstream-Status: Pending
 
 ---
  configs/qs95-5610_defconfig | 274 ++++++++++++++++++++++++++++++++++++
