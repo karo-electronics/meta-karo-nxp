@@ -1,0 +1,21 @@
+uuu_version 1.4.149
+
+# @_flash.bin            | bootloader, which can extract from wic image
+# @_image   [_flash.bin] | wic image burn to emmc.
+
+
+SDPS: boot -scanterm -f _flash.bin -scanlimited 0x800000
+
+SDPV: delay 1000
+SDPV: write -f _flash.bin -skipspl -scanterm -scanlimited 0x800000
+SDPV: jump -scanlimited 0x800000
+
+
+FB: ucmd setenv fastboot_dev mmc
+FB: ucmd setenv mmcdev ${emmc_dev}
+FB: ucmd mmc dev ${emmc_dev}
+FB: flash -scanterm -scanlimited 0x800000 mmc0boot0 _flash.bin
+FB: flash -raw2sparse mmc0 _image
+FB: ucmd if env exists emmc_ack; then ; else setenv emmc_ack 0; fi;
+FB: ucmd mmc partconf ${emmc_dev} ${emmc_ack} 1 0
+FB: done

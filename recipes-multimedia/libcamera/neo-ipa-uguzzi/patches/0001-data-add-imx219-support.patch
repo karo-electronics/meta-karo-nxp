@@ -1,0 +1,199 @@
+From 621989c5fc264c225a3047f5a6c8565c528996e7 Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Thu, 27 Aug 2026 14:28:45 +0000
+Subject: [PATCH] data: add imx219 support
+Upstream-Status: Pending
+
+---
+ cam_helper/camera_helper_imx219.cpp | 131 ++++++++++++++++++++++------
+ data/config_ipa_uguzzi.yaml         |  13 +++
+ data/database_imx219_1920_1080.bin  | Bin 0 -> 309664 bytes
+ data/database_imx219_3280_2464.bin  | Bin 0 -> 254080 bytes
+ data/meson.build                    |   2 +
+ 5 files changed, 121 insertions(+), 25 deletions(-)
+ create mode 100644 data/database_imx219_1920_1080.bin
+ create mode 100644 data/database_imx219_3280_2464.bin
+
+diff --git a/cam_helper/camera_helper_imx219.cpp b/cam_helper/camera_helper_imx219.cpp
+index 15c7154..08f6401 100644
+--- a/cam_helper/camera_helper_imx219.cpp
++++ b/cam_helper/camera_helper_imx219.cpp
+@@ -1,37 +1,118 @@
+ /* SPDX-License-Identifier: LGPL-2.1-or-later */
+-/*
+- * Copyright 2025-2026 NXP
+- *
++/* Copyright (C) 2021, Google Inc.
++ * camera_helper_imx219.c
+  * Helper class that performs sensor-specific parameter computations
+- * for Sony imx219 sensor
++ * for Sony IMX 219 sensor
++ * Copyright 2025-2026 NXP
+  */
+ 
+-#include "camera_helper.h"
++ #include <cmath>
++
++ #include <linux/v4l2-controls.h>
++ 
++ #include <libcamera/base/log.h>
++
++ #include "camera_helper.h"
++ 
++ namespace libcamera {
++ 
++ LOG_DECLARE_CATEGORY(NxpCameraHelper)
++ 
++ namespace nxp {
++
++ class CameraHelperImx219 : public CameraHelper
++ {
++ public:
++
++     uint32_t gainCode(double gain) const override;
++     double gain(uint32_t gainCode) const override;
++ };
++ 
++
++ /*
++  * gain multiplier( 1x-10.66x )converted to actual gain value code (0 - 232)
++  * to be applied on sensor driver
++  * via controlListSetAGC() from camera_helper.cpp
++  */
++ uint32_t CameraHelperImx219::gainCode(double gain) const
++ {
++
++    LOG(NxpCameraHelper, Debug) << "gainCode() input gain= " << gain; 
++    uint32_t code;
++    code = 256 - (256/gain);
++
++    LOG(NxpCameraHelper, Debug) << "gainCode() output gainCode= " << code;
++    return code;
++ }
++
++  /*
++  * called from sensorControlsToMetaData directly from  
++  * sensor driver via get(V4L2_CID_ANALOGUE_GAIN) (0 -232)
++  */
++ double CameraHelperImx219::gain(uint32_t gainCode) const
++ {
++    LOG(NxpCameraHelper, Debug) << "gain() input gainCode= " << gainCode; 
++    double gain;
++    gain = 256.0 / (256 - gainCode);
++    LOG(NxpCameraHelper, Debug) << "gain()=" << gain;
++    return gain;
++ }
++ 
++ REGISTER_CAMERA_HELPER("imx219", CameraHelperImx219)
++ 
++ } /* namespace nxp */
++ 
++ } /* namespace libcamera */
++
++ /*
++        exposure set via controlListSetAGC() in camera_helper.cpp
++        exposure get via sensorControlsToMetaData() in camera_helper.cpp
++
++        const ControlValue &exposureCtrl = sensorCtrls->get(V4L2_CID_EXPOSURE); 
++        int32_t exposureLines = exposureCtrl.get<int32_t>();
++		exposuresArray[0] = static_cast<float>(exposureLines * lineDuration());  
++        //value that gets set between the range of exposures in MMS Tool 
+ 
+-namespace libcamera {
++        lineduration = (mode_.minLineLength) / mode_.pixelRate = 3448/182400000 
++        = 1.890350877192982e-5 = 0.00001890350
++        lines is value set to v4l2 sensor V4L2_CID_EXPOSURE 
++        min exposure 4  , max exposure 65515 for v4l2 driver value    , 
++        but imx219.c driver also modifies exposure range based on vblank
++        imx219->exposure->minimum = 4 
+ 
+-namespace nxp {
++        
++        imx219.c driver modifies exposure range based on vblank 
++		format->height = 2464  //3280x2464 resolution
++        ctrl->val = 1062   vblank->val 
++        exposure_max = format->height + ctrl->val - 4;
++        exposure_max = 3522 
++        exposure_def = 1600 
+ 
+-class CameraHelperImx219 : public CameraHelper
+-{
+-public:
+-	uint32_t gainCode(double gain) const override;
+-	double gain(uint32_t gainCode) const override;
+-};
++		3522 = exposure / lineduration();
++		expsoure = 3522 * lineduration();
++		exposure = 3522* 0.00001890350
++		exposure = 0.066578127 in seconds -> 66578.127 ms set in AE limits 
++        MAX in MMS tool
+ 
+-/* Gain conversions come from RPi cam_helper_imx219.cpp implementation */
+-uint32_t CameraHelperImx219::gainCode(double gain) const
+-{
+-	return static_cast<uint32_t>(256 - 256 / gain);
+-}
++        min exposure  0.000075614 , 75.614 ms in AE Limits MMS
++        max exposure  0.03297065  , 66578.127 ms set in AE limits 
++        MAX in MMS tool
+ 
+-double CameraHelperImx219::gain(uint32_t gainCode) const
+-{
+-	return 256.0 / (256 - gainCode);
+-}
+ 
+-REGISTER_CAMERA_HELPER("imx219", CameraHelperImx219)
++        format->height = 1080  //1920x1080 cropped resolution
++        ctrl->val = 683        vblank->val 
++        exposure_max = format->height + ctrl->val - 4;
++        exposure_max = 1759 
++        exposure_def = 1600 
++	
++        1759 = exposure / lineduration();
++		expsoure = 1759 * lineduration();
++		exposure = 1759* 0.00001890350
++		exposure = 0.0332512565 in seconds -> 33251.2565 ms set in AE limits 
++        MAX in MMS tool
+ 
+-} /* namespace nxp */
++        min exposure  0.000075614 , 75.614 ms in AE Limits MMS
++        max exposure  0.03297065  , 33251.2565 ms set in AE limits
++        MAX in MMS tool
+ 
+-} /* namespace libcamera */
++*/
+diff --git a/data/config_ipa_uguzzi.yaml b/data/config_ipa_uguzzi.yaml
+index 929b2d3..4811acb 100644
+--- a/data/config_ipa_uguzzi.yaml
++++ b/data/config_ipa_uguzzi.yaml
+@@ -99,4 +99,17 @@ sensors:
+         dtp-file: database_ox05b1s_dual_2592-1944_10bpp.bin
+         tuning-id: [ 2011, 2012 ]
+         tuning-mode: 0
++  - model: imx219
++    socket-port: 50020
++    profiles:
++      - resolution: [3280, 2464]
++        bit-depth: 10
++        dtp-file: database_imx219_3280_2464.bin
++        tuning-id: [ 2010 ]
++        tuning-mode: 0
++      - resolution: [1920, 1080]
++        bit-depth: 10
++        dtp-file: database_imx219_1920_1080.bin
++        tuning-id: [ 2010 ]
++        tuning-mode: 0
+ ...
+diff --git a/data/meson.build b/data/meson.build
+index d8b7b47..3d75409 100644
+--- a/data/meson.build
++++ b/data/meson.build
+@@ -5,6 +5,8 @@ conf_files = files([
+     'database_os08a20_SDR_3840-2160_12bpp.bin',
+     'database_os08a20_HDR_3840-2160_12bpp.bin',
+     'database_ox05b1s_dual_2592-1944_10bpp.bin',
++    'database_imx219_3280_2464.bin',
++    'database_imx219_1920_1080.bin',
+     'config_ipa_uguzzi.yaml',
+ ])
+ 

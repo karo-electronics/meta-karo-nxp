@@ -1,75 +1,75 @@
-From a12b34521929ebece89757d57fb2d1cb46be8e7a Mon Sep 17 00:00:00 2001
+From a78b0e425ee6b9f1159e7839f5e6caefd3682b8c Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Wed, 29 Jul 2026 13:30:06 +0000
 Subject: [PATCH] boards: add support for qs95-5610 module
 Upstream-Status: Pending
 
 ---
- boards/qs95-5610/board.c              |  616 +++++++++++
- boards/qs95-5610/board.h              |  164 +++
- boards/qs95-5610/pin_mux.c            |   58 ++
- boards/qs95-5610/pin_mux.h            |   44 +
- boards/qs95-5610/sm/Makefile          |   63 ++
- boards/qs95-5610/sm/brd_sm.c          |  692 ++++++++++++
- boards/qs95-5610/sm/brd_sm.dox        |   54 +
- boards/qs95-5610/sm/brd_sm.h          |   99 ++
- boards/qs95-5610/sm/brd_sm_clock.c    |  358 +++++++
- boards/qs95-5610/sm/brd_sm_clock.h    |   96 ++
- boards/qs95-5610/sm/brd_sm_handlers.c |  270 +++++
- boards/qs95-5610/sm/brd_sm_handlers.h |   94 ++
- boards/qs95-5610/sm/brd_sm_sensor.c   |  414 ++++++++
- boards/qs95-5610/sm/brd_sm_sensor.h   |  210 ++++
- boards/qs95-5610/sm/brd_sm_voltage.c  |  568 ++++++++++
- boards/qs95-5610/sm/brd_sm_voltage.h  |  222 ++++
- configs/qs95-5610.cfg                 | 1018 ++++++++++++++++++
- configs/qs95-5610/config.dox          |   49 +
- configs/qs95-5610/config.mak          |   44 +
- configs/qs95-5610/config_bctrl.h      |  100 ++
- configs/qs95-5610/config_board.h      |   69 ++
- configs/qs95-5610/config_dev.h        |   65 ++
- configs/qs95-5610/config_lmm.h        |  227 ++++
- configs/qs95-5610/config_mb_mu.h      |  118 +++
- configs/qs95-5610/config_scmi.h       |  675 ++++++++++++
- configs/qs95-5610/config_smt.h        |  168 +++
- configs/qs95-5610/config_test.h       |  193 ++++
- configs/qs95-5610/config_trdc.h       | 1387 +++++++++++++++++++++++++
- configs/qs95-5610/config_user.h       |  230 ++++
- 29 files changed, 8365 insertions(+)
- create mode 100755 boards/qs95-5610/board.c
- create mode 100755 boards/qs95-5610/board.h
- create mode 100755 boards/qs95-5610/pin_mux.c
- create mode 100755 boards/qs95-5610/pin_mux.h
- create mode 100755 boards/qs95-5610/sm/Makefile
- create mode 100755 boards/qs95-5610/sm/brd_sm.c
- create mode 100755 boards/qs95-5610/sm/brd_sm.dox
- create mode 100755 boards/qs95-5610/sm/brd_sm.h
- create mode 100755 boards/qs95-5610/sm/brd_sm_clock.c
- create mode 100755 boards/qs95-5610/sm/brd_sm_clock.h
- create mode 100755 boards/qs95-5610/sm/brd_sm_handlers.c
- create mode 100755 boards/qs95-5610/sm/brd_sm_handlers.h
- create mode 100755 boards/qs95-5610/sm/brd_sm_sensor.c
- create mode 100755 boards/qs95-5610/sm/brd_sm_sensor.h
- create mode 100755 boards/qs95-5610/sm/brd_sm_voltage.c
- create mode 100755 boards/qs95-5610/sm/brd_sm_voltage.h
- create mode 100644 configs/qs95-5610.cfg
- create mode 100755 configs/qs95-5610/config.dox
- create mode 100755 configs/qs95-5610/config.mak
- create mode 100755 configs/qs95-5610/config_bctrl.h
- create mode 100755 configs/qs95-5610/config_board.h
- create mode 100644 configs/qs95-5610/config_dev.h
- create mode 100755 configs/qs95-5610/config_lmm.h
- create mode 100755 configs/qs95-5610/config_mb_mu.h
- create mode 100755 configs/qs95-5610/config_scmi.h
- create mode 100755 configs/qs95-5610/config_smt.h
- create mode 100755 configs/qs95-5610/config_test.h
- create mode 100755 configs/qs95-5610/config_trdc.h
- create mode 100644 configs/qs95-5610/config_user.h
+ boards/tx95/board.c              |  616 +++++++++++++
+ boards/tx95/board.h              |  164 ++++
+ boards/tx95/pin_mux.c            |   58 ++
+ boards/tx95/pin_mux.h            |   44 +
+ boards/tx95/sm/Makefile          |   63 ++
+ boards/tx95/sm/brd_sm.c          |  692 +++++++++++++++
+ boards/tx95/sm/brd_sm.dox        |   54 ++
+ boards/tx95/sm/brd_sm.h          |   99 +++
+ boards/tx95/sm/brd_sm_clock.c    |  358 ++++++++
+ boards/tx95/sm/brd_sm_clock.h    |   96 +++
+ boards/tx95/sm/brd_sm_handlers.c |  270 ++++++
+ boards/tx95/sm/brd_sm_handlers.h |   94 ++
+ boards/tx95/sm/brd_sm_sensor.c   |  414 +++++++++
+ boards/tx95/sm/brd_sm_sensor.h   |  210 +++++
+ boards/tx95/sm/brd_sm_voltage.c  |  568 ++++++++++++
+ boards/tx95/sm/brd_sm_voltage.h  |  222 +++++
+ configs/tx95.cfg                 | 1018 ++++++++++++++++++++++
+ configs/tx95/config.dox          |   49 ++
+ configs/tx95/config.mak          |   44 +
+ configs/tx95/config_bctrl.h      |  100 +++
+ configs/tx95/config_board.h      |   69 ++
+ configs/tx95/config_dev.h        |   65 ++
+ configs/tx95/config_lmm.h        |  225 +++++
+ configs/tx95/config_mb_mu.h      |  118 +++
+ configs/tx95/config_scmi.h       |  674 +++++++++++++++
+ configs/tx95/config_smt.h        |  168 ++++
+ configs/tx95/config_test.h       |  193 +++++
+ configs/tx95/config_trdc.h       | 1387 ++++++++++++++++++++++++++++++
+ configs/tx95/config_user.h       |  230 +++++
+ 29 files changed, 8362 insertions(+)
+ create mode 100755 boards/tx95/board.c
+ create mode 100755 boards/tx95/board.h
+ create mode 100755 boards/tx95/pin_mux.c
+ create mode 100755 boards/tx95/pin_mux.h
+ create mode 100755 boards/tx95/sm/Makefile
+ create mode 100755 boards/tx95/sm/brd_sm.c
+ create mode 100755 boards/tx95/sm/brd_sm.dox
+ create mode 100755 boards/tx95/sm/brd_sm.h
+ create mode 100755 boards/tx95/sm/brd_sm_clock.c
+ create mode 100755 boards/tx95/sm/brd_sm_clock.h
+ create mode 100755 boards/tx95/sm/brd_sm_handlers.c
+ create mode 100755 boards/tx95/sm/brd_sm_handlers.h
+ create mode 100755 boards/tx95/sm/brd_sm_sensor.c
+ create mode 100755 boards/tx95/sm/brd_sm_sensor.h
+ create mode 100755 boards/tx95/sm/brd_sm_voltage.c
+ create mode 100755 boards/tx95/sm/brd_sm_voltage.h
+ create mode 100644 configs/tx95.cfg
+ create mode 100755 configs/tx95/config.dox
+ create mode 100755 configs/tx95/config.mak
+ create mode 100755 configs/tx95/config_bctrl.h
+ create mode 100755 configs/tx95/config_board.h
+ create mode 100644 configs/tx95/config_dev.h
+ create mode 100755 configs/tx95/config_lmm.h
+ create mode 100755 configs/tx95/config_mb_mu.h
+ create mode 100755 configs/tx95/config_scmi.h
+ create mode 100755 configs/tx95/config_smt.h
+ create mode 100755 configs/tx95/config_test.h
+ create mode 100755 configs/tx95/config_trdc.h
+ create mode 100644 configs/tx95/config_user.h
 
-diff --git a/boards/qs95-5610/board.c b/boards/qs95-5610/board.c
+diff --git a/boards/tx95/board.c b/boards/tx95/board.c
 new file mode 100755
 index 0000000..8de0f0c
 --- /dev/null
-+++ b/boards/qs95-5610/board.c
++++ b/boards/tx95/board.c
 @@ -0,0 +1,616 @@
 +/*
 + * Copyright 2023-2025 NXP
@@ -687,11 +687,11 @@ index 0000000..8de0f0c
 +    }
 +}
 +
-diff --git a/boards/qs95-5610/board.h b/boards/qs95-5610/board.h
+diff --git a/boards/tx95/board.h b/boards/tx95/board.h
 new file mode 100755
 index 0000000..bb4c664
 --- /dev/null
-+++ b/boards/qs95-5610/board.h
++++ b/boards/tx95/board.h
 @@ -0,0 +1,164 @@
 +/*
 + * Copyright 2023-2024 NXP
@@ -857,11 +857,11 @@ index 0000000..bb4c664
 +
 +#endif /* BOARD_H */
 +
-diff --git a/boards/qs95-5610/pin_mux.c b/boards/qs95-5610/pin_mux.c
+diff --git a/boards/tx95/pin_mux.c b/boards/tx95/pin_mux.c
 new file mode 100755
 index 0000000..15553b8
 --- /dev/null
-+++ b/boards/qs95-5610/pin_mux.c
++++ b/boards/tx95/pin_mux.c
 @@ -0,0 +1,58 @@
 +/*
 + * Copyright 2023, 2025 NXP
@@ -921,11 +921,11 @@ index 0000000..15553b8
 +    IOMUXC_SetPinConfig(IOMUXC_PAD_GPIO_IO34__GPIO5_IO_BIT14, 0U);
 +}
 +
-diff --git a/boards/qs95-5610/pin_mux.h b/boards/qs95-5610/pin_mux.h
+diff --git a/boards/tx95/pin_mux.h b/boards/tx95/pin_mux.h
 new file mode 100755
 index 0000000..24cd792
 --- /dev/null
-+++ b/boards/qs95-5610/pin_mux.h
++++ b/boards/tx95/pin_mux.h
 @@ -0,0 +1,44 @@
 +/*
 + * Copyright 2023 NXP
@@ -971,11 +971,11 @@ index 0000000..24cd792
 + */
 +#endif /* PIN_MUX_H */
 +
-diff --git a/boards/qs95-5610/sm/Makefile b/boards/qs95-5610/sm/Makefile
+diff --git a/boards/tx95/sm/Makefile b/boards/tx95/sm/Makefile
 new file mode 100755
-index 0000000..10640ed
+index 0000000..7b6ccea
 --- /dev/null
-+++ b/boards/qs95-5610/sm/Makefile
++++ b/boards/tx95/sm/Makefile
 @@ -0,0 +1,63 @@
 +## ###################################################################
 +##
@@ -1009,7 +1009,7 @@ index 0000000..10640ed
 +##
 +## ###################################################################
 +
-+BOARD ?= qs95-5610
++BOARD ?= tx95
 +BRD_SM_API_DIR = $(ROOT_DIR)/sm/brd
 +BOARDS_DIR = $(ROOT_DIR)/boards
 +BOARD_DIR = $(BOARDS_DIR)/$(BOARD)
@@ -1040,11 +1040,11 @@ index 0000000..10640ed
 +	$(OUT)/fsl_pf09.o  \
 +	$(OUT)/fsl_pf53.o  \
 +
-diff --git a/boards/qs95-5610/sm/brd_sm.c b/boards/qs95-5610/sm/brd_sm.c
+diff --git a/boards/tx95/sm/brd_sm.c b/boards/tx95/sm/brd_sm.c
 new file mode 100755
 index 0000000..d1d821f
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm.c
++++ b/boards/tx95/sm/brd_sm.c
 @@ -0,0 +1,692 @@
 +/*
 +** ###################################################################
@@ -1738,11 +1738,11 @@ index 0000000..d1d821f
 +    return status;
 +}
 +
-diff --git a/boards/qs95-5610/sm/brd_sm.dox b/boards/qs95-5610/sm/brd_sm.dox
+diff --git a/boards/tx95/sm/brd_sm.dox b/boards/tx95/sm/brd_sm.dox
 new file mode 100755
-index 0000000..2a309c7
+index 0000000..f972d8e
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm.dox
++++ b/boards/tx95/sm/brd_sm.dox
 @@ -0,0 +1,54 @@
 +/*
 +** ###################################################################
@@ -1785,24 +1785,24 @@ index 0000000..2a309c7
 +
 +/*!
 +
-+@defgroup BRD_SM_QS95_5610 BOARD_QS95_5610: QS95-5610 SM Implementation
++@defgroup BRD_SM_TX95 BOARD_TX95: Ka-Ro electronics i.MX95 module family SM Implementation
 +
-+@brief Module for the QS95-5610 for the SM.
++@brief Module for the Ka-Ro electronics i.MX95 module family for the SM.
 +
 +Board Module
 +============
 +
-+This port supports QS95-5610.
++This port supports Ka-Ro electronics i.MX95 module family.
 +
 +*/
 +
 +/** @} */
 +
-diff --git a/boards/qs95-5610/sm/brd_sm.h b/boards/qs95-5610/sm/brd_sm.h
+diff --git a/boards/tx95/sm/brd_sm.h b/boards/tx95/sm/brd_sm.h
 new file mode 100755
 index 0000000..1441357
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm.h
++++ b/boards/tx95/sm/brd_sm.h
 @@ -0,0 +1,99 @@
 +/*
 +** ###################################################################
@@ -1903,11 +1903,11 @@ index 0000000..1441357
 +
 +#endif /* BRD_SM_H */
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_clock.c b/boards/qs95-5610/sm/brd_sm_clock.c
+diff --git a/boards/tx95/sm/brd_sm_clock.c b/boards/tx95/sm/brd_sm_clock.c
 new file mode 100755
 index 0000000..ac552eb
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_clock.c
++++ b/boards/tx95/sm/brd_sm_clock.c
 @@ -0,0 +1,358 @@
 +/*
 +** ###################################################################
@@ -2267,11 +2267,11 @@ index 0000000..ac552eb
 +    return pllVcoRate;
 +}
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_clock.h b/boards/qs95-5610/sm/brd_sm_clock.h
+diff --git a/boards/tx95/sm/brd_sm_clock.h b/boards/tx95/sm/brd_sm_clock.h
 new file mode 100755
 index 0000000..0cf1a12
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_clock.h
++++ b/boards/tx95/sm/brd_sm_clock.h
 @@ -0,0 +1,96 @@
 +/*
 +** ###################################################################
@@ -2369,11 +2369,11 @@ index 0000000..0cf1a12
 +
 +/** @} */
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_handlers.c b/boards/qs95-5610/sm/brd_sm_handlers.c
+diff --git a/boards/tx95/sm/brd_sm_handlers.c b/boards/tx95/sm/brd_sm_handlers.c
 new file mode 100755
-index 0000000..d72a049
+index 0000000..7ec26c6
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_handlers.c
++++ b/boards/tx95/sm/brd_sm_handlers.c
 @@ -0,0 +1,270 @@
 +/*
 +** ###################################################################
@@ -2584,20 +2584,20 @@ index 0000000..d72a049
 +        }
 +    }
 +
-+    // DISABLED FOR NOW BECAUSE OF INTERRUPT STORM (Test with final hardware again)
-+    // if (status == SM_ERR_SUCCESS)
-+    // {
-+    //     rgpio_pin_config_t gpioConfig =
-+    //     {
-+    //         kRGPIO_DigitalInput,
-+    //         0U
-+    //     };
++    // Configure PF09 interrupt handler
++    if (status == SM_ERR_SUCCESS)
++    {
++        rgpio_pin_config_t gpioConfig =
++        {
++            kRGPIO_DigitalInput,
++            0U
++        };
 +
-+    //     /* Init GPIO5-14 */
-+    //     RGPIO_PinInit(GPIO5, 14U, &gpioConfig);
-+    //     RGPIO_SetPinInterruptConfig(GPIO5, 14U, kRGPIO_InterruptOutput0,
-+    //         kRGPIO_InterruptLogicZero);
-+    // }
++        /* Init GPIO5-14 */
++        RGPIO_PinInit(GPIO5, 14U, &gpioConfig);
++        RGPIO_SetPinInterruptConfig(GPIO5, 14U, kRGPIO_InterruptOutput0,
++            kRGPIO_InterruptLogicZero);
++    }
 +
 +    /* Return status */
 +    return status;
@@ -2645,11 +2645,11 @@ index 0000000..d72a049
 +    }
 +}
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_handlers.h b/boards/qs95-5610/sm/brd_sm_handlers.h
+diff --git a/boards/tx95/sm/brd_sm_handlers.h b/boards/tx95/sm/brd_sm_handlers.h
 new file mode 100755
 index 0000000..86d1138
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_handlers.h
++++ b/boards/tx95/sm/brd_sm_handlers.h
 @@ -0,0 +1,94 @@
 +/*
 +** ###################################################################
@@ -2745,11 +2745,11 @@ index 0000000..86d1138
 +
 +#endif /* BRD_SM_HANDLERS_H */
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_sensor.c b/boards/qs95-5610/sm/brd_sm_sensor.c
+diff --git a/boards/tx95/sm/brd_sm_sensor.c b/boards/tx95/sm/brd_sm_sensor.c
 new file mode 100755
 index 0000000..ef6874f
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_sensor.c
++++ b/boards/tx95/sm/brd_sm_sensor.c
 @@ -0,0 +1,414 @@
 +/*
 +** ###################################################################
@@ -3165,11 +3165,11 @@ index 0000000..ef6874f
 +    LMM_SensorEvent(BRD_SM_SENSOR_TEMP_PF09, 0U, 1U);
 +}
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_sensor.h b/boards/qs95-5610/sm/brd_sm_sensor.h
+diff --git a/boards/tx95/sm/brd_sm_sensor.h b/boards/tx95/sm/brd_sm_sensor.h
 new file mode 100755
 index 0000000..98b68ae
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_sensor.h
++++ b/boards/tx95/sm/brd_sm_sensor.h
 @@ -0,0 +1,210 @@
 +/*
 +** ###################################################################
@@ -3381,11 +3381,11 @@ index 0000000..98b68ae
 +
 +/** @} */
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_voltage.c b/boards/qs95-5610/sm/brd_sm_voltage.c
+diff --git a/boards/tx95/sm/brd_sm_voltage.c b/boards/tx95/sm/brd_sm_voltage.c
 new file mode 100755
 index 0000000..430cb46
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_voltage.c
++++ b/boards/tx95/sm/brd_sm_voltage.c
 @@ -0,0 +1,568 @@
 +/*
 +** ###################################################################
@@ -3955,11 +3955,11 @@ index 0000000..430cb46
 +    return s_modeArm;
 +}
 +
-diff --git a/boards/qs95-5610/sm/brd_sm_voltage.h b/boards/qs95-5610/sm/brd_sm_voltage.h
+diff --git a/boards/tx95/sm/brd_sm_voltage.h b/boards/tx95/sm/brd_sm_voltage.h
 new file mode 100755
 index 0000000..2e21c6d
 --- /dev/null
-+++ b/boards/qs95-5610/sm/brd_sm_voltage.h
++++ b/boards/tx95/sm/brd_sm_voltage.h
 @@ -0,0 +1,222 @@
 +/*
 +** ###################################################################
@@ -4183,11 +4183,11 @@ index 0000000..2e21c6d
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610.cfg b/configs/qs95-5610.cfg
+diff --git a/configs/tx95.cfg b/configs/tx95.cfg
 new file mode 100644
-index 0000000..9589ccf
+index 0000000..ea4f913
 --- /dev/null
-+++ b/configs/qs95-5610.cfg
++++ b/configs/tx95.cfg
 @@ -0,0 +1,1018 @@
 +## ###################################################################
 +##
@@ -4221,10 +4221,10 @@ index 0000000..9589ccf
 +##
 +## ###################################################################
 +
-+# SM configuration file for the QS95-5610
++# SM configuration file for the Ka-Ro electronics i.MX95 module family
 +
-+MAKE    soc=MIMX95, board=qs95-5610, build=gcc_cross
-+DOX     name=QS95-5610, desc="QS95-5610 Configuration Data"
++MAKE    soc=MIMX95, board=tx95, build=gcc_cross
++DOX     name=TX95, desc="Ka-Ro electronics i.MX95 module family Configuration Data"
 +
 +include ../devices/MIMX95/configtool/device.cfg
 +
@@ -4511,6 +4511,7 @@ index 0000000..9589ccf
 +PIN_UART2_RXD         OWNER
 +PIN_UART2_TXD         OWNER
 +PIN_WDOG_ANY          OWNER
++PIN_GPIO_IO34         OWNER
 +
 +# Memory
 +
@@ -4532,7 +4533,7 @@ index 0000000..9589ccf
 +# M7 EENV                                                                  #
 +#==========================================================================#
 +
-+LM1                 name="M7", rpc=scmi, boot=2, skip=1, did=4, safe=seenv
++LM1                 name="M7", rpc=scmi, boot=0, skip=1, did=4, safe=seenv
 +
 +DFMT0:              sa=secure
 +DFMT1:              sa=secure, pa=privileged
@@ -4547,8 +4548,6 @@ index 0000000..9589ccf
 +CPU_M7P             start=2, stop=1
 +
 +# Start/Stop (mSel=1)
-+
-+MODE                msel=1, boot=2
 +
 +PD_M7               msel=1, start=1, stop=2
 +CPU_M7P             msel=1, start=2, stop=1
@@ -4591,7 +4590,7 @@ index 0000000..9589ccf
 +LPTMR1              OWNER
 +LPTMR2              OWNER
 +LPTPM1              OWNER
-+# LPUART3             OWNER, test - Used by A55
++# LPUART3             OWNER, test
 +MSGINTR1            OWNER
 +MSGINTR2            OWNER
 +MU5_A               OWNER
@@ -4606,8 +4605,8 @@ index 0000000..9589ccf
 +
 +# Pins
 +
-+PIN_GPIO_IO14       OWNER
-+PIN_GPIO_IO15       OWNER
++# PIN_GPIO_IO14       OWNER
++# PIN_GPIO_IO15       OWNER
 +
 +# Memory
 +
@@ -5127,6 +5126,8 @@ index 0000000..9589ccf
 +PIN_GPIO_IO11        OWNER
 +PIN_GPIO_IO12        OWNER
 +PIN_GPIO_IO13        OWNER
++PIN_GPIO_IO14       OWNER
++PIN_GPIO_IO15       OWNER
 +PIN_GPIO_IO16        OWNER
 +PIN_GPIO_IO17        OWNER
 +PIN_GPIO_IO18        OWNER
@@ -5145,7 +5146,6 @@ index 0000000..9589ccf
 +PIN_GPIO_IO31        OWNER
 +PIN_GPIO_IO32        OWNER
 +PIN_GPIO_IO33        OWNER
-+PIN_GPIO_IO34        OWNER
 +PIN_GPIO_IO35        OWNER
 +PIN_GPIO_IO36        OWNER
 +PIN_GPIO_IO37        OWNER
@@ -5207,11 +5207,11 @@ index 0000000..9589ccf
 +DDR                 EXEC, begin=0x088000000, end=0x089FFFFFF, clr=8
 +DDR                 EXEC, begin=0x08E000000, end=0x87FFFFFFF
 +
-diff --git a/configs/qs95-5610/config.dox b/configs/qs95-5610/config.dox
+diff --git a/configs/tx95/config.dox b/configs/tx95/config.dox
 new file mode 100755
-index 0000000..ee5942e
+index 0000000..421ea89
 --- /dev/null
-+++ b/configs/qs95-5610/config.dox
++++ b/configs/tx95/config.dox
 @@ -0,0 +1,49 @@
 +/*
 +** ###################################################################
@@ -5254,7 +5254,7 @@ index 0000000..ee5942e
 +
 +/*!
 +
-+@defgroup CONFIG_QS95-5610 CONFIG_QS95-5610: Configuration Data
++@defgroup CONFIG_TX95 CONFIG_TX95: Configuration Data
 +
 +@brief Module for Configuration Data.
 +
@@ -5262,11 +5262,11 @@ index 0000000..ee5942e
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config.mak b/configs/qs95-5610/config.mak
+diff --git a/configs/tx95/config.mak b/configs/tx95/config.mak
 new file mode 100755
-index 0000000..0e9b58e
+index 0000000..a5ae82d
 --- /dev/null
-+++ b/configs/qs95-5610/config.mak
++++ b/configs/tx95/config.mak
 @@ -0,0 +1,44 @@
 +## ###################################################################
 +##
@@ -5301,7 +5301,7 @@ index 0000000..0e9b58e
 +## ###################################################################
 +
 +GEN_CONFIG_VER ?= 2U
-+BOARD ?= qs95-5610
++BOARD ?= tx95
 +USES_FUSA ?= 1
 +
 +include ./devices/MIMX95/sm/Makefile
@@ -5312,11 +5312,11 @@ index 0000000..0e9b58e
 +include ./sm/rpc/smt/Makefile
 +include ./sm/makefiles/gcc_cross.mak
 +
-diff --git a/configs/qs95-5610/config_bctrl.h b/configs/qs95-5610/config_bctrl.h
+diff --git a/configs/tx95/config_bctrl.h b/configs/tx95/config_bctrl.h
 new file mode 100755
-index 0000000..863731f
+index 0000000..f9f280a
 --- /dev/null
-+++ b/configs/qs95-5610/config_bctrl.h
++++ b/configs/tx95/config_bctrl.h
 @@ -0,0 +1,100 @@
 +/*
 +** ###################################################################
@@ -5354,7 +5354,7 @@ index 0000000..863731f
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -5418,11 +5418,11 @@ index 0000000..863731f
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_board.h b/configs/qs95-5610/config_board.h
+diff --git a/configs/tx95/config_board.h b/configs/tx95/config_board.h
 new file mode 100755
-index 0000000..dbf1716
+index 0000000..d2ca1b1
 --- /dev/null
-+++ b/configs/qs95-5610/config_board.h
++++ b/configs/tx95/config_board.h
 @@ -0,0 +1,69 @@
 +/*
 +** ###################################################################
@@ -5460,7 +5460,7 @@ index 0000000..dbf1716
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -5493,11 +5493,11 @@ index 0000000..dbf1716
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_dev.h b/configs/qs95-5610/config_dev.h
+diff --git a/configs/tx95/config_dev.h b/configs/tx95/config_dev.h
 new file mode 100644
-index 0000000..336f4f9
+index 0000000..c10713e
 --- /dev/null
-+++ b/configs/qs95-5610/config_dev.h
++++ b/configs/tx95/config_dev.h
 @@ -0,0 +1,65 @@
 +/*
 +** ###################################################################
@@ -5535,7 +5535,7 @@ index 0000000..336f4f9
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -5564,12 +5564,12 @@ index 0000000..336f4f9
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_lmm.h b/configs/qs95-5610/config_lmm.h
+diff --git a/configs/tx95/config_lmm.h b/configs/tx95/config_lmm.h
 new file mode 100755
-index 0000000..94bdf41
+index 0000000..f643312
 --- /dev/null
-+++ b/configs/qs95-5610/config_lmm.h
-@@ -0,0 +1,227 @@
++++ b/configs/tx95/config_lmm.h
+@@ -0,0 +1,225 @@
 +/*
 +** ###################################################################
 +**
@@ -5606,7 +5606,7 @@ index 0000000..94bdf41
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -5650,12 +5650,10 @@ index 0000000..94bdf41
 +        .name = "M7", \
 +        .rpcType = SM_RPC_SCMI, \
 +        .rpcInst = 0U, \
-+        .boot[0] = 2U, \
 +        .bootSkip[0] = 1U, \
 +        .safeType = LMM_SAFE_TYPE_SEENV, \
 +        .start = 1U, \
 +        .stop = 1U, \
-+        .boot[1] = 2U, \
 +    }
 +
 +/*--------------------------------------------------------------------------*/
@@ -5694,7 +5692,7 @@ index 0000000..94bdf41
 +#define SM_LM_NUM_SEENV  1U
 +
 +/*! Config name */
-+#define SM_LM_CFG_NAME  "qs95-5610"
++#define SM_LM_CFG_NAME  "tx95"
 +
 +/*! Default LM for monitor */
 +#define SM_LM_DEFAULT  2U
@@ -5797,11 +5795,11 @@ index 0000000..94bdf41
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_mb_mu.h b/configs/qs95-5610/config_mb_mu.h
+diff --git a/configs/tx95/config_mb_mu.h b/configs/tx95/config_mb_mu.h
 new file mode 100755
-index 0000000..ddc578b
+index 0000000..134c7c9
 --- /dev/null
-+++ b/configs/qs95-5610/config_mb_mu.h
++++ b/configs/tx95/config_mb_mu.h
 @@ -0,0 +1,118 @@
 +/*
 +** ###################################################################
@@ -5839,7 +5837,7 @@ index 0000000..ddc578b
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -5921,12 +5919,12 @@ index 0000000..ddc578b
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_scmi.h b/configs/qs95-5610/config_scmi.h
+diff --git a/configs/tx95/config_scmi.h b/configs/tx95/config_scmi.h
 new file mode 100755
-index 0000000..5a5614f
+index 0000000..cf7596b
 --- /dev/null
-+++ b/configs/qs95-5610/config_scmi.h
-@@ -0,0 +1,675 @@
++++ b/configs/tx95/config_scmi.h
+@@ -0,0 +1,674 @@
 +/*
 +** ###################################################################
 +**
@@ -5963,7 +5961,7 @@ index 0000000..5a5614f
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -6016,8 +6014,6 @@ index 0000000..5a5614f
 +        .perfPerms[DEV_SM_PERF_M7] = SM_SCMI_PERM_ALL, \
 +        .perlpiPerms[DEV_SM_PERLPI_CAN1] = SM_SCMI_PERM_ALL, \
 +        .perlpiPerms[DEV_SM_PERLPI_WDOG5] = SM_SCMI_PERM_ALL, \
-+        .pinPerms[DEV_SM_PIN_GPIO_IO14] = SM_SCMI_PERM_ALL, \
-+        .pinPerms[DEV_SM_PIN_GPIO_IO15] = SM_SCMI_PERM_ALL, \
 +        .rtcPerms[DEV_SM_RTC_BBNSM] = SM_SCMI_PERM_PRIV, \
 +        .sensorPerms[BRD_SM_SENSOR_TEMP_PF09] = SM_SCMI_PERM_SET, \
 +        .sensorPerms[BRD_SM_SENSOR_TEMP_PF5301] = SM_SCMI_PERM_SET, \
@@ -6444,6 +6440,8 @@ index 0000000..5a5614f
 +        .pinPerms[DEV_SM_PIN_GPIO_IO11] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO12] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO13] = SM_SCMI_PERM_ALL, \
++        .pinPerms[DEV_SM_PIN_GPIO_IO14] = SM_SCMI_PERM_ALL, \
++        .pinPerms[DEV_SM_PIN_GPIO_IO15] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO16] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO17] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO18] = SM_SCMI_PERM_ALL, \
@@ -6462,7 +6460,6 @@ index 0000000..5a5614f
 +        .pinPerms[DEV_SM_PIN_GPIO_IO31] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO32] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO33] = SM_SCMI_PERM_ALL, \
-+        .pinPerms[DEV_SM_PIN_GPIO_IO34] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO35] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO36] = SM_SCMI_PERM_ALL, \
 +        .pinPerms[DEV_SM_PIN_GPIO_IO37] = SM_SCMI_PERM_ALL, \
@@ -6602,11 +6599,11 @@ index 0000000..5a5614f
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_smt.h b/configs/qs95-5610/config_smt.h
+diff --git a/configs/tx95/config_smt.h b/configs/tx95/config_smt.h
 new file mode 100755
-index 0000000..3bce687
+index 0000000..20bb034
 --- /dev/null
-+++ b/configs/qs95-5610/config_smt.h
++++ b/configs/tx95/config_smt.h
 @@ -0,0 +1,168 @@
 +/*
 +** ###################################################################
@@ -6644,7 +6641,7 @@ index 0000000..3bce687
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -6776,11 +6773,11 @@ index 0000000..3bce687
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_test.h b/configs/qs95-5610/config_test.h
+diff --git a/configs/tx95/config_test.h b/configs/tx95/config_test.h
 new file mode 100755
-index 0000000..def33ce
+index 0000000..9335953
 --- /dev/null
-+++ b/configs/qs95-5610/config_test.h
++++ b/configs/tx95/config_test.h
 @@ -0,0 +1,193 @@
 +/*
 +** ###################################################################
@@ -6818,7 +6815,7 @@ index 0000000..def33ce
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -6975,11 +6972,11 @@ index 0000000..def33ce
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_trdc.h b/configs/qs95-5610/config_trdc.h
+diff --git a/configs/tx95/config_trdc.h b/configs/tx95/config_trdc.h
 new file mode 100755
-index 0000000..9b10b28
+index 0000000..6793d0a
 --- /dev/null
-+++ b/configs/qs95-5610/config_trdc.h
++++ b/configs/tx95/config_trdc.h
 @@ -0,0 +1,1387 @@
 +/*
 +** ###################################################################
@@ -7017,7 +7014,7 @@ index 0000000..9b10b28
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_QS95-5610
++ * @addtogroup CONFIG_TX95
 + * @{
 + *
 + * @file
@@ -8368,11 +8365,11 @@ index 0000000..9b10b28
 +
 +/** @} */
 +
-diff --git a/configs/qs95-5610/config_user.h b/configs/qs95-5610/config_user.h
+diff --git a/configs/tx95/config_user.h b/configs/tx95/config_user.h
 new file mode 100644
 index 0000000..690de41
 --- /dev/null
-+++ b/configs/qs95-5610/config_user.h
++++ b/configs/tx95/config_user.h
 @@ -0,0 +1,230 @@
 +/*
 +** ###################################################################

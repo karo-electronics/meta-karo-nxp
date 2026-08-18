@@ -1,0 +1,477 @@
+From 96545f9458346ec5b1341f34d3ceabbc6e3b9aeb Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Wed, 2 Sep 2026 09:45:01 +0000
+Subject: [PATCH] drm: add support for the raspberry 7inch panel
+Upstream-Status: Pending
+
+---
+ arch/arm64/boot/dts/freescale/Makefile        |   6 +-
+ .../freescale/imx95-qs95-raspi-display.dtso   | 151 ++++++++++++++++++
+ drivers/gpu/drm/bridge/tc358762.c             |  14 ++
+ drivers/gpu/drm/panel/panel-simple.c          |  22 +++
+ drivers/input/touchscreen/edt-ft5x06.c        | 113 +++++++++++--
+ 5 files changed, 294 insertions(+), 12 deletions(-)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx95-qs95-raspi-display.dtso
+
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+index e9cc3c632d5e..3bffa482419e 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -893,9 +893,13 @@ dtb-$(CONFIG_ARCH_MXC) += imx95-qs95-5610.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx95-qs95-5610-qsbase95.dtb
+ DTC_FLAGS_imx95-qs95-5610 := -@
+ DTC_FLAGS_imx95-qs95-5610-qsbase95 := -@
+-dtb-$(CONFIG_ARCH_MXC) += imx95-qs95-lvds-panel.dtbo imx95-qs95-cam.dtbo
++dtb-$(CONFIG_ARCH_MXC) += \
++	imx95-qs95-lvds-panel.dtbo \
++	imx95-qs95-cam.dtbo \
++	imx95-qs95-raspi-display.dtbo
+ DTC_FLAGS_imx95-qs95-lvds-panel := -@
+ DTC_FLAGS_imx95-qs95-cam := -@
++DTC_FLAGS_imx95-qs95-rapsi-display := -@
+ 
+ dtb-$(CONFIG_ARCH_MXC) += imx95-15x15-evk.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx95-15x15-evk-flexspi-m2.dtb
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-raspi-display.dtso b/arch/arm64/boot/dts/freescale/imx95-qs95-raspi-display.dtso
+new file mode 100644
+index 000000000000..a68dea209266
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-raspi-display.dtso
+@@ -0,0 +1,151 @@
++// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
++/*
++ * Copyright (C) 2026 Robin Lintermann <rl@karo-electronics.com>
++ */
++
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include "imx95-clock.h"
++
++#define PIXCLK 26250000
++
++&{/} {
++	chosen {
++		overlays {
++			qs95-raspi-display;
++		};
++	};
++
++	rpi_panel: rpi-panel {
++		compatible = "panel-dpi";
++		backlight = <&reg_rpi_display>;
++		power-supply = <&reg_rpi_display>;
++		width-mm = <154>;
++		height-mm = <86>;
++		data-mapping = "rgb24";
++		default-on;
++		status = "okay";
++
++		panel-timing {
++			clock-frequency = <PIXCLK>;
++			hactive = <800>;
++			vactive = <480>;
++			hfront-porch = <131>;
++			hback-porch = <45>;
++			hsync-len = <2>;
++			vfront-porch = <7>;
++			vback-porch = <22>;
++			vsync-len = <2>;
++			hsync-active = <0>;
++			vsync-active = <0>;
++			de-active = <1>;
++			pixelclk-active = <1>;
++		};
++
++		port {
++			rpi_panel_in: endpoint {
++				remote-endpoint = <&dd_bridge_out>;
++			};
++		};
++	};
++
++	reg_bridge: reg-bridge {
++		compatible = "regulator-fixed";
++		regulator-name = "bridge_reg";
++		gpio = <&reg_rpi_display 0 GPIO_ACTIVE_HIGH>;
++		vin-supply = <&reg_rpi_display>;
++		enable-active-high;
++	};
++};
++
++&dpu {
++	assigned-clocks = <&scmi_clk IMX95_CLK_DISP1PIX>,
++			  <&scmi_clk IMX95_CLK_VIDEOPLL1_VCO>,
++			  <&scmi_clk IMX95_CLK_VIDEOPLL1>;
++	assigned-clock-parents = <&scmi_clk IMX95_CLK_VIDEOPLL1>,
++			  <0>, <&scmi_clk IMX95_CLK_VIDEOPLL1_VCO>;
++	assigned-clock-rates = <0>, <(PIXCLK * 16 * 8)>, <(PIXCLK * 16)>;
++};
++
++&mipi_dsi {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++    dsi_dpi_bridge: tc358762@0 {
++        reg = <0>;
++		compatible = "toshiba,tc358762";
++		vddc-supply = <&reg_bridge>;
++		status = "okay";
++
++		ports {
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			port@0 {
++				reg = <0>;
++				dd_bridge_in: endpoint {
++					remote-endpoint = <&dsi_out>;
++				};
++			};
++
++			port@1 {
++				reg = <1>;
++				dd_bridge_out: endpoint {
++					remote-endpoint = <&rpi_panel_in>;
++				};
++			};
++		};
++	};
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@1 {
++			reg = <1>;
++			dsi_out: endpoint {
++				remote-endpoint = <&dd_bridge_in>;
++				data-lanes = <1>;
++			};
++		};
++	};
++};
++
++&lpi2c2 {
++	touchpanel@38 {
++		compatible = "edt,edt-ft5506";
++		reg = <0x38>;
++		vcc-supply = <&reg_rpi_display>;
++		reset-gpio = <&reg_rpi_display 1 GPIO_ACTIVE_LOW>;
++
++		touchscreen-size-x = <800>;
++		touchscreen-size-y = <480>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++	};
++
++	reg_rpi_display: reg-rpi-display@45 {
++		compatible = "raspberrypi,7inch-touchscreen-panel-regulator";
++		reg = <0x45>;
++		gpio-controller;
++		#gpio-cells = <2>;
++	};
++};
++
++&display_pixel_link {
++	status = "okay";
++};
++
++&pixel_interleaver {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++
++	channel@0 {
++		reg = <0>;
++		status = "okay";
++	};
++};
+diff --git a/drivers/gpu/drm/bridge/tc358762.c b/drivers/gpu/drm/bridge/tc358762.c
+index 98df3e667d4a..ef11a7c53674 100644
+--- a/drivers/gpu/drm/bridge/tc358762.c
++++ b/drivers/gpu/drm/bridge/tc358762.c
+@@ -53,6 +53,11 @@
+ #define LCDCTRL_VSPOL		BIT(19) /* Polarity of VSYNC signal */
+ #define LCDCTRL_VSDELAY(v)	(((v) & 0xfff) << 20) /* VSYNC delay */
+ 
++#define LCD_HS_HBP		0x0424
++#define LCD_HDISP_HFP	0x0428
++#define LCD_VS_VBP		0x042c
++#define LCD_VDISP_VFP	0x0430
++
+ /* SPI Master Registers */
+ #define SPICMR			0x0450
+ #define SPITCR			0x0454
+@@ -139,6 +144,15 @@ static int tc358762_init(struct tc358762 *ctx)
+ 	tc358762_write(ctx, LCDCTRL, lcdctrl);
+ 
+ 	tc358762_write(ctx, SYSCTRL, 0x040f);
++	
++	tc358762_write(ctx, LCD_HS_HBP, (ctx->mode.hsync_end - ctx->mode.hsync_start) |
++		       ((ctx->mode.htotal - ctx->mode.hsync_end) << 16));
++	tc358762_write(ctx, LCD_HDISP_HFP, ctx->mode.hdisplay |
++		       ((ctx->mode.hsync_start - ctx->mode.hdisplay) << 16));
++	tc358762_write(ctx, LCD_VS_VBP, (ctx->mode.vsync_end - ctx->mode.vsync_start) |
++		       ((ctx->mode.vtotal - ctx->mode.vsync_end) << 16));
++	tc358762_write(ctx, LCD_VDISP_VFP, ctx->mode.vdisplay |
++		       ((ctx->mode.vsync_start - ctx->mode.vdisplay) << 16));
+ 	msleep(100);
+ 
+ 	tc358762_write(ctx, PPI_STARTPPI, PPI_START_FUNCTION);
+diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
+index d1651e875fec..b88919df6eae 100644
+--- a/drivers/gpu/drm/panel/panel-simple.c
++++ b/drivers/gpu/drm/panel/panel-simple.c
+@@ -446,6 +446,7 @@ static struct panel_desc *panel_dpi_probe(struct device *dev)
+ 	struct panel_desc *desc;
+ 	unsigned int bus_flags;
+ 	struct videomode vm;
++	const char *mapping;
+ 	int ret;
+ 
+ 	np = dev->of_node;
+@@ -470,6 +471,27 @@ static struct panel_desc *panel_dpi_probe(struct device *dev)
+ 	of_property_read_u32(np, "width-mm", &desc->size.width);
+ 	of_property_read_u32(np, "height-mm", &desc->size.height);
+ 
++	of_property_read_string(np, "data-mapping", &mapping);
++
++	if (mapping) {
++		if (!strcmp(mapping, "rgb24")) {
++			desc->bus_format = MEDIA_BUS_FMT_RGB888_1X24;
++			desc->bpc = 8;
++		} else if (!strcmp(mapping, "bgr24")) {
++			desc->bus_format = MEDIA_BUS_FMT_BGR888_1X24;
++			desc->bpc = 8;
++		} else {
++			dev_warn(dev, "%pOF: invalid data-mapping \"%s\" for \"panel-dpi\" binding\n",
++				np, mapping);
++		}
++	} else {
++		/* No data-mapping node found, set by default bus format & bpc */
++		dev_warn(dev, "%pOF: no data-mapping node found for \"panel-dpi\" binding\n",
++			np);
++		desc->bus_format = MEDIA_BUS_FMT_RGB888_1X24;
++		desc->bpc = 8;
++	}
++
+ 	/* Extract bus_flags from display_timing */
+ 	bus_flags = 0;
+ 	vm.flags = timing->flags;
+diff --git a/drivers/input/touchscreen/edt-ft5x06.c b/drivers/input/touchscreen/edt-ft5x06.c
+index bf498bd4dea9..06a08385c3bd 100644
+--- a/drivers/input/touchscreen/edt-ft5x06.c
++++ b/drivers/input/touchscreen/edt-ft5x06.c
+@@ -14,6 +14,7 @@
+  *    http://www.glyn.com/Products/Displays
+  */
+ 
++#include <linux/bitops.h>
+ #include <linux/debugfs.h>
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
+@@ -30,7 +31,9 @@
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/slab.h>
++#include <linux/timer.h>
+ #include <linux/uaccess.h>
++#include <linux/workqueue.h>
+ 
+ #include <linux/unaligned.h>
+ 
+@@ -77,6 +80,10 @@
+ #define EDT_DEFAULT_NUM_X		1024
+ #define EDT_DEFAULT_NUM_Y		1024
+ 
++#define RESET_DELAY_MS		300	/* reset deassert to I2C */
++#define FIRST_POLL_DELAY_MS	300	/* in addition to the above */
++#define POLL_INTERVAL_MS		17	/* 17ms = 60fps */
++
+ #define M06_REG_CMD(factory) ((factory) ? 0xf3 : 0xfc)
+ #define M06_REG_ADDR(factory, addr) ((factory) ? (addr) & 0x7f : (addr) & 0x3f)
+ 
+@@ -138,6 +145,8 @@ struct edt_ft5x06_ts_data {
+ 	u8 tdata_cmd;
+ 	int tdata_len;
+ 	int tdata_offset;
++	unsigned int known_ids;
++	int init_td_status;
+ 
+ 	char name[EDT_NAME_LEN];
+ 	char fw_version[EDT_NAME_LEN];
+@@ -146,6 +155,9 @@ struct edt_ft5x06_ts_data {
+ 	enum edt_ver version;
+ 	unsigned int crc_errors;
+ 	unsigned int header_errors;
++
++	struct timer_list timer;
++	struct work_struct work_i2c_poll;
+ };
+ 
+ struct edt_i2c_chip_data {
+@@ -302,17 +314,49 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
+ 	u8 rdbuf[63];
+ 	int i, type, x, y, id;
+ 	int error;
++	int num_points;
++	long released_ids;
++	unsigned int active_ids = 0, known_ids = tsdata->known_ids;
++	int b = 0;
+ 
+ 	memset(rdbuf, 0, sizeof(rdbuf));
+ 	error = regmap_bulk_read(tsdata->regmap, tsdata->tdata_cmd, rdbuf,
+ 				 tsdata->tdata_len);
++	if (tsdata->version == EDT_M06) {
++		num_points = tsdata->max_support_points;
++	} else {
++		/* Register 2 is TD_STATUS, containing the number of touch
++		 * points.
++		 */
++		num_points = min(rdbuf[2] & 0xf, tsdata->max_support_points);
++
++		/* When polling FT5x06 without IRQ: initial register contents
++		 * could be stale or undefined; discard all readings until
++		 * TD_STATUS changes for the first time (or num_points is 0).
++		 */
++		if (tsdata->init_td_status) {
++			if (tsdata->init_td_status < 0)
++				tsdata->init_td_status = rdbuf[2];
++
++			if (num_points && rdbuf[2] == tsdata->init_td_status)
++				goto out;
++
++			tsdata->init_td_status = 0;
++		}
++
++		if (!error && num_points)
++			error = regmap_bulk_read(tsdata->regmap,
++					 tsdata->tdata_offset,
++					 &rdbuf[tsdata->tdata_offset],
++					 tsdata->point_len * num_points);
++	}
+ 	if (error) {
+ 		dev_err_ratelimited(dev, "Unable to fetch data, error: %d\n",
+ 				    error);
+ 		goto out;
+ 	}
+ 
+-	for (i = 0; i < tsdata->max_support_points; i++) {
++	for (i = 0; i < num_points; i++) {
+ 		u8 *buf = &rdbuf[i * tsdata->point_len + tsdata->tdata_offset];
+ 
+ 		type = buf[0] >> 6;
+@@ -334,10 +378,25 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
+ 
+ 		input_mt_slot(tsdata->input, id);
+ 		if (input_mt_report_slot_state(tsdata->input, MT_TOOL_FINGER,
+-					       type != TOUCH_EVENT_UP))
++				       type != TOUCH_EVENT_UP)) {
+ 			touchscreen_report_pos(tsdata->input, &tsdata->prop,
+-					       x, y, true);
++				       x, y, true);
++			active_ids |= BIT(id);
++		} else {
++			known_ids &= ~BIT(id);
++		}
++	}
++
++	/* One issue with the device is the TOUCH_UP message is not always
++	 * returned. Instead track which ids we know about and report when they
++	 * are no longer updated
++	 */
++	released_ids = known_ids & ~active_ids;
++	for_each_set_bit_from(b, &released_ids, tsdata->max_support_points) {
++		input_mt_slot(tsdata->input, b);
++		input_mt_report_slot_inactive(tsdata->input);
+ 	}
++	tsdata->known_ids = active_ids;
+ 
+ 	input_mt_report_pointer_emulation(tsdata->input, true);
+ 	input_sync(tsdata->input);
+@@ -346,6 +405,22 @@ static irqreturn_t edt_ft5x06_ts_isr(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
++
++static void edt_ft5x06_ts_irq_poll_timer(struct timer_list *t)
++{
++	struct edt_ft5x06_ts_data *tsdata = container_of(t, struct edt_ft5x06_ts_data, timer);
++
++	schedule_work(&tsdata->work_i2c_poll);
++	mod_timer(&tsdata->timer, jiffies + msecs_to_jiffies(POLL_INTERVAL_MS));
++}
++
++static void edt_ft5x06_ts_work_i2c_poll(struct work_struct *work)
++{
++	struct edt_ft5x06_ts_data *tsdata = container_of(work,
++			struct edt_ft5x06_ts_data, work_i2c_poll);
++
++	edt_ft5x06_ts_isr(0, tsdata);
++}
+ struct edt_ft5x06_attribute {
+ 	struct device_attribute dattr;
+ 	size_t field_offset;
+@@ -1333,12 +1408,22 @@ static int edt_ft5x06_ts_probe(struct i2c_client *client)
+ 		irq_flags = IRQF_TRIGGER_FALLING;
+ 	irq_flags |= IRQF_ONESHOT;
+ 
+-	error = devm_request_threaded_irq(&client->dev, client->irq,
+-					  NULL, edt_ft5x06_ts_isr, irq_flags,
+-					  client->name, tsdata);
+-	if (error) {
+-		dev_err(&client->dev, "Unable to request touchscreen IRQ.\n");
+-		return error;
++	if (client->irq) {
++		error = devm_request_threaded_irq(&client->dev, client->irq,
++				  NULL, edt_ft5x06_ts_isr, irq_flags,
++				  client->name, tsdata);
++		if (error) {
++			dev_err(&client->dev, "Unable to request touchscreen IRQ.\n");
++			return error;
++		}
++	} else {
++		tsdata->init_td_status = -1; /* filter bogus initial data */
++		INIT_WORK(&tsdata->work_i2c_poll,
++			  edt_ft5x06_ts_work_i2c_poll);
++		timer_setup(&tsdata->timer, edt_ft5x06_ts_irq_poll_timer, 0);
++		tsdata->timer.expires =
++			jiffies + msecs_to_jiffies(FIRST_POLL_DELAY_MS);
++		add_timer(&tsdata->timer);
+ 	}
+ 
+ 	error = input_register_device(input);
+@@ -1360,6 +1445,10 @@ static void edt_ft5x06_ts_remove(struct i2c_client *client)
+ {
+ 	struct edt_ft5x06_ts_data *tsdata = i2c_get_clientdata(client);
+ 
++	if (!client->irq) {
++		timer_delete(&tsdata->timer);
++		cancel_work_sync(&tsdata->work_i2c_poll);
++	}
+ 	edt_ft5x06_ts_teardown_debugfs(tsdata);
+ }
+ 
+@@ -1391,7 +1480,8 @@ static int edt_ft5x06_ts_suspend(struct device *dev)
+ 	 * settings. Disable the irq to avoid adjusting each host till the
+ 	 * device is back in a full functional state.
+ 	 */
+-	disable_irq(tsdata->client->irq);
++	if (client->irq)
++		disable_irq(tsdata->client->irq);
+ 
+ 	gpiod_set_value_cansleep(reset_gpio, 1);
+ 	usleep_range(1000, 2000);
+@@ -1453,7 +1543,8 @@ static int edt_ft5x06_ts_resume(struct device *dev)
+ 		msleep(300);
+ 
+ 		edt_ft5x06_restore_reg_parameters(tsdata);
+-		enable_irq(tsdata->client->irq);
++		if (client->irq)
++			enable_irq(tsdata->client->irq);
+ 
+ 		if (tsdata->factory_mode)
+ 			ret = edt_ft5x06_factory_mode(tsdata);
