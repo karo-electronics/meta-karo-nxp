@@ -8,7 +8,7 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KERNEL_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 KERNEL_BRANCH_DEFAULT = "lf-6.6.y-karo-2"
-KERNEL_REV_DEFAULT = "a5828aff2268bc88a57799c1a55652fd18eb2cf6"
+KERNEL_REV_DEFAULT = "3ebeb74e758d6c8c1625662d2d229b4740659cd7"
 
 CVE_PRODUCT = "linux:linux_kernel"
 CVE_VERSION = "6.6.52"
