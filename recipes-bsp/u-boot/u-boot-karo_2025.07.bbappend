@@ -4,7 +4,7 @@ SRC_URI:append = " \
     file://karo.bmp;subdir=git/tools/logos \
 "
 
-SRC_URI:append:mx8m-nxp-bsp = " \
+SRC_URI:append = " \
     file://dts/imx8m-karo-pmic-bd71847.dtsi;subdir=git/arch/arm \
     file://dts/imx8m-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8m-karo.dtsi;subdir=git/arch/arm \
@@ -19,21 +19,12 @@ SRC_URI:append:mx8m-nxp-bsp = " \
     file://dts/imx8mp-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8mp-karo.dtsi;subdir=git/arch/arm \
     file://dts/imx8mp-tx8p-lvds-mb.dtsi;subdir=git/arch/arm \
-"
-
-SRC_URI:append:tx8p-ml82 = " \
     file://dts/imx8mp-tx8p-ml81-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8mp-tx8p-ml81.dts;subdir=git/arch/arm \
     file://dts/imx8mp-tx8p-ml81-lvds-mb-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx8mp-tx8p-ml81-lvds-mb.dts;subdir=git/arch/arm \
-"
-
-SRC_URI:append:mx91-nxp-bsp = " \
     file://dts/imx91-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx91-karo.dtsi;subdir=git/arch/arm \
-"
-
-SRC_URI:append:mx93-nxp-bsp = " \
     file://dts/imx93-karo-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/imx93-karo.dtsi;subdir=git/arch/arm \
 "
