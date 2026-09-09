@@ -1,0 +1,347 @@
+From 08efd44e44da2770f98a10997a9fedf23fba9019 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Wed, 9 Sep 2026 16:43:20 +0200
+Subject: [PATCH] boards: krimx95: fall back to polling when INTB stays low
+
+- spurious and I2C error counters, 100 ms window
+- 64 empty services: IRQ off, poll SYSTEM_INT each tick
+- re-arm when line high, once a second
+- tick hook, g_pmicBusy guard
+- LPI2C pin-low timeout 1 ms
+- notify stub, INTB flags
+
+Upstream-Status: Inappropriate [board-specific]
+---
+ boards/krimx95/board.c              |   8 ++
+ boards/krimx95/sm/brd_sm.c          |   6 ++
+ boards/krimx95/sm/brd_sm_handlers.c | 135 +++++++++++++++++++++++++++-
+ boards/krimx95/sm/brd_sm_handlers.h |  47 +++++++++-
+ 4 files changed, 191 insertions(+), 5 deletions(-)
+
+diff --git a/boards/krimx95/board.c b/boards/krimx95/board.c
+index e26aa30..c4955a3 100755
+--- a/boards/krimx95/board.c
++++ b/boards/krimx95/board.c
+@@ -525,6 +525,9 @@ void BOARD_InitSerialBus(void)
+     lpi2cConfig.baudRate_Hz = BOARD_I2C_BAUDRATE;
+     lpi2cConfig.enableDoze = false;
+ 
++    /* A bus held low would freeze the tick and starve the watchdog refresh */
++    lpi2cConfig.pinLowTimeout_ns = 1000000U;
++
+     LPI2C_MasterInit(base, &lpi2cConfig, rate);
+ }
+ 
+@@ -606,6 +609,9 @@ void BOARD_SystemSleepExit(uint32_t sleepMode, uint32_t sleepFlags)
+ /*--------------------------------------------------------------------------*/
+ void BOARD_SystemSleepUnprepare(uint32_t sleepMode, uint32_t sleepFlags)
+ {
++    /* BOARD_SystemSleepExit already restarted the tick, which also drives I2C */
++    g_pmicBusy = true;
++
+     BRD_SM_VoltageRestore();
+ 
+     /* Re-arm INTB if WAKEUPMIX was reset */
+@@ -614,6 +620,8 @@ void BOARD_SystemSleepUnprepare(uint32_t sleepMode, uint32_t sleepFlags)
+     /* WAKEUPMIX was off: a latch raised in sleep shows only on a read */
+     (void) BRD_SM_Pf09Handler();
+ 
++    g_pmicBusy = false;
++
+     /* Service SM LPUART wakeup events */
+     if (s_uartConfig.base != NULL)
+     {
+diff --git a/boards/krimx95/sm/brd_sm.c b/boards/krimx95/sm/brd_sm.c
+index d1d821f..998f701 100755
+--- a/boards/krimx95/sm/brd_sm.c
++++ b/boards/krimx95/sm/brd_sm.c
+@@ -241,6 +241,12 @@ void BRD_SM_TimerTick(uint32_t msec)
+ {
+     /* Kick the dog */
+     BOARD_WdogRefresh();
++
++    /* Ties with IRQ56, but thread code holding the LPI2C would be cut in two */
++    if (!g_pmicBusy)
++    {
++        BRD_SM_IntbTick();
++    }
+ }
+ 
+ /*--------------------------------------------------------------------------*/
+diff --git a/boards/krimx95/sm/brd_sm_handlers.c b/boards/krimx95/sm/brd_sm_handlers.c
+index 2d522f0..1175dad 100755
+--- a/boards/krimx95/sm/brd_sm_handlers.c
++++ b/boards/krimx95/sm/brd_sm_handlers.c
+@@ -41,6 +41,7 @@
+ #include "sm.h"
+ #include "brd_sm.h"
+ #include "dev_sm.h"
++#include "lmm.h"
+ #include "fsl_lpi2c.h"
+ #include "fsl_rgpio.h"
+ 
+@@ -54,10 +55,26 @@
+ /* PF09 INTB (pin 41) on GPIO_IO34 = GPIO5.IO[14], WAKEUPMIX */
+ #define BOARD_INTB_PIN              14U
+ 
++/* Level IRQ with no PMIC latch means a stuck line; stop before the M33 starves */
++#define BOARD_INTB_SPURIOUS_MAX     64U
++
++/* Isolated glitches over a lifetime must not trip the guard; count inside 100ms */
++#define BOARD_INTB_SPURIOUS_WINDOW  10U
++
++/* PF09 12.7: SYSTEM_INT sums all groups, one byte read per tick keeps alarms alive */
++#define BOARD_INTB_POLL_TICKS       1U
++
++/* A released line goes back to interrupt mode; check once a second */
++#define BOARD_INTB_REARM_TICKS      100U
++
+ /* Local types */
+ 
+ /* Local variables */
+ 
++static uint32_t s_intbSpurious = 0U;
++static uint32_t s_intbIoErr = 0U;
++static uint32_t s_intbWindow = 0U;
++static uint32_t s_intbTicks = 0U;
+ /* PF09 12.7: a masked latch never asserts INTB, so nothing may clear it here */
+ static const uint8_t s_pf09Unmasked[PF09_MASK_LEN] =
+ {
+@@ -83,6 +100,8 @@ PF53_Type g_pf5301Dev;
+ PF53_Type g_pf5302Dev;
+ 
+ uint32_t g_pmicFaultFlags = 0U;
++bool g_intbPolling = false;
++volatile bool g_pmicBusy = false;
+ 
+ /* Local functions */
+ 
+@@ -336,28 +355,135 @@ void Reserved72_IRQHandler(void)
+     /* Handle PF09 interrupt */
+     if ((flags & (1UL << BOARD_INTB_PIN)) != 0U)
+     {
+-        BRD_SM_Pf09Handler();
++        brd_sm_pf09_status_t st = BRD_SM_Pf09Handler();
++        bool stuck = false;
++
++        if (st == BRD_SM_PF09_INT_CAUSE)
++        {
++            s_intbSpurious = 0U;
++            s_intbIoErr = 0U;
++        }
++        else if (st == BRD_SM_PF09_INT_EMPTY)
++        {
++            s_intbIoErr = 0U;
++            s_intbSpurious++;
++            stuck = (s_intbSpurious >= BOARD_INTB_SPURIOUS_MAX);
++        }
++        else
++        {
++            /* A bad bus proves no cause, but a level IRQ would re-enter forever */
++            s_intbIoErr++;
++            stuck = (s_intbIoErr >= BOARD_INTB_SPURIOUS_MAX);
++        }
++
++        if (stuck)
++        {
++            /* Line stuck without PMIC cause; poll so no alarm is lost */
++            NVIC_DisableIRQ(Reserved72_IRQn);
++            g_intbPolling = true;
++            s_intbTicks = 0U;
++            BRD_SM_PmicFaultNotify(BRD_SM_PMIC_FLAG_INTB_STUCK);
++        }
+     }
+ 
+     /* RGPIO ISF re-asserts while level is low; clear after the PMIC latches */
+     RGPIO_ClearPinsInterruptFlags(GPIO5, kRGPIO_InterruptOutput1, flags);
+ }
+ 
++/*--------------------------------------------------------------------------*/
++/* INTB tick: age the spurious count, poll and re-arm when stuck            */
++/*--------------------------------------------------------------------------*/
++void BRD_SM_IntbTick(void)
++{
++    if (!g_intbPolling)
++    {
++        /* Age the count so old glitches do not accumulate */
++        s_intbWindow++;
++        if (s_intbWindow >= BOARD_INTB_SPURIOUS_WINDOW)
++        {
++            s_intbWindow = 0U;
++            s_intbSpurious = 0U;
++        }
++    }
++    else
++    {
++        s_intbTicks++;
++
++        /* PF09 12.7: SYSTEM_INT nonzero means an unmasked latch is pending */
++        if ((s_intbTicks % BOARD_INTB_POLL_TICKS) == 0U)
++        {
++            uint8_t sysInt = 0U;
++
++            if (PF09_PmicRead(&g_pf09Dev, PF09_REG_SYSTEM_INT, &sysInt)
++                && (sysInt != 0U))
++            {
++                (void) BRD_SM_Pf09Handler();
++            }
++        }
++
++        /* Line high again: clear stale flag and re-arm the interrupt */
++        if ((s_intbTicks % BOARD_INTB_REARM_TICKS) == 0U)
++        {
++            if (RGPIO_PinRead(GPIO5, BOARD_INTB_PIN) != 0U)
++            {
++                s_intbSpurious = 0U;
++                s_intbIoErr = 0U;
++                s_intbWindow = 0U;
++                g_intbPolling = false;
++                RGPIO_ClearPinsInterruptFlags(GPIO5, kRGPIO_InterruptOutput1,
++                    1UL << BOARD_INTB_PIN);
++                NVIC_ClearPendingIRQ(Reserved72_IRQn);
++                NVIC_EnableIRQ(Reserved72_IRQn);
++                BRD_SM_PmicFaultNotify(BRD_SM_PMIC_FLAG_INTB_RESTORED);
++            }
++        }
++    }
++}
++
+ /*==========================================================================*/
+ 
++/*--------------------------------------------------------------------------*/
++/* Report a memorized PMIC fault                                            */
++/*--------------------------------------------------------------------------*/
++void BRD_SM_PmicFaultNotify(uint32_t flags)
++{
++    /* Detect and record now; the SCMI delivery to the agent lands in a later patch */
++    (void) flags;
++}
++
+ /*--------------------------------------------------------------------------*/
+ /* PF09 handler                                                             */
+ /*--------------------------------------------------------------------------*/
+-void BRD_SM_Pf09Handler(void)
++brd_sm_pf09_status_t BRD_SM_Pf09Handler(void)
+ {
++    brd_sm_pf09_status_t rc = BRD_SM_PF09_INT_EMPTY;
+     uint8_t stat[PF09_MASK_LEN] = { 0 };
+ 
+     /* Read status of interrupts */
+-    if (PF09_IntStatus(&g_pf09Dev, stat, PF09_MASK_LEN))
++    if (!PF09_IntStatus(&g_pf09Dev, stat, PF09_MASK_LEN))
+     {
++        rc = BRD_SM_PF09_INT_IOERR;
++    }
++    else
++    {
++        bool pending = false;
+         bool therm;
+         uint8_t thermStat;
+ 
++        /* Nonzero status proves the interrupt had a cause */
++        for (uint32_t idx = 0U; idx < PF09_MASK_LEN; idx++)
++        {
++            if (stat[idx] != 0U)
++            {
++                pending = true;
++            }
++        }
++
++        if (pending)
++        {
++            rc = BRD_SM_PF09_INT_CAUSE;
++        }
++
+         thermStat = stat[PF09_MASK_IDX_STATUS2] & 0x0FU;
+         therm = (thermStat != 0U);
+ 
+@@ -391,5 +517,8 @@ void BRD_SM_Pf09Handler(void)
+             BRD_SM_SensorHandler();
+         }
+     }
++
++    /* Return status */
++    return rc;
+ }
+ 
+diff --git a/boards/krimx95/sm/brd_sm_handlers.h b/boards/krimx95/sm/brd_sm_handlers.h
+index 6e58393..81e36ea 100755
+--- a/boards/krimx95/sm/brd_sm_handlers.h
++++ b/boards/krimx95/sm/brd_sm_handlers.h
+@@ -57,11 +57,29 @@
+ 
+ /* Defines */
+ 
++/*!
++ * @name PMIC fault notification flags
++ */
++/** @{ */
++/* An agent subscribes with a flag mask, so one bit must be in every report */
++#define BRD_SM_PMIC_FLAG_ANY            0x01U  /*!< Set on every report */
++#define BRD_SM_PMIC_FLAG_INTB_STUCK     0x20U  /*!< INTB stuck, now polling */
++#define BRD_SM_PMIC_FLAG_INTB_RESTORED  0x40U  /*!< INTB released, IRQ re-armed */
++/** @} */
++
+ /* PF09 12.7: the driver keeps FAULT_FLAGS in 0-7 and HFAULT_FLAGS in 8-15 */
+ #define BRD_SM_PMIC_IO_SHIFT  16U  /*!< IO_INT latches read once at boot */
+ 
+ /* Types */
+ 
++/*! Outcome of one PF09 service */
++typedef enum
++{
++    BRD_SM_PF09_INT_CAUSE, /*!< A latch explained the interrupt */
++    BRD_SM_PF09_INT_EMPTY, /*!< Read succeeded, no cause found */
++    BRD_SM_PF09_INT_IOERR  /*!< I2C failed, absence of a cause is not proven */
++} brd_sm_pf09_status_t;
++
+ /* External variables */
+ 
+ /*! Handle to access PF09 */
+@@ -76,6 +94,12 @@ extern PF53_Type g_pf5302Dev;
+ /*! Fault flags from the PMICs */
+ extern uint32_t g_pmicFaultFlags;
+ 
++/*! True while INTB is stuck and the PF09 is polled */
++extern bool g_intbPolling;
++
++/*! True while thread code owns the PMIC bus; the tick then skips its service */
++extern volatile bool g_pmicBusy;
++
+ /* Functions */
+ 
+ /*!
+@@ -98,9 +122,28 @@ void BRD_SM_IntbConfig(void);
+ void Reserved72_IRQHandler(void);
+ 
+ /*!
+- * Read and clear the pending PF09 interrupts.
++ * INTB periodic service.
++ *
++ * Ages the spurious count; polls the PF09 and tries to re-arm the
++ * interrupt while the line is stuck low.
++ */
++void BRD_SM_IntbTick(void);
++
++/*!
++ * Read, memorize and clear the pending PF09 interrupts.
++ *
++ * @return Returns the outcome of the service.
++ */
++brd_sm_pf09_status_t BRD_SM_Pf09Handler(void);
++
++/*!
++ * Report a memorized PMIC fault.
++ *
++ * Called from interrupt context. The default implementation does nothing.
++ *
++ * @param[in]     flags    Bitmap of ::BRD_SM_PMIC_FLAG_INTB_STUCK and friends.
+  */
+-void BRD_SM_Pf09Handler(void);
++void BRD_SM_PmicFaultNotify(uint32_t flags);
+ 
+ /** @} */
+ 
+-- 
+2.43.0
+
