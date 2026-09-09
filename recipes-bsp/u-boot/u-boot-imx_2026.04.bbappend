@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 SRC_URI:append = " \
     file://patches/0001-board-add-support-for-qs95-5610-module-and-qsbase95-.patch \
     file://patches/0002-env-implement-karo-environment.patch \
+    file://patches/0003-dts-move-u-boot-include-to-base-dts.patch \
 "
 
 # Create symlink to fix path resolution error when using devtool
