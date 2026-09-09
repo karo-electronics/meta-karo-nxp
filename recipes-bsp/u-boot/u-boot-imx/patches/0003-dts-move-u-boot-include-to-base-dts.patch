@@ -2,6 +2,7 @@ From 96c5f671b3818e854b72f53fffe6032b9b212d44 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Wed, 9 Sep 2026 14:11:00 +0000
 Subject: [PATCH] dts: move u-boot include to base dts
+Upstream-Status: Pending
 
 ---
  arch/arm/dts/imx95-qs95-5610-qsbase95.dts | 1 -
