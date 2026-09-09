@@ -1,0 +1,34 @@
+From 96c5f671b3818e854b72f53fffe6032b9b212d44 Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Wed, 9 Sep 2026 14:11:00 +0000
+Subject: [PATCH] dts: move u-boot include to base dts
+
+---
+ arch/arm/dts/imx95-qs95-5610-qsbase95.dts | 1 -
+ arch/arm/dts/imx95-qs95-5610.dts          | 1 +
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+index a660a5e8c03..9ef3a7310db 100644
+--- a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
++++ b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+@@ -6,7 +6,6 @@
+ /dts-v1/;
+ 
+ #include "imx95-qs95-5610.dts"
+-#include "imx95-qs95-5610-u-boot.dtsi"
+ 
+ / {
+ 	model = "Ka-Ro electronics GmbH QS95-5610 (NXP i.MX95) solder-in module on QSBASE95 baseboard";
+diff --git a/arch/arm/dts/imx95-qs95-5610.dts b/arch/arm/dts/imx95-qs95-5610.dts
+index 7c6a9f3858a..6250ee82a6a 100644
+--- a/arch/arm/dts/imx95-qs95-5610.dts
++++ b/arch/arm/dts/imx95-qs95-5610.dts
+@@ -6,6 +6,7 @@
+ /dts-v1/;
+ 
+ #include "imx95.dtsi"
++#include "imx95-qs95-5610-u-boot.dtsi"
+ 
+ / {
+ 	compatible = "fsl,qs95-5610", "fsl,imx95";
