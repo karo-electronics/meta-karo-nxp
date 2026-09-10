@@ -7,3 +7,4 @@ SRC_URI += "file://0004-boards-krimx95-fall-back-to-polling-when-INTB-stays-.pat
 SRC_URI += "file://0005-boards-krimx95-record-PMIC-faults-and-supervise-the-.patch"
 SRC_URI += "file://0006-boards-krimx95-expose-PMIC-fault-journal-over-SCMI-c.patch"
 SRC_URI += "file://0007-boards-krimx95-PF09-VMON-and-voltage-suspend-fixes.patch"
+SRC_URI += "file://0008-boards-krimx95-reset-reason-monitor-command-board-id.patch"
