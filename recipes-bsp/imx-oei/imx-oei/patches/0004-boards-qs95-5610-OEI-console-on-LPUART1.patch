@@ -1,0 +1,28 @@
+From 6a3c65e96f570f965ea3267355482aeadae4cb58 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Fri, 11 Sep 2026 19:41:39 +0200
+Subject: [PATCH] boards: qs95-5610: OEI console on LPUART1
+
+LPUART2 pads 91/92 are the customer UART_B (QS95 data sheet p.10).
+
+Upstream-Status: Inappropriate [board-specific]
+---
+ boards/qs95-5610/config_board.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/boards/qs95-5610/config_board.h b/boards/qs95-5610/config_board.h
+index 31afdb3..ca75496 100644
+--- a/boards/qs95-5610/config_board.h
++++ b/boards/qs95-5610/config_board.h
+@@ -52,7 +52,7 @@
+ /* Defines */
+ 
+ /*! Config for UART instance */
+-#define BOARD_DEBUG_UART_INSTANCE    2U
++#define BOARD_DEBUG_UART_INSTANCE    1U
+ /*! Config for UART baudrate */
+ #define BOARD_DEBUG_UART_BAUDRATE    115200U
+ 
+-- 
+2.43.0
+
