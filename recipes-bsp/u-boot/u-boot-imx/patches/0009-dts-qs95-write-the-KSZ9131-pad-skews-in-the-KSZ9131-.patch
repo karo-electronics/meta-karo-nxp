@@ -1,0 +1,102 @@
+From 54e5ed8c2e7921404493aa50cdf63fc652b98832 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Fri, 11 Sep 2026 12:45:25 +0200
+Subject: [PATCH] dts: qs95: write the KSZ9131 pad skews in the KSZ9131
+ convention
+
+The two KSZ9131 nodes carried their 24 pad skews as "-skew-ps" with
+values written as "420 + delta" and "900 + delta". Both are the KSZ9031
+convention (Documentation/devicetree/bindings/net/micrel-ksz90x1.txt,
+section KSZ9031: "The default value is the neutral setting, so setting
+rxc-skew-ps=<0> actually results in -900 picoseconds adjustment"; the
+4-bit data pads are neutral at 420 ps, the 5-bit clock pads at 900 ps).
+
+The KSZ9131 driver only reads "-skew-psec" (micrel.c,
+ksz9131_of_load_all_skew_values), so the 24 values were silently ignored.
+Renaming alone would be wrong: for the KSZ9131 the binding says "Unlike
+KSZ9031, the values represent picosecond delays", range -700..800 ps
+(data, control) and -700..2400 ps (clocks), default 0 = neutral. The
+neutral offsets therefore have to go and only the measured deltas stay:
+
+  rxd0-skew-ps = <(420 + 100)>  ->  rxd0-skew-psec = <100>
+  rxc-skew-ps  = <(900 + 112)>  ->  rxc-skew-psec  = <112>
+
+The driver rounds to the 100 ps step of the device. Same change in the
+U-Boot tree, whose KSZ9131 driver uses the same property names.
+
+Upstream-Status: Pending
+---
+ arch/arm/dts/imx95-qs95-5610-qsbase95.dts | 50 ++++++++++++-----------
+ 1 file changed, 26 insertions(+), 24 deletions(-)
+
+diff --git a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+index f5054c2d0c9..0427877e86a 100644
+--- a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
++++ b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+@@ -49,18 +49,19 @@
+ 		reset-assert-us = <10000>;
+ 		reset-deassert-us = <120000>;
+ 
+-		rxd0-skew-ps = <100>;
+-		rxd1-skew-ps = <180>;
+-		rxd2-skew-ps = <104>;
+-		rxd3-skew-ps = <115>;
+-		txd0-skew-ps = <292>;
+-		txd1-skew-ps = <258>;
+-		txd2-skew-ps = <239>;
+-		txd3-skew-ps = <229>;
+-		rxdv-skew-ps = <111>;
+-		txen-skew-ps = <192>;
+-		rxc-skew-ps = <112>;
+-		txc-skew-ps = <110>;
++		/* KSZ9131: real ps, 0 = neutral (micrel-ksz90x1.txt, not KSZ9031 420/900) */
++		rxd0-skew-psec = <100>;
++		rxd1-skew-psec = <180>;
++		rxd2-skew-psec = <104>;
++		rxd3-skew-psec = <115>;
++		txd0-skew-psec = <292>;
++		txd1-skew-psec = <258>;
++		txd2-skew-psec = <239>;
++		txd3-skew-psec = <229>;
++		rxdv-skew-psec = <111>;
++		txen-skew-psec = <192>;
++		rxc-skew-psec = <112>;
++		txc-skew-psec = <110>;
+ 	};
+ 
+ 	ethphy1: ethernet-phy@7 {
+@@ -72,18 +73,19 @@
+ 		reset-assert-us = <10000>;
+ 		reset-deassert-us = <120000>;
+ 
+-		rxd0-skew-ps = <168>;
+-		rxd1-skew-ps = <174>;
+-		rxd2-skew-ps = <169>;
+-		rxd3-skew-ps = <187>;
+-		txd0-skew-ps = <135>;
+-		txd1-skew-ps = <117>;
+-		txd2-skew-ps = <115>;
+-		txd3-skew-ps = <108>;
+-		rxdv-skew-ps = <198>;
+-		txen-skew-ps = <90>;
+-		rxc-skew-ps = <167>;
+-		txc-skew-ps = <96>;
++		/* KSZ9131: real ps, 0 = neutral (micrel-ksz90x1.txt, not KSZ9031 420/900) */
++		rxd0-skew-psec = <168>;
++		rxd1-skew-psec = <174>;
++		rxd2-skew-psec = <169>;
++		rxd3-skew-psec = <187>;
++		txd0-skew-psec = <135>;
++		txd1-skew-psec = <117>;
++		txd2-skew-psec = <115>;
++		txd3-skew-psec = <108>;
++		rxdv-skew-psec = <198>;
++		txen-skew-psec = <90>;
++		rxc-skew-psec = <167>;
++		txc-skew-psec = <96>;
+ 	};
+ };
+ 
+-- 
+2.43.0
+

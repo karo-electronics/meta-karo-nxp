@@ -12,6 +12,7 @@ SRC_URI:append = " \
     file://0006-mmc-fsl_esdhc_imx-fail-HS400-setup-when-the-strobe-D.patch \
     file://0007-dts-qs95-use-a-documented-slew-rate-on-ENET-TXC-MDC-.patch \
     file://0008-dts-qs95-use-a-3.3-V-drive-strength-on-the-PHY-reset.patch \
+    file://0009-dts-qs95-write-the-KSZ9131-pad-skews-in-the-KSZ9131-.patch \
 "
 
 UBOOT_FEATURES:append:qs95 = " fastboot"
