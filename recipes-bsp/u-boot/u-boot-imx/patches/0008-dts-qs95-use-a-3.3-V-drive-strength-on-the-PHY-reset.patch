@@ -1,0 +1,52 @@
+From bc1032d8f589795b06b6c76d158751eccb9ccd07 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Fri, 11 Sep 2026 12:33:27 +0200
+Subject: [PATCH] dts: qs95: use a 3.3 V drive strength on the PHY reset and
+ interrupt pads
+
+FSEL1 is documented; DSE = 11_1111b (X6) is documented "for 1.8 V NVCC IO
+supply voltage" only, together with X5 (IMX95RM Rev.5, SW_PAD_CTL_PAD_GPIO_IOxx,
+bits 6-1 "Drive Strength Field"). The four PHY reset and interrupt pads
+(GPIO_IO23/24/28/29) sit in the NVCC_GPIO domain, which the QS95 module
+wires to VDD_3V3 (schematic K700-204 v2 p.4, NVCC_GPIO_1/2/3). X4 is the
+highest drive strength documented for 3.3 V.
+
+  GPIO_IO28, GPIO_IO24 (PHY0 reset/INT): 0x17e -> 0x11e
+  GPIO_IO29, GPIO_IO23 (PHY1 reset/INT): 0x17e -> 0x11e
+
+Only the DSE field changes; slew rate and pulls are untouched.
+
+Upstream-Status: Pending
+---
+ arch/arm/dts/imx95-qs95-5610-qsbase95.dts | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+index a14601a0bd5..f5054c2d0c9 100644
+--- a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
++++ b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+@@ -109,15 +109,17 @@
+ 
+ 	pinctrl_ethphy0: ethphy0grp {
+ 		fsl,pins = <
+-			IMX95_PAD_GPIO_IO28__GPIO2_IO_BIT28  			0x17e
+-			IMX95_PAD_GPIO_IO24__GPIO2_IO_BIT24  			0x17e
++			/* DSE=X4: IMX95RM SW_PAD_CTL bits 6-1, X5/X6 need 1.8 V NVCC */
++			IMX95_PAD_GPIO_IO28__GPIO2_IO_BIT28  			0x11e
++			IMX95_PAD_GPIO_IO24__GPIO2_IO_BIT24  			0x11e
+ 		>;
+ 	};
+ 
+ 	pinctrl_ethphy1: ethphy1grp {
+ 		fsl,pins = <
+-			IMX95_PAD_GPIO_IO29__GPIO2_IO_BIT29  			0x17e
+-			IMX95_PAD_GPIO_IO23__GPIO2_IO_BIT23  			0x17e
++			/* DSE=X4: IMX95RM SW_PAD_CTL bits 6-1, X5/X6 need 1.8 V NVCC */
++			IMX95_PAD_GPIO_IO29__GPIO2_IO_BIT29  			0x11e
++			IMX95_PAD_GPIO_IO23__GPIO2_IO_BIT23  			0x11e
+ 		>;
+ 	};
+ 
+-- 
+2.43.0
+
