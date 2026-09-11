@@ -14,6 +14,7 @@ SRC_URI:append = " \
     file://0008-arm64-dts-imx95-qs95-no-eDMA1-on-LPUART1-ERR052900.patch \
     file://0009-arm64-dts-imx95-qs95-disable-USB-park-mode-in-HS-ERR.patch \
     file://0010-arm64-dts-imx95-qs95-note-errata-without-software-wo.patch \
+    file://0011-arm64-dts-imx95-qs95-enable-UART_B-lpuart2.patch \
 "
 
 SRC_URI:append = " file://${SOC_FAMILY}_defconfig"

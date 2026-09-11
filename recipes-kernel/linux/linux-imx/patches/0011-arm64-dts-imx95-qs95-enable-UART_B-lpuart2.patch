@@ -1,0 +1,47 @@
+From 9a2eae0d33c0fe8bda210f8ada45186e138fb57e Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Fri, 11 Sep 2026 19:42:10 +0200
+Subject: [PATCH] arm64: dts: imx95-qs95: enable UART_B (lpuart2)
+
+Module pads 91/92, QS95 data sheet p.10.
+
+Upstream-Status: Pending
+---
+ arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+index 4953a1ef2b4e..f2b9b9da2ea5 100644
+--- a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+@@ -221,6 +221,13 @@ &lpuart1 {
+ 	status = "okay";
+ };
+ 
++/* UART_B, module pads 91/92 (QS95 data sheet p.10) */
++&lpuart2 {
++	pinctrl-0 = <&pinctrl_uart2>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
+ &mu7 {
+ 	status = "okay";
+ };
+@@ -289,6 +296,13 @@ IMX95_PAD_UART1_TXD__AONMIX_TOP_LPUART1_TX		0x31e
+ 		>;
+ 	};
+ 
++	pinctrl_uart2: uart2grp {
++		fsl,pins = <
++			IMX95_PAD_UART2_RXD__AONMIX_TOP_LPUART2_RX		0x31e
++			IMX95_PAD_UART2_TXD__AONMIX_TOP_LPUART2_TX		0x31e
++		>;
++	};
++
+ 	pinctrl_usdhc1: usdhc1grp {
+ 		fsl,pins = <
+ 			IMX95_PAD_SD1_CLK__USDHC1_CLK				0x158e
+-- 
+2.43.0
+
