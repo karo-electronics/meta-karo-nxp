@@ -13,6 +13,7 @@ SRC_URI:append = " \
     file://0007-dts-qs95-use-a-documented-slew-rate-on-ENET-TXC-MDC-.patch \
     file://0008-dts-qs95-use-a-3.3-V-drive-strength-on-the-PHY-reset.patch \
     file://0009-dts-qs95-write-the-KSZ9131-pad-skews-in-the-KSZ9131-.patch \
+    file://0010-dts-qs95-drive-PCIE_PWR_EN-from-the-M.2-regulator.patch \
 "
 
 UBOOT_FEATURES:append:qs95 = " fastboot"

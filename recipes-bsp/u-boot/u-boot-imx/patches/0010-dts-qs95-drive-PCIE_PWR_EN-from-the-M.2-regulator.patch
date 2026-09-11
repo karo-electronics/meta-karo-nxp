@@ -1,0 +1,54 @@
+From 46eccb5173c72d9fb08335e9a75eae80f02230df Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Fri, 11 Sep 2026 13:32:43 +0200
+Subject: [PATCH] dts: qs95: drive PCIE_PWR_EN from the M.2 regulator
+
+reg_m2_pwr was a "regulator-fixed" with "enable-active-high" but no
+"gpio", so it had nothing to switch (fixed-regulator.yaml: gpio = "gpio to
+use for enable control"; enable-active-high = "Polarity of GPIO is Active
+high"). PCIE_PWR_EN (GPIO_IO15, X3 pin 13 of the QSBASE95 M.2 flex
+connector) was instead given to the PCIe node as "disable-gpio", a
+property that neither the i.MX95 driver nor its binding
+(fsl,imx6q-pcie.yaml) know: the pin was never driven.
+
+Move the pin to the regulator the PCIe node already consumes through
+"vpcie-supply", keep the level the previous DT intended (high = enabled,
+the pad also has a pull-up), and use the documented name "host-wake-gpio"
+for the wake line.
+
+  reg_m2_pwr : + gpio = <&gpio2 15 GPIO_ACTIVE_HIGH>
+  pcie0      : - disable-gpio, wake-gpio -> host-wake-gpio
+
+Upstream-Status: Pending
+---
+ arch/arm/dts/imx95-qs95-5610-qsbase95.dts | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+index 0427877e86a..925608556ca 100644
+--- a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
++++ b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
+@@ -15,6 +15,8 @@
+ 		regulator-max-microvolt = <3300000>;
+ 		regulator-min-microvolt = <3300000>;
+ 		regulator-name = "M.2-power";
++		/* PCIE_PWR_EN, X3.13: fixed-regulator.yaml gpio enable */
++		gpio = <&gpio2 15 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
+ 	};
+ };
+@@ -92,9 +94,9 @@
+ &pcie0 {
+ 	pinctrl-0 = <&pinctrl_pcie0>;
+ 	pinctrl-names = "default";
+-	disable-gpio = <&gpio2 15 GPIO_ACTIVE_LOW>;
+ 	reset-gpio = <&gpio2 17 GPIO_ACTIVE_LOW>;
+-	wake-gpio = <&gpio2 14 GPIO_ACTIVE_LOW>;
++	/* host-wake-gpio: fsl,imx6q-pcie.yaml; no disable-gpio there */
++	host-wake-gpio = <&gpio2 14 GPIO_ACTIVE_LOW>;
+ 	vpcie-supply = <&reg_m2_pwr>;
+ 	supports-clkreq;
+ 	status = "okay";
+-- 
+2.43.0
+
