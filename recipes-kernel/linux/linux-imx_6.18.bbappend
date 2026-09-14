@@ -12,6 +12,7 @@ SRC_URI:append = " \
     file://0006-arm64-dts-imx95-qs95-thermal-trips-for-the-industria.patch \
     file://0007-arm64-dts-imx95-qs95-add-usdhc2-and-VDD_SD2_3V3-regu.patch \
     file://0008-arm64-dts-imx95-qs95-no-eDMA1-on-LPUART1-ERR052900.patch \
+    file://0009-arm64-dts-imx95-qs95-disable-USB-park-mode-in-HS-ERR.patch \
 "
 
 SRC_URI:append = " file://${SOC_FAMILY}_defconfig"
