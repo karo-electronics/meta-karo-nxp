@@ -9,6 +9,7 @@ SRC_URI:append = " \
     file://0003-configs-add-defconfigs-for-qs95-5610-module.patch \
     file://0004-dts-add-files-for-qs95-5610-module.patch \
     file://0005-board-add-qs95-specific-mac-readout-function.patch \
+    file://0006-mmc-fsl_esdhc_imx-fail-HS400-setup-when-the-strobe-D.patch \
 "
 
 UBOOT_FEATURES:append:qs95 = " fastboot"
