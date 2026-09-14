@@ -1,0 +1,79 @@
+From 462d67ee54eefb35e8ce1523a0bfcd2a00d11a00 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Mon, 14 Sep 2026 14:20:21 +0200
+Subject: [PATCH] configs: krimx95: let Linux boot the M7 through remoteproc
+
+- AP-NS gets LMM_1 ALL: SM demands EXCLUSIVE across LMs
+- AP-NS gets the M7 TCM window to load firmware
+- QS95 data sheet p.1 promises a usable Cortex-M7
+- Headers regenerated with configtool.pl
+
+Upstream-Status: Inappropriate [board-specific]
+---
+ configs/krimx95.cfg           | 5 ++++-
+ configs/krimx95/config_scmi.h | 2 +-
+ configs/krimx95/config_trdc.h | 5 ++++-
+ 3 files changed, 9 insertions(+), 3 deletions(-)
+
+diff --git a/configs/krimx95.cfg b/configs/krimx95.cfg
+index 47020e9..8531674 100644
+--- a/configs/krimx95.cfg
++++ b/configs/krimx95.cfg
+@@ -583,7 +583,8 @@ CLOCK_USBPHYBURUNIN       ALL
+ CLOCK_VPUDSP              ALL
+ HSIO_PLL                  ALL
+ LDB_PLL                   ALL
+-LMM_1                     NOTIFY
++# SM rpc_scmi_lmm.c: booting another LM needs EXCLUSIVE, hence ALL
++LMM_1                     ALL
+ PERF_A55                  ALL
+ RTC                       ALL, test
+ SENSOR_TEMP_A55           ALL
+@@ -1015,6 +1016,8 @@ PIN_XSPI1_SS1_B      OWNER
+ FLEXSPI1_MEM        EXEC, begin=0x000000000, end=0x0FFFFFFFF
+ OCRAM_C             EXEC, begin=0x001000000, end=0x001017FFF
+ OCRAM               EXEC, begin=0x0204C0000, size=96K
++# M7 TCM, IMX95RM Table 13 p.77: remoteproc loads the firmware here
++M7MIX               DATA, begin=0x020380000, end=0x02047FFFF
+ GPU                 DATA, begin=0x04D900000, end=0x04DD7FFFF
+ DDR                 EXEC, begin=0x088000000, end=0x089FFFFFF, clr=8
+ DDR                 EXEC, begin=0x08E000000, end=0x87FFFFFFF
+diff --git a/configs/krimx95/config_scmi.h b/configs/krimx95/config_scmi.h
+index d25b6f6..b123152 100755
+--- a/configs/krimx95/config_scmi.h
++++ b/configs/krimx95/config_scmi.h
+@@ -434,7 +434,7 @@
+         .gprPerms[DEV_SM_GPR_5] = SM_SCMI_PERM_ALL, \
+         .gprPerms[DEV_SM_GPR_6] = SM_SCMI_PERM_ALL, \
+         .gprPerms[DEV_SM_GPR_7] = SM_SCMI_PERM_ALL, \
+-        .lmmPerms[1] = SM_SCMI_PERM_NOTIFY, \
++        .lmmPerms[1] = SM_SCMI_PERM_ALL, \
+         .pdPerms[DEV_SM_PD_CAMERA] = SM_SCMI_PERM_ALL, \
+         .pdPerms[DEV_SM_PD_DISPLAY] = SM_SCMI_PERM_ALL, \
+         .pdPerms[DEV_SM_PD_GPU] = SM_SCMI_PERM_ALL, \
+diff --git a/configs/krimx95/config_trdc.h b/configs/krimx95/config_trdc.h
+index a688bb5..8b8961e 100755
+--- a/configs/krimx95/config_trdc.h
++++ b/configs/krimx95/config_trdc.h
+@@ -1324,7 +1324,8 @@
+         SM_CFG_Z1(0x0001824cU), \
+         SM_CFG_Z1(0x00018254U), \
+         SM_CFG_Z1(0x0001825cU), \
+-        SM_CFG_Z1(0x00018344U), \
++        SM_CFG_W1(0x00018340U), 0x20380001U, \
++        SM_CFG_W1(0x00018344U), 0x2047C011U, \
+         SM_CFG_Z1(0x0001834cU), \
+         SM_CFG_Z1(0x00018354U), \
+         SM_CFG_Z1(0x0001835cU), \
+@@ -1360,6 +1361,8 @@
+         SM_CFG_W1(0x0001895cU), 0x4A09C011U, \
+         SM_CFG_W1(0x00018960U), 0x20380001U, \
+         SM_CFG_W1(0x00018964U), 0x2047C011U, \
++        SM_CFG_W1(0x00018968U), 0x20380001U, \
++        SM_CFG_W1(0x0001896cU), 0x2047C011U, \
+         SM_CFG_Z1(0x00018a44U), \
+         SM_CFG_Z1(0x00018a4cU), \
+         SM_CFG_Z1(0x00018a54U), \
+-- 
+2.43.0
+
