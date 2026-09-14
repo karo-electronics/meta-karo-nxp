@@ -9,3 +9,4 @@ SRC_URI += "file://0006-boards-krimx95-expose-PMIC-fault-journal-over-SCMI-c.pat
 SRC_URI += "file://0007-boards-krimx95-PF09-VMON-and-voltage-suspend-fixes.patch"
 SRC_URI += "file://0008-boards-krimx95-reset-reason-monitor-command-board-id.patch"
 SRC_URI += "file://0009-configs-krimx95-SM-console-on-LPUART1-LPUART2-given-.patch"
+SRC_URI += "file://0010-configs-krimx95-regenerate-headers-after-LPUART2-han.patch"

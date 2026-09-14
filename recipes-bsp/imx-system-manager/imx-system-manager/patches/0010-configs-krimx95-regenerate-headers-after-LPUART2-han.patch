@@ -1,0 +1,68 @@
+From 0acf6cf9a5bb10892f8df0a72993c8d220cc9732 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Mon, 14 Sep 2026 17:12:27 +0200
+Subject: [PATCH] configs: krimx95: regenerate headers after LPUART2 hand-over
+
+- config_scmi.h and config_trdc.h regenerated with configtool.pl
+- Yocto regenerates them at build; tree kept consistent
+
+Upstream-Status: Inappropriate [board-specific]
+---
+ configs/krimx95/config_scmi.h | 4 ++++
+ configs/krimx95/config_trdc.h | 4 ++--
+ 2 files changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/configs/krimx95/config_scmi.h b/configs/krimx95/config_scmi.h
+index c322fb6..d25b6f6 100755
+--- a/configs/krimx95/config_scmi.h
++++ b/configs/krimx95/config_scmi.h
+@@ -265,6 +265,7 @@
+         .clkPerms[DEV_SM_CLK_LPSPI7] = SM_SCMI_PERM_ALL, \
+         .clkPerms[DEV_SM_CLK_LPSPI8] = SM_SCMI_PERM_ALL, \
+         .clkPerms[DEV_SM_CLK_LPUART1] = SM_SCMI_PERM_ALL, \
++        .clkPerms[DEV_SM_CLK_LPUART2] = SM_SCMI_PERM_ALL, \
+         .clkPerms[DEV_SM_CLK_LPUART3] = SM_SCMI_PERM_ALL, \
+         .clkPerms[DEV_SM_CLK_LPUART4] = SM_SCMI_PERM_ALL, \
+         .clkPerms[DEV_SM_CLK_LPUART5] = SM_SCMI_PERM_ALL, \
+@@ -456,6 +457,7 @@
+         .perlpiPerms[DEV_SM_PERLPI_GPIO4] = SM_SCMI_PERM_ALL, \
+         .perlpiPerms[DEV_SM_PERLPI_GPIO5] = SM_SCMI_PERM_ALL, \
+         .perlpiPerms[DEV_SM_PERLPI_LPUART1] = SM_SCMI_PERM_ALL, \
++        .perlpiPerms[DEV_SM_PERLPI_LPUART2] = SM_SCMI_PERM_ALL, \
+         .perlpiPerms[DEV_SM_PERLPI_LPUART3] = SM_SCMI_PERM_ALL, \
+         .perlpiPerms[DEV_SM_PERLPI_LPUART4] = SM_SCMI_PERM_ALL, \
+         .perlpiPerms[DEV_SM_PERLPI_LPUART5] = SM_SCMI_PERM_ALL, \
+@@ -573,6 +575,8 @@
+         .pinPerms[DEV_SM_PIN_SD3_DATA3] = SM_SCMI_PERM_ALL, \
+         .pinPerms[DEV_SM_PIN_UART1_RXD] = SM_SCMI_PERM_ALL, \
+         .pinPerms[DEV_SM_PIN_UART1_TXD] = SM_SCMI_PERM_ALL, \
++        .pinPerms[DEV_SM_PIN_UART2_RXD] = SM_SCMI_PERM_ALL, \
++        .pinPerms[DEV_SM_PIN_UART2_TXD] = SM_SCMI_PERM_ALL, \
+         .pinPerms[DEV_SM_PIN_XSPI1_DATA0] = SM_SCMI_PERM_ALL, \
+         .pinPerms[DEV_SM_PIN_XSPI1_DATA1] = SM_SCMI_PERM_ALL, \
+         .pinPerms[DEV_SM_PIN_XSPI1_DATA2] = SM_SCMI_PERM_ALL, \
+diff --git a/configs/krimx95/config_trdc.h b/configs/krimx95/config_trdc.h
+index a901ad6..a688bb5 100755
+--- a/configs/krimx95/config_trdc.h
++++ b/configs/krimx95/config_trdc.h
+@@ -108,7 +108,7 @@
+         SM_CFG_W1(0x00010450U), 0x30003330U, \
+         SM_CFG_W1(0x00010454U), 0x03333033U, \
+         SM_CFG_W1(0x00010458U), 0x00030000U, \
+-        SM_CFG_W1(0x0001045cU), 0x33330030U, \
++        SM_CFG_W1(0x0001045cU), 0x33330003U, \
+         SM_CFG_W1(0x00010460U), 0x33333333U, \
+         SM_CFG_W1(0x00010464U), 0x30000003U, \
+         SM_CFG_W1(0x00010468U), 0x33330030U, \
+@@ -124,7 +124,7 @@
+         SM_CFG_W1(0x00010650U), 0x09000309U, \
+         SM_CFG_W1(0x00010654U), 0x0000C900U, \
+         SM_CFG_W1(0x00010658U), 0x99909900U, \
+-        SM_CFG_W1(0x0001065cU), 0x00009009U, \
++        SM_CFG_W1(0x0001065cU), 0x00009099U, \
+         SM_CFG_W1(0x00010668U), 0x00009900U, \
+         SM_CFG_W1(0x0001066cU), 0x90909000U, \
+         SM_CFG_W1(0x00010670U), 0x00009000U, \
+-- 
+2.43.0
+
