@@ -8,6 +8,7 @@ SRC_URI:append = " \
     file://0002-imx219-update-driver.patch \
     file://0003-drm-add-support-for-the-raspberry-7inch-panel.patch \
     file://0004-dts-split-qsbase95-baseboard-dts-into-per-device-ove.patch \
+    file://0005-arm64-dts-imx95-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
 "
 
 SRC_URI:append = " file://${SOC_FAMILY}_defconfig"
