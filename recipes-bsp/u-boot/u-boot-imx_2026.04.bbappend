@@ -15,6 +15,7 @@ SRC_URI:append = " \
     file://0009-dts-qs95-write-the-KSZ9131-pad-skews-in-the-KSZ9131-.patch \
     file://0010-dts-qs95-drive-PCIE_PWR_EN-from-the-M.2-regulator.patch \
     file://0011-dts-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
+    file://0012-dts-qs95-no-eDMA1-on-LPUART1-ERR052900.patch \
 "
 
 UBOOT_FEATURES:append:qs95 = " fastboot"
