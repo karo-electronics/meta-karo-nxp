@@ -10,6 +10,7 @@ SRC_URI:append = " \
     file://0004-dts-split-qsbase95-baseboard-dts-into-per-device-ove.patch \
     file://0005-arm64-dts-imx95-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
     file://0006-arm64-dts-imx95-qs95-thermal-trips-for-the-industria.patch \
+    file://0007-arm64-dts-imx95-qs95-add-usdhc2-and-VDD_SD2_3V3-regu.patch \
 "
 
 SRC_URI:append = " file://${SOC_FAMILY}_defconfig"
