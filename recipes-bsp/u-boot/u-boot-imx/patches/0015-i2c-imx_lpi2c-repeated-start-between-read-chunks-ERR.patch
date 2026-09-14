@@ -1,0 +1,145 @@
+From 09080e1cb75f5412aefda92841aa84904173e614 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Mon, 14 Sep 2026 14:51:59 +0200
+Subject: [PATCH] i2c: imx_lpi2c: repeated start between read chunks, ERR053261
+
+- IMX95_P21N ERR053261 p.27: queued READ after READ loses data
+- Reads over 256 bytes restart with the address per chunk
+- Chunk end gets the NACK, IMX95RM p.2299, then repeated start
+- Driver used to queue the next READ before the last byte
+
+Upstream-Status: Pending
+---
+ drivers/i2c/imx_lpi2c.c | 84 ++++++++++++++++++++---------------------
+ 1 file changed, 42 insertions(+), 42 deletions(-)
+
+diff --git a/drivers/i2c/imx_lpi2c.c b/drivers/i2c/imx_lpi2c.c
+index 4878b3dd3d9..876985d15fe 100644
+--- a/drivers/i2c/imx_lpi2c.c
++++ b/drivers/i2c/imx_lpi2c.c
+@@ -21,7 +21,6 @@
+ #define LPI2C_TIMEOUT_MS 100
+ 
+ #define LPI2C_CHUNK_DATA	256U
+-#define LPI2C_CHUNK_LEN_MIN	1U
+ 
+ static int bus_i2c_init(struct udevice *bus);
+ 
+@@ -125,8 +124,8 @@ static int bus_i2c_receive(struct udevice *bus, u8 *rxbuf, int len)
+ 	struct dm_i2c_bus *i2c = dev_get_uclass_priv(bus);
+ 	struct imx_lpi2c_bus *i2c_bus = dev_get_priv(bus);
+ 	struct imx_lpi2c_reg *regs = (struct imx_lpi2c_reg *)(i2c_bus->base);
+-	unsigned int chunk_len, rx_remain, timeout;
+ 	lpi2c_status_t result = LPI2C_SUCESS;
++	unsigned int timeout;
+ 	u32 val;
+ 	ulong start_time = get_timer(0);
+ 
+@@ -134,6 +133,10 @@ static int bus_i2c_receive(struct udevice *bus, u8 *rxbuf, int len)
+ 	if (!len)
+ 		return result;
+ 
++	/* one receive command per call, at most LPI2C_CHUNK_DATA bytes */
++	if (len > LPI2C_CHUNK_DATA)
++		return -1;
++
+ 	/*
+ 	 * Extend the timeout for a bulk read if needed.
+ 	 * The calculated timeout is the result of multiplying the
+@@ -142,42 +145,32 @@ static int bus_i2c_receive(struct udevice *bus, u8 *rxbuf, int len)
+ 	 */
+ 	timeout = max(len * 10 * 1000 / i2c->speed_hz, LPI2C_TIMEOUT_MS);
+ 
+-	rx_remain = len;
+-	while (rx_remain > 0) {
+-		chunk_len = clamp(rx_remain, LPI2C_CHUNK_LEN_MIN, LPI2C_CHUNK_DATA) - 1;
++	result = bus_i2c_wait_for_tx_ready(regs);
++	if (result) {
++		debug("i2c: receive wait for tx ready: %d\n", result);
++		return result;
++	}
+ 
+-		result = bus_i2c_wait_for_tx_ready(regs);
+-		if (result) {
+-			debug("i2c: receive wait for tx ready: %d\n", result);
+-			return result;
+-		}
++	/* clear all status flags */
++	writel(0x7f00, &regs->msr);
++	/* send receive command */
++	writel(LPI2C_MTDR_CMD(0x1) | LPI2C_MTDR_DATA(len - 1), &regs->mtdr);
+ 
+-		/* clear all status flags */
+-		writel(0x7f00, &regs->msr);
+-		/* send receive command */
+-		writel(LPI2C_MTDR_CMD(0x1) | LPI2C_MTDR_DATA(chunk_len), &regs->mtdr);
+-		rx_remain = rx_remain - (chunk_len & 0xff) - 1;
+-
+-		while (len--) {
+-			do {
+-				result = imx_lpci2c_check_clear_error(regs);
+-				if (result) {
+-					debug("i2c: receive check clear error: %d\n",
+-					      result);
+-					return result;
+-				}
+-				if (get_timer(start_time) > timeout) {
+-					debug("i2c: receive mrdr: timeout\n");
+-					return -1;
+-				}
+-				val = readl(&regs->mrdr);
+-			} while (val & LPI2C_MRDR_RXEMPTY_MASK);
+-			*rxbuf++ = LPI2C_MRDR_DATA(val);
+-
+-			/* send next receive command before controller NACKs last byte */
+-			if ((len - rx_remain) < 2 && rx_remain > 0)
+-				break;
+-		}
++	while (len--) {
++		do {
++			result = imx_lpci2c_check_clear_error(regs);
++			if (result) {
++				debug("i2c: receive check clear error: %d\n",
++				      result);
++				return result;
++			}
++			if (get_timer(start_time) > timeout) {
++				debug("i2c: receive mrdr: timeout\n");
++				return -1;
++			}
++			val = readl(&regs->mrdr);
++		} while (val & LPI2C_MRDR_RXEMPTY_MASK);
++		*rxbuf++ = LPI2C_MRDR_DATA(val);
+ 	}
+ 
+ 	return result;
+@@ -263,13 +256,20 @@ static int bus_i2c_stop(struct udevice *bus)
+ static int bus_i2c_read(struct udevice *bus, u32 chip, u8 *buf, int len)
+ {
+ 	lpi2c_status_t result;
++	int chunk;
+ 
+-	result = bus_i2c_start(bus, chip, 1);
+-	if (result)
+-		return result;
+-	result = bus_i2c_receive(bus, buf, len);
+-	if (result)
+-		return result;
++	/* ERR053261: no back-to-back receive commands, repeated start per chunk */
++	do {
++		chunk = min(len, (int)LPI2C_CHUNK_DATA);
++		result = bus_i2c_start(bus, chip, 1);
++		if (result)
++			return result;
++		result = bus_i2c_receive(bus, buf, chunk);
++		if (result)
++			return result;
++		buf += chunk;
++		len -= chunk;
++	} while (len > 0);
+ 
+ 	return result;
+ }
+-- 
+2.43.0
+
