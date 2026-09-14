@@ -1,0 +1,52 @@
+From 1880056afd8d17ea973e7aba4a51f5049a002f45 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Mon, 14 Sep 2026 15:07:39 +0200
+Subject: [PATCH] arm64: dts: imx95-qs95: note errata without software
+ workaround
+
+- IMX95_P21N ERR052845 p.53: WDOG3 reset stalls the wakeup bus clock
+- ERR051725 p.52: USB2 device detach needs the CTRL2 sequence
+- ERR053003 p.14, ERR053260 p.13: ISI RAW alignment and format
+- Comments only, no functional change
+
+Upstream-Status: Pending
+---
+ arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts | 2 ++
+ arch/arm64/boot/dts/freescale/imx95-qs95-cam.dtso | 2 ++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+index 2c4e9d2e6f40..4953a1ef2b4e 100644
+--- a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+@@ -502,6 +502,7 @@ pf5302_crit: trip1 {
+ };
+ 
+ &usb2 {
++	/* ERR051725 p.52: device soft detach needs CTRL2 sequence, USBCMD.RS alone fails */
+ 	dr_mode = "host";
+ 	vbus-supply = <&reg_usb_vbus>;
+ 	disable-over-current;
+@@ -574,5 +575,6 @@ &mali {
+ };
+ 
+ &wdog3 {
++	/* ERR052845 p.53: WDOG3 reset may stop bus_wakeup_clk_root */
+ 	status = "okay";
+ };
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-cam.dtso b/arch/arm64/boot/dts/freescale/imx95-qs95-cam.dtso
+index 5a5984d02b84..2a47a9432a57 100644
+--- a/arch/arm64/boot/dts/freescale/imx95-qs95-cam.dtso
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-cam.dtso
+@@ -101,6 +101,8 @@ formatter_0_out: endpoint {
+ };
+ 
+ &isi {
++	/* ERR053003 p.14: ISI writes RAW MSB-aligned, right-shift in software */
++	/* ERR053260 p.13: CHNL_IMG_CTRL FORMAT must match the sensor native RAW */
+ 	status = "okay";
+ 
+ 	ports {
+-- 
+2.43.0
+
