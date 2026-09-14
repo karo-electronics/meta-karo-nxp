@@ -11,6 +11,7 @@ SRC_URI:append = " \
     file://0005-arm64-dts-imx95-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
     file://0006-arm64-dts-imx95-qs95-thermal-trips-for-the-industria.patch \
     file://0007-arm64-dts-imx95-qs95-add-usdhc2-and-VDD_SD2_3V3-regu.patch \
+    file://0008-arm64-dts-imx95-qs95-no-eDMA1-on-LPUART1-ERR052900.patch \
 "
 
 SRC_URI:append = " file://${SOC_FAMILY}_defconfig"

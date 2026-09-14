@@ -1,0 +1,31 @@
+From 2c8842fb25805ad43c3c10dde3ee9e6796ef29cc Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Mon, 14 Sep 2026 14:51:13 +0200
+Subject: [PATCH] arm64: dts: imx95-qs95: no eDMA1 on LPUART1, ERR052900
+
+- IMX95_P21N ERR052900 p.27: DMA1 overflows the LPUART1 TX buffer
+- lpuart1 inherited edma1 channels 20/21 from imx95.dtsi
+- PIO only, as the erratum workaround prescribes
+
+Upstream-Status: Pending
+---
+ arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+index 5f6ea221d258..401f2a9e48d6 100644
+--- a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+@@ -213,6 +213,9 @@ &lpi2c4 {
+ };
+ 
+ &lpuart1 {
++	/* ERR052900: eDMA1 corrupts LPUART1 TX, PIO only */
++	/delete-property/ dmas;
++	/delete-property/ dma-names;
+ 	pinctrl-0 = <&pinctrl_uart1>;
+ 	pinctrl-names = "default";
+ 	status = "okay";
+-- 
+2.43.0
+
