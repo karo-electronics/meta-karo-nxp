@@ -1,0 +1,97 @@
+From 55494a3ef1bbe04cbb112b3afeabe14397dbabdc Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Tue, 15 Sep 2026 07:51:23 +0000
+Subject: [PATCH] board: add qs95-specific mac readout function
+Upstream-Status: Pending
+
+---
+ arch/arm/mach-imx/imx9/scmi/soc.c |  2 +-
+ arch/arm/mach-imx/imx9/soc.c      |  2 +-
+ board/karo/imx95/imx95.c          | 34 +++++++++++++++++++++++++++++++
+ 3 files changed, 36 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/mach-imx/imx9/scmi/soc.c b/arch/arm/mach-imx/imx9/scmi/soc.c
+index 79114704d6d..f12901764e0 100644
+--- a/arch/arm/mach-imx/imx9/scmi/soc.c
++++ b/arch/arm/mach-imx/imx9/scmi/soc.c
+@@ -772,7 +772,7 @@ static inline void eth_addr_add(u8 *addr, long offset)
+ 	u64_to_ether_addr(u, addr);
+ }
+ 
+-void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
++__weak void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ {
+ 	u32 val[2] = {};
+ 	int ret, num_of_macs;
+diff --git a/arch/arm/mach-imx/imx9/soc.c b/arch/arm/mach-imx/imx9/soc.c
+index ca14a2de7cc..1b4059896c6 100644
+--- a/arch/arm/mach-imx/imx9/soc.c
++++ b/arch/arm/mach-imx/imx9/soc.c
+@@ -543,7 +543,7 @@ phys_size_t get_effective_memsize(void)
+ 	}
+ }
+ 
+-void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
++__weak void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
+ {
+ 	u32 val[2] = {};
+ 	int ret;
+diff --git a/board/karo/imx95/imx95.c b/board/karo/imx95/imx95.c
+index 7cf67ab9677..b3aae09f473 100644
+--- a/board/karo/imx95/imx95.c
++++ b/board/karo/imx95/imx95.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include <env.h>
++#include <fuse.h>
+ #include <init.h>
+ #include <fdt_support.h>
+ #include <asm/gpio.h>
+@@ -16,6 +17,7 @@
+ #include <power/regulator.h>
+ #include <scmi_agent.h>
+ #include "../dts/upstream/src/arm64/freescale/imx95-power.h"
++#include <asm/global_data.h>
+ #include <asm/arch/sys_proto.h>
+ #include <dm/uclass.h>
+ #include <dm/device.h>
+@@ -65,6 +67,38 @@ int board_phys_sdram_size(phys_size_t *size)
+ 	return 0;
+ }
+ 
++void imx_get_mac_from_fuse(int dev_id, unsigned char *mac)
++{
++	u32 val[2] = {};
++	int ret;
++
++	ret = fuse_read(40, 5, &val[0]);
++	if (ret)
++		goto err;
++
++	ret = fuse_read(40, 6, &val[1]);
++	if (ret)
++		goto err;
++
++	mac[0] = (val[1] >> 8) & 0xff;
++	mac[1] = val[1] & 0xff;
++	mac[2] = (val[0] >> 24) & 0xff;
++	mac[3] = (val[0] >> 16) & 0xff;
++	mac[4] = (val[0] >> 8) & 0xff;
++	mac[5] = val[0] & 0xff;
++
++	// programmed mac address is always even
++	// therefore add 1 to mac address for other enetc controller
++	if (dev_id != 0)
++		mac[5] += 1;
++
++	debug("%s: MAC%d: %pM\n", __func__, dev_id, mac);
++	return;
++err:
++	memset(mac, 0, 6);
++	printf("%s: fuse read err: %d\n", __func__, ret);
++}
++
+ int board_interface_eth_init(struct udevice *dev, phy_interface_t interface)
+ {
+ 	int ret;

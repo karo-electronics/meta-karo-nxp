@@ -1,75 +1,75 @@
-From a78b0e425ee6b9f1159e7839f5e6caefd3682b8c Mon Sep 17 00:00:00 2001
+From 940101dae34cb5ce8427fd91351dc98ab6dec37d Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Wed, 29 Jul 2026 13:30:06 +0000
 Subject: [PATCH] boards: add support for qs95-5610 module
 Upstream-Status: Pending
 
 ---
- boards/tx95/board.c              |  616 +++++++++++++
- boards/tx95/board.h              |  164 ++++
- boards/tx95/pin_mux.c            |   58 ++
- boards/tx95/pin_mux.h            |   44 +
- boards/tx95/sm/Makefile          |   63 ++
- boards/tx95/sm/brd_sm.c          |  692 +++++++++++++++
- boards/tx95/sm/brd_sm.dox        |   54 ++
- boards/tx95/sm/brd_sm.h          |   99 +++
- boards/tx95/sm/brd_sm_clock.c    |  358 ++++++++
- boards/tx95/sm/brd_sm_clock.h    |   96 +++
- boards/tx95/sm/brd_sm_handlers.c |  270 ++++++
- boards/tx95/sm/brd_sm_handlers.h |   94 ++
- boards/tx95/sm/brd_sm_sensor.c   |  414 +++++++++
- boards/tx95/sm/brd_sm_sensor.h   |  210 +++++
- boards/tx95/sm/brd_sm_voltage.c  |  568 ++++++++++++
- boards/tx95/sm/brd_sm_voltage.h  |  222 +++++
- configs/tx95.cfg                 | 1018 ++++++++++++++++++++++
- configs/tx95/config.dox          |   49 ++
- configs/tx95/config.mak          |   44 +
- configs/tx95/config_bctrl.h      |  100 +++
- configs/tx95/config_board.h      |   69 ++
- configs/tx95/config_dev.h        |   65 ++
- configs/tx95/config_lmm.h        |  225 +++++
- configs/tx95/config_mb_mu.h      |  118 +++
- configs/tx95/config_scmi.h       |  674 +++++++++++++++
- configs/tx95/config_smt.h        |  168 ++++
- configs/tx95/config_test.h       |  193 +++++
- configs/tx95/config_trdc.h       | 1387 ++++++++++++++++++++++++++++++
- configs/tx95/config_user.h       |  230 +++++
- 29 files changed, 8362 insertions(+)
- create mode 100755 boards/tx95/board.c
- create mode 100755 boards/tx95/board.h
- create mode 100755 boards/tx95/pin_mux.c
- create mode 100755 boards/tx95/pin_mux.h
- create mode 100755 boards/tx95/sm/Makefile
- create mode 100755 boards/tx95/sm/brd_sm.c
- create mode 100755 boards/tx95/sm/brd_sm.dox
- create mode 100755 boards/tx95/sm/brd_sm.h
- create mode 100755 boards/tx95/sm/brd_sm_clock.c
- create mode 100755 boards/tx95/sm/brd_sm_clock.h
- create mode 100755 boards/tx95/sm/brd_sm_handlers.c
- create mode 100755 boards/tx95/sm/brd_sm_handlers.h
- create mode 100755 boards/tx95/sm/brd_sm_sensor.c
- create mode 100755 boards/tx95/sm/brd_sm_sensor.h
- create mode 100755 boards/tx95/sm/brd_sm_voltage.c
- create mode 100755 boards/tx95/sm/brd_sm_voltage.h
- create mode 100644 configs/tx95.cfg
- create mode 100755 configs/tx95/config.dox
- create mode 100755 configs/tx95/config.mak
- create mode 100755 configs/tx95/config_bctrl.h
- create mode 100755 configs/tx95/config_board.h
- create mode 100644 configs/tx95/config_dev.h
- create mode 100755 configs/tx95/config_lmm.h
- create mode 100755 configs/tx95/config_mb_mu.h
- create mode 100755 configs/tx95/config_scmi.h
- create mode 100755 configs/tx95/config_smt.h
- create mode 100755 configs/tx95/config_test.h
- create mode 100755 configs/tx95/config_trdc.h
- create mode 100644 configs/tx95/config_user.h
+ boards/krimx95/board.c              |  616 ++++++++++++
+ boards/krimx95/board.h              |  164 ++++
+ boards/krimx95/pin_mux.c            |   58 ++
+ boards/krimx95/pin_mux.h            |   44 +
+ boards/krimx95/sm/Makefile          |   63 ++
+ boards/krimx95/sm/brd_sm.c          |  692 +++++++++++++
+ boards/krimx95/sm/brd_sm.dox        |   54 ++
+ boards/krimx95/sm/brd_sm.h          |   99 ++
+ boards/krimx95/sm/brd_sm_clock.c    |  358 +++++++
+ boards/krimx95/sm/brd_sm_clock.h    |   96 ++
+ boards/krimx95/sm/brd_sm_handlers.c |  270 ++++++
+ boards/krimx95/sm/brd_sm_handlers.h |   94 ++
+ boards/krimx95/sm/brd_sm_sensor.c   |  414 ++++++++
+ boards/krimx95/sm/brd_sm_sensor.h   |  210 ++++
+ boards/krimx95/sm/brd_sm_voltage.c  |  568 +++++++++++
+ boards/krimx95/sm/brd_sm_voltage.h  |  222 +++++
+ configs/krimx95.cfg                 | 1018 ++++++++++++++++++++
+ configs/krimx95/config.dox          |   49 +
+ configs/krimx95/config.mak          |   44 +
+ configs/krimx95/config_bctrl.h      |  100 ++
+ configs/krimx95/config_board.h      |   69 ++
+ configs/krimx95/config_dev.h        |   65 ++
+ configs/krimx95/config_lmm.h        |  226 +++++
+ configs/krimx95/config_mb_mu.h      |  118 +++
+ configs/krimx95/config_scmi.h       |  674 +++++++++++++
+ configs/krimx95/config_smt.h        |  168 ++++
+ configs/krimx95/config_test.h       |  193 ++++
+ configs/krimx95/config_trdc.h       | 1387 +++++++++++++++++++++++++++
+ configs/krimx95/config_user.h       |  230 +++++
+ 29 files changed, 8363 insertions(+)
+ create mode 100755 boards/krimx95/board.c
+ create mode 100755 boards/krimx95/board.h
+ create mode 100755 boards/krimx95/pin_mux.c
+ create mode 100755 boards/krimx95/pin_mux.h
+ create mode 100755 boards/krimx95/sm/Makefile
+ create mode 100755 boards/krimx95/sm/brd_sm.c
+ create mode 100755 boards/krimx95/sm/brd_sm.dox
+ create mode 100755 boards/krimx95/sm/brd_sm.h
+ create mode 100755 boards/krimx95/sm/brd_sm_clock.c
+ create mode 100755 boards/krimx95/sm/brd_sm_clock.h
+ create mode 100755 boards/krimx95/sm/brd_sm_handlers.c
+ create mode 100755 boards/krimx95/sm/brd_sm_handlers.h
+ create mode 100755 boards/krimx95/sm/brd_sm_sensor.c
+ create mode 100755 boards/krimx95/sm/brd_sm_sensor.h
+ create mode 100755 boards/krimx95/sm/brd_sm_voltage.c
+ create mode 100755 boards/krimx95/sm/brd_sm_voltage.h
+ create mode 100644 configs/krimx95.cfg
+ create mode 100755 configs/krimx95/config.dox
+ create mode 100755 configs/krimx95/config.mak
+ create mode 100755 configs/krimx95/config_bctrl.h
+ create mode 100755 configs/krimx95/config_board.h
+ create mode 100644 configs/krimx95/config_dev.h
+ create mode 100755 configs/krimx95/config_lmm.h
+ create mode 100755 configs/krimx95/config_mb_mu.h
+ create mode 100755 configs/krimx95/config_scmi.h
+ create mode 100755 configs/krimx95/config_smt.h
+ create mode 100755 configs/krimx95/config_test.h
+ create mode 100755 configs/krimx95/config_trdc.h
+ create mode 100644 configs/krimx95/config_user.h
 
-diff --git a/boards/tx95/board.c b/boards/tx95/board.c
+diff --git a/boards/krimx95/board.c b/boards/krimx95/board.c
 new file mode 100755
 index 0000000..8de0f0c
 --- /dev/null
-+++ b/boards/tx95/board.c
++++ b/boards/krimx95/board.c
 @@ -0,0 +1,616 @@
 +/*
 + * Copyright 2023-2025 NXP
@@ -687,11 +687,11 @@ index 0000000..8de0f0c
 +    }
 +}
 +
-diff --git a/boards/tx95/board.h b/boards/tx95/board.h
+diff --git a/boards/krimx95/board.h b/boards/krimx95/board.h
 new file mode 100755
 index 0000000..bb4c664
 --- /dev/null
-+++ b/boards/tx95/board.h
++++ b/boards/krimx95/board.h
 @@ -0,0 +1,164 @@
 +/*
 + * Copyright 2023-2024 NXP
@@ -857,11 +857,11 @@ index 0000000..bb4c664
 +
 +#endif /* BOARD_H */
 +
-diff --git a/boards/tx95/pin_mux.c b/boards/tx95/pin_mux.c
+diff --git a/boards/krimx95/pin_mux.c b/boards/krimx95/pin_mux.c
 new file mode 100755
 index 0000000..15553b8
 --- /dev/null
-+++ b/boards/tx95/pin_mux.c
++++ b/boards/krimx95/pin_mux.c
 @@ -0,0 +1,58 @@
 +/*
 + * Copyright 2023, 2025 NXP
@@ -921,11 +921,11 @@ index 0000000..15553b8
 +    IOMUXC_SetPinConfig(IOMUXC_PAD_GPIO_IO34__GPIO5_IO_BIT14, 0U);
 +}
 +
-diff --git a/boards/tx95/pin_mux.h b/boards/tx95/pin_mux.h
+diff --git a/boards/krimx95/pin_mux.h b/boards/krimx95/pin_mux.h
 new file mode 100755
 index 0000000..24cd792
 --- /dev/null
-+++ b/boards/tx95/pin_mux.h
++++ b/boards/krimx95/pin_mux.h
 @@ -0,0 +1,44 @@
 +/*
 + * Copyright 2023 NXP
@@ -971,11 +971,11 @@ index 0000000..24cd792
 + */
 +#endif /* PIN_MUX_H */
 +
-diff --git a/boards/tx95/sm/Makefile b/boards/tx95/sm/Makefile
+diff --git a/boards/krimx95/sm/Makefile b/boards/krimx95/sm/Makefile
 new file mode 100755
-index 0000000..7b6ccea
+index 0000000..2ef7623
 --- /dev/null
-+++ b/boards/tx95/sm/Makefile
++++ b/boards/krimx95/sm/Makefile
 @@ -0,0 +1,63 @@
 +## ###################################################################
 +##
@@ -1009,7 +1009,7 @@ index 0000000..7b6ccea
 +##
 +## ###################################################################
 +
-+BOARD ?= tx95
++BOARD ?= krimx95
 +BRD_SM_API_DIR = $(ROOT_DIR)/sm/brd
 +BOARDS_DIR = $(ROOT_DIR)/boards
 +BOARD_DIR = $(BOARDS_DIR)/$(BOARD)
@@ -1040,11 +1040,11 @@ index 0000000..7b6ccea
 +	$(OUT)/fsl_pf09.o  \
 +	$(OUT)/fsl_pf53.o  \
 +
-diff --git a/boards/tx95/sm/brd_sm.c b/boards/tx95/sm/brd_sm.c
+diff --git a/boards/krimx95/sm/brd_sm.c b/boards/krimx95/sm/brd_sm.c
 new file mode 100755
 index 0000000..d1d821f
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm.c
++++ b/boards/krimx95/sm/brd_sm.c
 @@ -0,0 +1,692 @@
 +/*
 +** ###################################################################
@@ -1738,11 +1738,11 @@ index 0000000..d1d821f
 +    return status;
 +}
 +
-diff --git a/boards/tx95/sm/brd_sm.dox b/boards/tx95/sm/brd_sm.dox
+diff --git a/boards/krimx95/sm/brd_sm.dox b/boards/krimx95/sm/brd_sm.dox
 new file mode 100755
-index 0000000..f972d8e
+index 0000000..9009347
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm.dox
++++ b/boards/krimx95/sm/brd_sm.dox
 @@ -0,0 +1,54 @@
 +/*
 +** ###################################################################
@@ -1785,7 +1785,7 @@ index 0000000..f972d8e
 +
 +/*!
 +
-+@defgroup BRD_SM_TX95 BOARD_TX95: Ka-Ro electronics i.MX95 module family SM Implementation
++@defgroup BRD_SM_KRIMX95 BOARD_KRIMX95: Ka-Ro electronics i.MX95 module family SM Implementation
 +
 +@brief Module for the Ka-Ro electronics i.MX95 module family for the SM.
 +
@@ -1798,11 +1798,11 @@ index 0000000..f972d8e
 +
 +/** @} */
 +
-diff --git a/boards/tx95/sm/brd_sm.h b/boards/tx95/sm/brd_sm.h
+diff --git a/boards/krimx95/sm/brd_sm.h b/boards/krimx95/sm/brd_sm.h
 new file mode 100755
 index 0000000..1441357
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm.h
++++ b/boards/krimx95/sm/brd_sm.h
 @@ -0,0 +1,99 @@
 +/*
 +** ###################################################################
@@ -1903,11 +1903,11 @@ index 0000000..1441357
 +
 +#endif /* BRD_SM_H */
 +
-diff --git a/boards/tx95/sm/brd_sm_clock.c b/boards/tx95/sm/brd_sm_clock.c
+diff --git a/boards/krimx95/sm/brd_sm_clock.c b/boards/krimx95/sm/brd_sm_clock.c
 new file mode 100755
 index 0000000..ac552eb
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_clock.c
++++ b/boards/krimx95/sm/brd_sm_clock.c
 @@ -0,0 +1,358 @@
 +/*
 +** ###################################################################
@@ -2267,11 +2267,11 @@ index 0000000..ac552eb
 +    return pllVcoRate;
 +}
 +
-diff --git a/boards/tx95/sm/brd_sm_clock.h b/boards/tx95/sm/brd_sm_clock.h
+diff --git a/boards/krimx95/sm/brd_sm_clock.h b/boards/krimx95/sm/brd_sm_clock.h
 new file mode 100755
 index 0000000..0cf1a12
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_clock.h
++++ b/boards/krimx95/sm/brd_sm_clock.h
 @@ -0,0 +1,96 @@
 +/*
 +** ###################################################################
@@ -2369,11 +2369,11 @@ index 0000000..0cf1a12
 +
 +/** @} */
 +
-diff --git a/boards/tx95/sm/brd_sm_handlers.c b/boards/tx95/sm/brd_sm_handlers.c
+diff --git a/boards/krimx95/sm/brd_sm_handlers.c b/boards/krimx95/sm/brd_sm_handlers.c
 new file mode 100755
 index 0000000..7ec26c6
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_handlers.c
++++ b/boards/krimx95/sm/brd_sm_handlers.c
 @@ -0,0 +1,270 @@
 +/*
 +** ###################################################################
@@ -2645,11 +2645,11 @@ index 0000000..7ec26c6
 +    }
 +}
 +
-diff --git a/boards/tx95/sm/brd_sm_handlers.h b/boards/tx95/sm/brd_sm_handlers.h
+diff --git a/boards/krimx95/sm/brd_sm_handlers.h b/boards/krimx95/sm/brd_sm_handlers.h
 new file mode 100755
 index 0000000..86d1138
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_handlers.h
++++ b/boards/krimx95/sm/brd_sm_handlers.h
 @@ -0,0 +1,94 @@
 +/*
 +** ###################################################################
@@ -2745,11 +2745,11 @@ index 0000000..86d1138
 +
 +#endif /* BRD_SM_HANDLERS_H */
 +
-diff --git a/boards/tx95/sm/brd_sm_sensor.c b/boards/tx95/sm/brd_sm_sensor.c
+diff --git a/boards/krimx95/sm/brd_sm_sensor.c b/boards/krimx95/sm/brd_sm_sensor.c
 new file mode 100755
 index 0000000..ef6874f
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_sensor.c
++++ b/boards/krimx95/sm/brd_sm_sensor.c
 @@ -0,0 +1,414 @@
 +/*
 +** ###################################################################
@@ -3165,11 +3165,11 @@ index 0000000..ef6874f
 +    LMM_SensorEvent(BRD_SM_SENSOR_TEMP_PF09, 0U, 1U);
 +}
 +
-diff --git a/boards/tx95/sm/brd_sm_sensor.h b/boards/tx95/sm/brd_sm_sensor.h
+diff --git a/boards/krimx95/sm/brd_sm_sensor.h b/boards/krimx95/sm/brd_sm_sensor.h
 new file mode 100755
 index 0000000..98b68ae
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_sensor.h
++++ b/boards/krimx95/sm/brd_sm_sensor.h
 @@ -0,0 +1,210 @@
 +/*
 +** ###################################################################
@@ -3381,11 +3381,11 @@ index 0000000..98b68ae
 +
 +/** @} */
 +
-diff --git a/boards/tx95/sm/brd_sm_voltage.c b/boards/tx95/sm/brd_sm_voltage.c
+diff --git a/boards/krimx95/sm/brd_sm_voltage.c b/boards/krimx95/sm/brd_sm_voltage.c
 new file mode 100755
 index 0000000..430cb46
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_voltage.c
++++ b/boards/krimx95/sm/brd_sm_voltage.c
 @@ -0,0 +1,568 @@
 +/*
 +** ###################################################################
@@ -3955,11 +3955,11 @@ index 0000000..430cb46
 +    return s_modeArm;
 +}
 +
-diff --git a/boards/tx95/sm/brd_sm_voltage.h b/boards/tx95/sm/brd_sm_voltage.h
+diff --git a/boards/krimx95/sm/brd_sm_voltage.h b/boards/krimx95/sm/brd_sm_voltage.h
 new file mode 100755
 index 0000000..2e21c6d
 --- /dev/null
-+++ b/boards/tx95/sm/brd_sm_voltage.h
++++ b/boards/krimx95/sm/brd_sm_voltage.h
 @@ -0,0 +1,222 @@
 +/*
 +** ###################################################################
@@ -4183,11 +4183,11 @@ index 0000000..2e21c6d
 +
 +/** @} */
 +
-diff --git a/configs/tx95.cfg b/configs/tx95.cfg
+diff --git a/configs/krimx95.cfg b/configs/krimx95.cfg
 new file mode 100644
-index 0000000..ea4f913
+index 0000000..42aa21e
 --- /dev/null
-+++ b/configs/tx95.cfg
++++ b/configs/krimx95.cfg
 @@ -0,0 +1,1018 @@
 +## ###################################################################
 +##
@@ -4223,8 +4223,8 @@ index 0000000..ea4f913
 +
 +# SM configuration file for the Ka-Ro electronics i.MX95 module family
 +
-+MAKE    soc=MIMX95, board=tx95, build=gcc_cross
-+DOX     name=TX95, desc="Ka-Ro electronics i.MX95 module family Configuration Data"
++MAKE    soc=MIMX95, board=krimx95, build=gcc_cross
++DOX     name=krimx95, desc="Ka-Ro electronics i.MX95 module family Configuration Data"
 +
 +include ../devices/MIMX95/configtool/device.cfg
 +
@@ -5207,11 +5207,11 @@ index 0000000..ea4f913
 +DDR                 EXEC, begin=0x088000000, end=0x089FFFFFF, clr=8
 +DDR                 EXEC, begin=0x08E000000, end=0x87FFFFFFF
 +
-diff --git a/configs/tx95/config.dox b/configs/tx95/config.dox
+diff --git a/configs/krimx95/config.dox b/configs/krimx95/config.dox
 new file mode 100755
-index 0000000..421ea89
+index 0000000..30e67f3
 --- /dev/null
-+++ b/configs/tx95/config.dox
++++ b/configs/krimx95/config.dox
 @@ -0,0 +1,49 @@
 +/*
 +** ###################################################################
@@ -5254,7 +5254,7 @@ index 0000000..421ea89
 +
 +/*!
 +
-+@defgroup CONFIG_TX95 CONFIG_TX95: Configuration Data
++@defgroup CONFIG_krimx95 CONFIG_krimx95: Configuration Data
 +
 +@brief Module for Configuration Data.
 +
@@ -5262,11 +5262,11 @@ index 0000000..421ea89
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config.mak b/configs/tx95/config.mak
+diff --git a/configs/krimx95/config.mak b/configs/krimx95/config.mak
 new file mode 100755
-index 0000000..a5ae82d
+index 0000000..fcdc682
 --- /dev/null
-+++ b/configs/tx95/config.mak
++++ b/configs/krimx95/config.mak
 @@ -0,0 +1,44 @@
 +## ###################################################################
 +##
@@ -5301,7 +5301,7 @@ index 0000000..a5ae82d
 +## ###################################################################
 +
 +GEN_CONFIG_VER ?= 2U
-+BOARD ?= tx95
++BOARD ?= krimx95
 +USES_FUSA ?= 1
 +
 +include ./devices/MIMX95/sm/Makefile
@@ -5312,11 +5312,11 @@ index 0000000..a5ae82d
 +include ./sm/rpc/smt/Makefile
 +include ./sm/makefiles/gcc_cross.mak
 +
-diff --git a/configs/tx95/config_bctrl.h b/configs/tx95/config_bctrl.h
+diff --git a/configs/krimx95/config_bctrl.h b/configs/krimx95/config_bctrl.h
 new file mode 100755
-index 0000000..f9f280a
+index 0000000..a20348a
 --- /dev/null
-+++ b/configs/tx95/config_bctrl.h
++++ b/configs/krimx95/config_bctrl.h
 @@ -0,0 +1,100 @@
 +/*
 +** ###################################################################
@@ -5354,7 +5354,7 @@ index 0000000..f9f280a
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -5418,11 +5418,11 @@ index 0000000..f9f280a
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_board.h b/configs/tx95/config_board.h
+diff --git a/configs/krimx95/config_board.h b/configs/krimx95/config_board.h
 new file mode 100755
-index 0000000..d2ca1b1
+index 0000000..c9d5687
 --- /dev/null
-+++ b/configs/tx95/config_board.h
++++ b/configs/krimx95/config_board.h
 @@ -0,0 +1,69 @@
 +/*
 +** ###################################################################
@@ -5460,7 +5460,7 @@ index 0000000..d2ca1b1
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -5493,11 +5493,11 @@ index 0000000..d2ca1b1
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_dev.h b/configs/tx95/config_dev.h
+diff --git a/configs/krimx95/config_dev.h b/configs/krimx95/config_dev.h
 new file mode 100644
-index 0000000..c10713e
+index 0000000..1bdf014
 --- /dev/null
-+++ b/configs/tx95/config_dev.h
++++ b/configs/krimx95/config_dev.h
 @@ -0,0 +1,65 @@
 +/*
 +** ###################################################################
@@ -5535,7 +5535,7 @@ index 0000000..c10713e
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -5564,12 +5564,12 @@ index 0000000..c10713e
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_lmm.h b/configs/tx95/config_lmm.h
+diff --git a/configs/krimx95/config_lmm.h b/configs/krimx95/config_lmm.h
 new file mode 100755
-index 0000000..f643312
+index 0000000..16610ca
 --- /dev/null
-+++ b/configs/tx95/config_lmm.h
-@@ -0,0 +1,225 @@
++++ b/configs/krimx95/config_lmm.h
+@@ -0,0 +1,226 @@
 +/*
 +** ###################################################################
 +**
@@ -5606,7 +5606,7 @@ index 0000000..f643312
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -5650,6 +5650,7 @@ index 0000000..f643312
 +        .name = "M7", \
 +        .rpcType = SM_RPC_SCMI, \
 +        .rpcInst = 0U, \
++        .boot[0] = 0U, \
 +        .bootSkip[0] = 1U, \
 +        .safeType = LMM_SAFE_TYPE_SEENV, \
 +        .start = 1U, \
@@ -5692,7 +5693,7 @@ index 0000000..f643312
 +#define SM_LM_NUM_SEENV  1U
 +
 +/*! Config name */
-+#define SM_LM_CFG_NAME  "tx95"
++#define SM_LM_CFG_NAME  "krimx95"
 +
 +/*! Default LM for monitor */
 +#define SM_LM_DEFAULT  2U
@@ -5795,11 +5796,11 @@ index 0000000..f643312
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_mb_mu.h b/configs/tx95/config_mb_mu.h
+diff --git a/configs/krimx95/config_mb_mu.h b/configs/krimx95/config_mb_mu.h
 new file mode 100755
-index 0000000..134c7c9
+index 0000000..7844010
 --- /dev/null
-+++ b/configs/tx95/config_mb_mu.h
++++ b/configs/krimx95/config_mb_mu.h
 @@ -0,0 +1,118 @@
 +/*
 +** ###################################################################
@@ -5837,7 +5838,7 @@ index 0000000..134c7c9
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -5919,11 +5920,11 @@ index 0000000..134c7c9
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_scmi.h b/configs/tx95/config_scmi.h
+diff --git a/configs/krimx95/config_scmi.h b/configs/krimx95/config_scmi.h
 new file mode 100755
-index 0000000..cf7596b
+index 0000000..c9ba3bb
 --- /dev/null
-+++ b/configs/tx95/config_scmi.h
++++ b/configs/krimx95/config_scmi.h
 @@ -0,0 +1,674 @@
 +/*
 +** ###################################################################
@@ -5961,7 +5962,7 @@ index 0000000..cf7596b
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -6599,11 +6600,11 @@ index 0000000..cf7596b
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_smt.h b/configs/tx95/config_smt.h
+diff --git a/configs/krimx95/config_smt.h b/configs/krimx95/config_smt.h
 new file mode 100755
-index 0000000..20bb034
+index 0000000..491c476
 --- /dev/null
-+++ b/configs/tx95/config_smt.h
++++ b/configs/krimx95/config_smt.h
 @@ -0,0 +1,168 @@
 +/*
 +** ###################################################################
@@ -6641,7 +6642,7 @@ index 0000000..20bb034
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -6773,11 +6774,11 @@ index 0000000..20bb034
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_test.h b/configs/tx95/config_test.h
+diff --git a/configs/krimx95/config_test.h b/configs/krimx95/config_test.h
 new file mode 100755
-index 0000000..9335953
+index 0000000..ffcdf31
 --- /dev/null
-+++ b/configs/tx95/config_test.h
++++ b/configs/krimx95/config_test.h
 @@ -0,0 +1,193 @@
 +/*
 +** ###################################################################
@@ -6815,7 +6816,7 @@ index 0000000..9335953
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -6972,11 +6973,11 @@ index 0000000..9335953
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_trdc.h b/configs/tx95/config_trdc.h
+diff --git a/configs/krimx95/config_trdc.h b/configs/krimx95/config_trdc.h
 new file mode 100755
-index 0000000..6793d0a
+index 0000000..a901ad6
 --- /dev/null
-+++ b/configs/tx95/config_trdc.h
++++ b/configs/krimx95/config_trdc.h
 @@ -0,0 +1,1387 @@
 +/*
 +** ###################################################################
@@ -7014,7 +7015,7 @@ index 0000000..6793d0a
 +
 +/*==========================================================================*/
 +/*!
-+ * @addtogroup CONFIG_TX95
++ * @addtogroup CONFIG_krimx95
 + * @{
 + *
 + * @file
@@ -8365,11 +8366,11 @@ index 0000000..6793d0a
 +
 +/** @} */
 +
-diff --git a/configs/tx95/config_user.h b/configs/tx95/config_user.h
+diff --git a/configs/krimx95/config_user.h b/configs/krimx95/config_user.h
 new file mode 100644
 index 0000000..690de41
 --- /dev/null
-+++ b/configs/tx95/config_user.h
++++ b/configs/krimx95/config_user.h
 @@ -0,0 +1,230 @@
 +/*
 +** ###################################################################

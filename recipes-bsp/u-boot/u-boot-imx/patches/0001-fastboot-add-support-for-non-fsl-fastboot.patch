@@ -1,0 +1,64 @@
+From 06ea0b2a28c6590ccc95a7a3a7b647a8e5dc8905 Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Mon, 14 Sep 2026 11:59:18 +0000
+Subject: [PATCH] fastboot: add support for non-fsl fastboot
+Upstream-Status: Pending
+
+---
+ drivers/fastboot/Kconfig        |  1 -
+ drivers/usb/gadget/f_fastboot.c | 16 ----------------
+ 2 files changed, 17 deletions(-)
+
+diff --git a/drivers/fastboot/Kconfig b/drivers/fastboot/Kconfig
+index a8dfdc87c7f..fca70fc307e 100644
+--- a/drivers/fastboot/Kconfig
++++ b/drivers/fastboot/Kconfig
+@@ -103,7 +103,6 @@ config FASTBOOT_FLASH
+ config FASTBOOT_UUU_SUPPORT
+ 	bool "Enable UUU support"
+ 	default y if ARCH_MX7 || ARCH_MX6 || ARCH_IMX8 || ARCH_IMX8M || ARCH_MX7ULP
+-	select FSL_FASTBOOT
+ 	select FAT_WRITE
+ 	select CMD_GPT
+ 	select RANDOM_UUID
+diff --git a/drivers/usb/gadget/f_fastboot.c b/drivers/usb/gadget/f_fastboot.c
+index 8c758643782..5b0109b9269 100644
+--- a/drivers/usb/gadget/f_fastboot.c
++++ b/drivers/usb/gadget/f_fastboot.c
+@@ -206,10 +206,6 @@ static struct usb_gadget_strings *fastboot_strings[] = {
+ 	NULL,
+ };
+ 
+-#if CONFIG_IS_ENABLED(FASTBOOT_UUU_SUPPORT)
+-extern struct stdio_dev g_fastboot_stdio;
+-#endif
+-
+ static void rx_handler_command(struct usb_ep *ep, struct usb_request *req);
+ 
+ static void fastboot_fifo_complete(struct usb_ep *ep, struct usb_request *req)
+@@ -306,10 +302,6 @@ static int fastboot_bind(struct usb_configuration *c, struct usb_function *f)
+ 	if (s)
+ 		g_dnl_set_serialnumber((char *)s);
+ 
+-#if CONFIG_IS_ENABLED(FASTBOOT_UUU_SUPPORT)
+-	stdio_register(&g_fastboot_stdio);
+-#endif
+-
+ 	return 0;
+ }
+ 
+@@ -318,14 +310,6 @@ static void fastboot_unbind(struct usb_configuration *c, struct usb_function *f)
+ 	f->os_desc_table = NULL;
+ 	list_del(&fb_os_desc.ext_prop);
+ 	memset(fastboot_func, 0, sizeof(*fastboot_func));
+-
+-#if CONFIG_IS_ENABLED(FASTBOOT_UUU_SUPPORT) && CONFIG_IS_ENABLED(SYS_STDIO_DEREGISTER)
+-	struct stdio_dev *dev;
+-	dev = stdio_get_by_name("fastboot");
+-	if (dev)
+-		stdio_deregister_dev(dev, 1);
+-#endif
+-
+ }
+ 
+ static void fastboot_disable(struct usb_function *f)

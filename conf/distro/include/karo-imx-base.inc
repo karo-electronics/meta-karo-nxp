@@ -6,16 +6,7 @@ DISTROOVERRIDES = "karo"
 MAINTAINER = "Ka-Ro <rl@karo-electronics.de>"
 
 # Set a more generic tuning for code reuse across parts
-DEFAULTTUNE:mx8-nxp-bsp    ?= "armv8a-crc-crypto"
-DEFAULTTUNE:mx8m-nxp-bsp   ?= "armv8a-crc-crypto"
-DEFAULTTUNE:mx8qm-nxp-bsp  ?= "armv8a-crc-crypto"
-DEFAULTTUNE:mx8x-nxp-bsp   ?= "armv8a-crc-crypto"
-DEFAULTTUNE:mx8ulp-nxp-bsp ?= "armv8a-crc-crypto"
 DEFAULTTUNE:mx9-nxp-bsp    ?= "armv8-2a-crypto"
-DEFAULTTUNE:mx91-nxp-bsp   ?= "armv8-2a-crypto"
-DEFAULTTUNE:mx93-nxp-bsp   ?= "armv8-2a-crypto"
-DEFAULTTUNE:mx943-nxp-bsp  ?= "armv8-2a-crypto"
-DEFAULTTUNE:mx95-nxp-bsp   ?= "armv8-2a-crypto"
 
 SKIP_META_SECURITY_SANITY_CHECK = "1"
 SKIP_META_TPM_SANITY_CHECK = "1"
@@ -47,7 +38,7 @@ DISTRO_FEATURES_DEFAULTS ?= "\
     vfat \
     xattr \
 "
-DISTRO_FEATURES_DEFAULTS:append:mx9-nxp-bsp = " edac"
+DISTRO_FEATURES_DEFAULTS:append = " pcie dsi83 lvds-panel raspi-display csi-camera imx219"
 
 # Use systemd as default init manager
 POKY_INIT_MANAGER = "systemd"
@@ -59,3 +50,10 @@ TOOLCHAIN_HOST_TASK:append = " \
     nativesdk-gcc nativesdk-gcc-symlinks \
     nativesdk-gnutls-dev \
 "
+
+IMX_MALI_DRIVERS ??= "mali-imx mesa"
+
+PACKAGECONFIG:append:pn-pulseaudio = " autospawn-for-root"
+
+PACKAGECONFIG:append:pn-mesa-demos = " wayland"
+PACKAGECONFIG:remove:pn-mesa-demos = "vulkan"

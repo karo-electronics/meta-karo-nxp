@@ -1,0 +1,486 @@
+From 90868aded6fe15e66fe6f2febd72e17f168d03bc Mon Sep 17 00:00:00 2001
+From: Robin Lintermann <rl@karo-electronics.de>
+Date: Mon, 14 Sep 2026 11:54:18 +0000
+Subject: [PATCH] dts: split qsbase95 baseboard dts into per device overlays
+Upstream-Status: Pending
+
+---
+ arch/arm64/boot/dts/freescale/Makefile        |  10 +-
+ .../freescale/imx95-qs95-5610-qsbase95.dts    | 163 ------------------
+ .../boot/dts/freescale/imx95-qs95-5610.dts    |   5 +
+ .../freescale/imx95-qs95-enetc0-ksz9131.dtso  |  91 ++++++++++
+ .../freescale/imx95-qs95-enetc1-ksz9131.dtso  |  91 ++++++++++
+ .../boot/dts/freescale/imx95-qs95-pcie.dtso   |  48 ++++++
+ 6 files changed, 242 insertions(+), 166 deletions(-)
+ delete mode 100644 arch/arm64/boot/dts/freescale/imx95-qs95-5610-qsbase95.dts
+ create mode 100644 arch/arm64/boot/dts/freescale/imx95-qs95-enetc0-ksz9131.dtso
+ create mode 100644 arch/arm64/boot/dts/freescale/imx95-qs95-enetc1-ksz9131.dtso
+ create mode 100644 arch/arm64/boot/dts/freescale/imx95-qs95-pcie.dtso
+
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+index 3bffa482419e..f858caa32ac6 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -890,16 +890,20 @@ imx943-orangebox-netc-m33-dtbs := imx943-orangebox.dtb \
+ dtb-$(CONFIG_ARCH_MXC) += imx943-orangebox-netc-m33.dtb
+ 
+ dtb-$(CONFIG_ARCH_MXC) += imx95-qs95-5610.dtb
+-dtb-$(CONFIG_ARCH_MXC) += imx95-qs95-5610-qsbase95.dtb
+ DTC_FLAGS_imx95-qs95-5610 := -@
+-DTC_FLAGS_imx95-qs95-5610-qsbase95 := -@
+ dtb-$(CONFIG_ARCH_MXC) += \
++	imx95-qs95-enetc0-ksz9131.dtbo \
++	imx95-qs95-enetc1-ksz9131.dtbo \
++	imx95-qs95-pcie.dtbo \
+ 	imx95-qs95-lvds-panel.dtbo \
+ 	imx95-qs95-cam.dtbo \
+ 	imx95-qs95-raspi-display.dtbo
++DTC_FLAGS_imx95-qs95-enetc0-ksz9131 := -@
++DTC_FLAGS_imx95-qs95-enetc1-ksz9131 := -@
++DTC_FLAGS_imx95-qs95-pcie := -@
+ DTC_FLAGS_imx95-qs95-lvds-panel := -@
+ DTC_FLAGS_imx95-qs95-cam := -@
+-DTC_FLAGS_imx95-qs95-rapsi-display := -@
++DTC_FLAGS_imx95-qs95-raspi-display := -@
+ 
+ dtb-$(CONFIG_ARCH_MXC) += imx95-15x15-evk.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx95-15x15-evk-flexspi-m2.dtb
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-5610-qsbase95.dts b/arch/arm64/boot/dts/freescale/imx95-qs95-5610-qsbase95.dts
+deleted file mode 100644
+index 6a74b349da11..000000000000
+--- a/arch/arm64/boot/dts/freescale/imx95-qs95-5610-qsbase95.dts
++++ /dev/null
+@@ -1,163 +0,0 @@
+-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+-/*
+- * Copyright 2026 Ka-Ro electronics GmbH
+- */
+-
+-/dts-v1/;
+-
+-#include "imx95-qs95-5610.dts"
+-
+-/ {
+-	model = "Ka-Ro electronics GmbH QS95-5610 (NXP i.MX95) solder-in module on QSBASE95 baseboard";
+-
+-	reg_m2_pwr: regulator-m2-pwr {
+-		compatible = "regulator-fixed";
+-		regulator-max-microvolt = <3300000>;
+-		regulator-min-microvolt = <3300000>;
+-		regulator-name = "M.2-power";
+-		enable-active-high;
+-	};
+-};
+-
+-&enetc_port0 {
+-	phy-handle = <&ethphy0>;
+-	phy-mode = "rgmii-id";
+-	pinctrl-0 = <&pinctrl_ethphy0 &pinctrl_enetc0>;
+-	pinctrl-names = "default";
+-	status = "okay";
+-};
+-
+-&enetc_port1 {
+-	phy-handle = <&ethphy1>;
+-	phy-mode = "rgmii-id";
+-	pinctrl-0 = <&pinctrl_ethphy1 &pinctrl_enetc1>;
+-	pinctrl-names = "default";
+-	status = "okay";
+-};
+-
+-&netc_emdio {
+-	pinctrl-0 = <&pinctrl_emdio>;
+-	pinctrl-names = "default";
+-	status = "okay";
+-
+-	ethphy0: ethernet-phy@3 {
+-		reg = <3>;
+-		interrupt-parent = <&gpio2>;
+-		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
+-		reset-gpios = <&gpio2 28 GPIO_ACTIVE_LOW>;
+-		reset-assert-us = <10000>;
+-		reset-deassert-us = <120000>;
+-
+-		rxd0-skew-ps = <(420 + 100)>;
+-		rxd1-skew-ps = <(420 + 180)>;
+-		rxd2-skew-ps = <(420 + 104)>;
+-		rxd3-skew-ps = <(420 + 115)>;
+-		txd0-skew-ps = <(420 + 292)>;
+-		txd1-skew-ps = <(420 + 258)>;
+-		txd2-skew-ps = <(420 + 239)>;
+-		txd3-skew-ps = <(420 + 229)>;
+-		rxdv-skew-ps = <(420 + 111)>;
+-		txen-skew-ps = <(420 + 192)>;
+-		rxc-skew-ps = <(900 + 112)>;
+-		txc-skew-ps = <(900 + 110)>;
+-	};
+-
+-	ethphy1: ethernet-phy@7 {
+-		reg = <7>;
+-		interrupt-parent = <&gpio2>;
+-		interrupts = <23 IRQ_TYPE_LEVEL_LOW>;
+-		reset-gpios = <&gpio2 29 GPIO_ACTIVE_LOW>;
+-		reset-assert-us = <10000>;
+-		reset-deassert-us = <120000>;
+-
+-		rxd0-skew-ps = <(420 + 168)>;
+-		rxd1-skew-ps = <(420 + 174)>;
+-		rxd2-skew-ps = <(420 + 169)>;
+-		rxd3-skew-ps = <(420 + 187)>;
+-		txd0-skew-ps = <(420 + 135)>;
+-		txd1-skew-ps = <(420 + 117)>;
+-		txd2-skew-ps = <(420 + 115)>;
+-		txd3-skew-ps = <(420 + 108)>;
+-		rxdv-skew-ps = <(420 + 198)>;
+-		txen-skew-ps = <(420 + 90)>;
+-		rxc-skew-ps = <(900 + 167)>;
+-		txc-skew-ps = <(900 + 96)>;
+-	};
+-};
+-
+-&pcie0 {
+-	pinctrl-0 = <&pinctrl_pcie0>;
+-	pinctrl-names = "default";
+-	disable-gpio = <&gpio2 15 GPIO_ACTIVE_LOW>;
+-	reset-gpio = <&gpio2 17 GPIO_ACTIVE_LOW>;
+-	wake-gpio = <&gpio2 14 GPIO_ACTIVE_LOW>;
+-	vpcie-supply = <&reg_m2_pwr>;
+-	supports-clkreq;
+-	status = "okay";
+-};
+-
+-&scmi_iomuxc {
+-	pinctrl_emdio: emdiogrp {
+-		fsl,pins = <
+-			IMX95_PAD_ENET1_MDC__NETCMIX_TOP_NETC_MDC		0x006
+-			IMX95_PAD_ENET1_MDIO__NETCMIX_TOP_NETC_MDIO		0x006
+-		>;
+-	};
+-
+-	pinctrl_ethphy0: ethphy0grp {
+-		fsl,pins = <
+-			IMX95_PAD_GPIO_IO28__GPIO2_IO_BIT28  			0x17e
+-			IMX95_PAD_GPIO_IO24__GPIO2_IO_BIT24  			0x17e
+-		>;
+-	};
+-
+-	pinctrl_ethphy1: ethphy1grp {
+-		fsl,pins = <
+-			IMX95_PAD_GPIO_IO29__GPIO2_IO_BIT29  			0x17e
+-			IMX95_PAD_GPIO_IO23__GPIO2_IO_BIT23  			0x17e
+-		>;
+-	};
+-
+-	pinctrl_enetc0: enetc0grp {
+-		fsl,pins = <
+-			IMX95_PAD_ENET1_TD3__NETCMIX_TOP_ETH0_RGMII_TD3		0x51e
+-			IMX95_PAD_ENET1_TD2__NETCMIX_TOP_ETH0_RGMII_TD2		0x51e
+-			IMX95_PAD_ENET1_TD1__NETCMIX_TOP_ETH0_RGMII_TD1		0x51e
+-			IMX95_PAD_ENET1_TD0__NETCMIX_TOP_ETH0_RGMII_TD0		0x51e
+-			IMX95_PAD_ENET1_TX_CTL__NETCMIX_TOP_ETH0_RGMII_TX_CTL	0x51e
+-			IMX95_PAD_ENET1_TXC__NETCMIX_TOP_ETH0_RGMII_TX_CLK	0x01e
+-			IMX95_PAD_ENET1_RX_CTL__NETCMIX_TOP_ETH0_RGMII_RX_CTL	0x300
+-			IMX95_PAD_ENET1_RXC__NETCMIX_TOP_ETH0_RGMII_RX_CLK	0x500
+-			IMX95_PAD_ENET1_RD0__NETCMIX_TOP_ETH0_RGMII_RD0		0x500
+-			IMX95_PAD_ENET1_RD1__NETCMIX_TOP_ETH0_RGMII_RD1		0x300
+-			IMX95_PAD_ENET1_RD2__NETCMIX_TOP_ETH0_RGMII_RD2		0x300
+-			IMX95_PAD_ENET1_RD3__NETCMIX_TOP_ETH0_RGMII_RD3		0x300
+-		>;
+-	};
+-
+-	pinctrl_enetc1: enetc1grp {
+-		fsl,pins = <
+-			IMX95_PAD_ENET2_TD3__NETCMIX_TOP_ETH1_RGMII_TD3		0x51e
+-			IMX95_PAD_ENET2_TD2__NETCMIX_TOP_ETH1_RGMII_TD2		0x51e
+-			IMX95_PAD_ENET2_TD1__NETCMIX_TOP_ETH1_RGMII_TD1		0x51e
+-			IMX95_PAD_ENET2_TD0__NETCMIX_TOP_ETH1_RGMII_TD0		0x51e
+-			IMX95_PAD_ENET2_TX_CTL__NETCMIX_TOP_ETH1_RGMII_TX_CTL	0x51e
+-			IMX95_PAD_ENET2_TXC__NETCMIX_TOP_ETH1_RGMII_TX_CLK	0x01e
+-			IMX95_PAD_ENET2_RX_CTL__NETCMIX_TOP_ETH1_RGMII_RX_CTL	0x300
+-			IMX95_PAD_ENET2_RXC__NETCMIX_TOP_ETH1_RGMII_RX_CLK	0x300
+-			IMX95_PAD_ENET2_RD0__NETCMIX_TOP_ETH1_RGMII_RD0		0x500
+-			IMX95_PAD_ENET2_RD1__NETCMIX_TOP_ETH1_RGMII_RD1		0x300
+-			IMX95_PAD_ENET2_RD2__NETCMIX_TOP_ETH1_RGMII_RD2		0x300
+-			IMX95_PAD_ENET2_RD3__NETCMIX_TOP_ETH1_RGMII_RD3		0x300
+-		>;
+-	};
+-
+-	pinctrl_pcie0: pcie0grp {
+-		fsl,pins = <
+-			IMX95_PAD_GPIO_IO15__GPIO2_IO_BIT15					0x31e		// PCIE_PWR_EN
+-			IMX95_PAD_GPIO_IO14__GPIO2_IO_BIT14					0x31e		// PCIE_DET_WAKE
+-			IMX95_PAD_GPIO_IO32__HSIOMIX_TOP_PCIE1_CLKREQ_B		0x40000b1e  // PCIE_CLKREQ
+-			IMX95_PAD_GPIO_IO17__GPIO2_IO_BIT17					0x31e		// PCIE_RST_B
+-		>;
+-	};
+-};
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+index 70bac43f1234..999aad498381 100644
+--- a/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-5610.dts
+@@ -27,12 +27,17 @@ aliases {
+ 		serial0 = &lpuart1;
+ 		serial1 = &lpuart2;
+ 		serial2 = &lpuart3;
++		usb-host = &usb2;
++		usbotg = &usb3_dwc3;
+ 	};
+ 
+ 	chosen {
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+ 		stdout-path = &lpuart1;
++
++		overlays {
++		};
+ 	};
+ 
+ 	reg_1p8v: regulator-1p8v {
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-enetc0-ksz9131.dtso b/arch/arm64/boot/dts/freescale/imx95-qs95-enetc0-ksz9131.dtso
+new file mode 100644
+index 000000000000..8b400682bc34
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-enetc0-ksz9131.dtso
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2026 Ka-Ro electronics GmbH
++ */
++
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++#include "imx95-pinfunc.h"
++
++&{/chosen} {
++	overlays {
++		qs95-enetc0-ksz9131;
++	};
++};
++
++&enetc_port0 {
++	phy-handle = <&ethphy0>;
++	phy-mode = "rgmii-id";
++	pinctrl-0 = <&pinctrl_ethphy0 &pinctrl_enetc0>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&netc_emdio {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	pinctrl-0 = <&pinctrl_emdio>;
++	pinctrl-names = "default";
++	status = "okay";
++
++	ethphy0: ethernet-phy@3 {
++		reg = <3>;
++		interrupt-parent = <&gpio2>;
++		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
++		reset-gpios = <&gpio2 28 GPIO_ACTIVE_LOW>;
++		reset-assert-us = <10000>;
++		reset-deassert-us = <120000>;
++
++		rxd0-skew-psec = <100>;
++		rxd1-skew-psec = <180>;
++		rxd2-skew-psec = <104>;
++		rxd3-skew-psec = <115>;
++		txd0-skew-psec = <292>;
++		txd1-skew-psec = <258>;
++		txd2-skew-psec = <239>;
++		txd3-skew-psec = <229>;
++		rxdv-skew-psec = <111>;
++		txen-skew-psec = <192>;
++		rxc-skew-psec = <112>;
++		txc-skew-psec = <110>;
++	};
++};
++
++&scmi_iomuxc {
++	pinctrl_emdio: emdiogrp {
++		fsl,pins = <
++			/* FSEL1=11b: IMX95RM SW_PAD_CTL bits 8-7, IMX95IEC 4.11.4.1 */
++			IMX95_PAD_ENET1_MDC__NETCMIX_TOP_NETC_MDC		0x186
++			IMX95_PAD_ENET1_MDIO__NETCMIX_TOP_NETC_MDIO		0x186
++		>;
++	};
++
++	pinctrl_ethphy0: ethphy0grp {
++		fsl,pins = <
++			/* DSE=X4: IMX95RM SW_PAD_CTL bits 6-1, X5/X6 need 1.8 V NVCC */
++			IMX95_PAD_GPIO_IO28__GPIO2_IO_BIT28  			0x11e
++			IMX95_PAD_GPIO_IO24__GPIO2_IO_BIT24  			0x11e
++		>;
++	};
++
++	pinctrl_enetc0: enetc0grp {
++		fsl,pins = <
++			IMX95_PAD_ENET1_TD3__NETCMIX_TOP_ETH0_RGMII_TD3		0x51e
++			IMX95_PAD_ENET1_TD2__NETCMIX_TOP_ETH0_RGMII_TD2		0x51e
++			IMX95_PAD_ENET1_TD1__NETCMIX_TOP_ETH0_RGMII_TD1		0x51e
++			IMX95_PAD_ENET1_TD0__NETCMIX_TOP_ETH0_RGMII_TD0		0x51e
++			IMX95_PAD_ENET1_TX_CTL__NETCMIX_TOP_ETH0_RGMII_TX_CTL	0x51e
++			/* FSEL1=11b: IMX95RM SW_PAD_CTL bits 8-7, IMX95IEC 4.11.4.1 */
++			IMX95_PAD_ENET1_TXC__NETCMIX_TOP_ETH0_RGMII_TX_CLK	0x19e
++			IMX95_PAD_ENET1_RX_CTL__NETCMIX_TOP_ETH0_RGMII_RX_CTL	0x300
++			IMX95_PAD_ENET1_RXC__NETCMIX_TOP_ETH0_RGMII_RX_CLK	0x500
++			IMX95_PAD_ENET1_RD0__NETCMIX_TOP_ETH0_RGMII_RD0		0x500
++			IMX95_PAD_ENET1_RD1__NETCMIX_TOP_ETH0_RGMII_RD1		0x300
++			IMX95_PAD_ENET1_RD2__NETCMIX_TOP_ETH0_RGMII_RD2		0x300
++			IMX95_PAD_ENET1_RD3__NETCMIX_TOP_ETH0_RGMII_RD3		0x300
++		>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-enetc1-ksz9131.dtso b/arch/arm64/boot/dts/freescale/imx95-qs95-enetc1-ksz9131.dtso
+new file mode 100644
+index 000000000000..05ba217d8402
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-enetc1-ksz9131.dtso
+@@ -0,0 +1,91 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2026 Ka-Ro electronics GmbH
++ */
++
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include <dt-bindings/interrupt-controller/irq.h>
++#include "imx95-pinfunc.h"
++
++&{/chosen} {
++	overlays {
++		qs95-enetc1-ksz9131;
++	};
++};
++
++&enetc_port1 {
++	phy-handle = <&ethphy1>;
++	phy-mode = "rgmii-id";
++	pinctrl-0 = <&pinctrl_ethphy1 &pinctrl_enetc1>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
++&netc_emdio {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	pinctrl-0 = <&pinctrl_emdio>;
++	pinctrl-names = "default";
++	status = "okay";
++
++	ethphy1: ethernet-phy@7 {
++		reg = <7>;
++		interrupt-parent = <&gpio2>;
++		interrupts = <23 IRQ_TYPE_LEVEL_LOW>;
++		reset-gpios = <&gpio2 29 GPIO_ACTIVE_LOW>;
++		reset-assert-us = <10000>;
++		reset-deassert-us = <120000>;
++
++		rxd0-skew-psec = <168>;
++		rxd1-skew-psec = <174>;
++		rxd2-skew-psec = <169>;
++		rxd3-skew-psec = <187>;
++		txd0-skew-psec = <135>;
++		txd1-skew-psec = <117>;
++		txd2-skew-psec = <115>;
++		txd3-skew-psec = <108>;
++		rxdv-skew-psec = <198>;
++		txen-skew-psec = <90>;
++		rxc-skew-psec = <167>;
++		txc-skew-psec = <96>;
++	};
++};
++
++&scmi_iomuxc {
++	pinctrl_emdio: emdiogrp {
++		fsl,pins = <
++			/* FSEL1=11b: IMX95RM SW_PAD_CTL bits 8-7, IMX95IEC 4.11.4.1 */
++			IMX95_PAD_ENET1_MDC__NETCMIX_TOP_NETC_MDC		0x186
++			IMX95_PAD_ENET1_MDIO__NETCMIX_TOP_NETC_MDIO		0x186
++		>;
++	};
++
++	pinctrl_ethphy1: ethphy1grp {
++		fsl,pins = <
++			/* DSE=X4: IMX95RM SW_PAD_CTL bits 6-1, X5/X6 need 1.8 V NVCC */
++			IMX95_PAD_GPIO_IO29__GPIO2_IO_BIT29  			0x11e
++			IMX95_PAD_GPIO_IO23__GPIO2_IO_BIT23  			0x11e
++		>;
++	};
++
++	pinctrl_enetc1: enetc1grp {
++		fsl,pins = <
++			IMX95_PAD_ENET2_TD3__NETCMIX_TOP_ETH1_RGMII_TD3		0x51e
++			IMX95_PAD_ENET2_TD2__NETCMIX_TOP_ETH1_RGMII_TD2		0x51e
++			IMX95_PAD_ENET2_TD1__NETCMIX_TOP_ETH1_RGMII_TD1		0x51e
++			IMX95_PAD_ENET2_TD0__NETCMIX_TOP_ETH1_RGMII_TD0		0x51e
++			IMX95_PAD_ENET2_TX_CTL__NETCMIX_TOP_ETH1_RGMII_TX_CTL	0x51e
++			/* FSEL1=11b: IMX95RM SW_PAD_CTL bits 8-7, IMX95IEC 4.11.4.1 */
++			IMX95_PAD_ENET2_TXC__NETCMIX_TOP_ETH1_RGMII_TX_CLK	0x19e
++			IMX95_PAD_ENET2_RX_CTL__NETCMIX_TOP_ETH1_RGMII_RX_CTL	0x300
++			IMX95_PAD_ENET2_RXC__NETCMIX_TOP_ETH1_RGMII_RX_CLK	0x300
++			IMX95_PAD_ENET2_RD0__NETCMIX_TOP_ETH1_RGMII_RD0		0x500
++			IMX95_PAD_ENET2_RD1__NETCMIX_TOP_ETH1_RGMII_RD1		0x300
++			IMX95_PAD_ENET2_RD2__NETCMIX_TOP_ETH1_RGMII_RD2		0x300
++			IMX95_PAD_ENET2_RD3__NETCMIX_TOP_ETH1_RGMII_RD3		0x300
++		>;
++	};
++};
+diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-pcie.dtso b/arch/arm64/boot/dts/freescale/imx95-qs95-pcie.dtso
+new file mode 100644
+index 000000000000..4c4187ce10b7
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx95-qs95-pcie.dtso
+@@ -0,0 +1,48 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2026 Ka-Ro electronics GmbH
++ */
++
++/dts-v1/;
++/plugin/;
++
++#include <dt-bindings/gpio/gpio.h>
++#include "imx95-pinfunc.h"
++
++&{/chosen} {
++	overlays {
++		qs95-pcie;
++	};
++};
++
++&{/} {
++	reg_m2_pwr: regulator-m2-pwr {
++		compatible = "regulator-fixed";
++		regulator-max-microvolt = <3300000>;
++		regulator-min-microvolt = <3300000>;
++		regulator-name = "M.2-power";
++		gpio = <&gpio2 15 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++	};
++};
++
++&pcie0 {
++	pinctrl-0 = <&pinctrl_pcie0>;
++	pinctrl-names = "default";
++	reset-gpio = <&gpio2 17 GPIO_ACTIVE_LOW>;
++	host-wake-gpio = <&gpio2 14 GPIO_ACTIVE_LOW>;
++	vpcie-supply = <&reg_m2_pwr>;
++	supports-clkreq;
++	status = "okay";
++};
++
++&scmi_iomuxc {
++	pinctrl_pcie0: pcie0grp {
++		fsl,pins = <
++			IMX95_PAD_GPIO_IO15__GPIO2_IO_BIT15					0x31e		// PCIE_PWR_EN
++			IMX95_PAD_GPIO_IO14__GPIO2_IO_BIT14					0x31e		// PCIE_DET_WAKE
++			IMX95_PAD_GPIO_IO32__HSIOMIX_TOP_PCIE1_CLKREQ_B		0x40000b1e  // PCIE_CLKREQ
++			IMX95_PAD_GPIO_IO17__GPIO2_IO_BIT17					0x31e		// PCIE_RST_B
++		>;
++	};
++};

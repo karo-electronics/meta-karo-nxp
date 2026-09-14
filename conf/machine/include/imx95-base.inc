@@ -10,12 +10,12 @@ MACHINE_FEATURES += "pci optee"
 
 # Set U-Boot DTB
 KARO_BASEBOARD ??= ""
-KERNEL_DEVICETREE_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
-UBOOT_DTB_NAME ?= "${@ "${KERNEL_DEVICETREE_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
+DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
+UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 UBOOT_ENV_FILE ?= "${@ "${MACHINE}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 KERNEL_DEVICETREE = " \
-    freescale/${KERNEL_DEVICETREE_BASENAME}.dtb \
+    freescale/${DTB_BASENAME}.dtb \
 "
 
 IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-imx"
@@ -29,6 +29,9 @@ SPL_BINARY = "spl/u-boot-spl.bin"
 
 UBOOT_CONFIG ??= "default mfg noenv"
 
+UBOOT_FEATURES ??= ""
+UBOOT_FEATURES:append = "${@ " optee" if 'optee' in d.getVar('MACHINE_FEATURES').split() else ""}"
+
 ATF_PLATFORM = "imx95"
 OEI_CORE   = "m33"
 OEI_SOC    = "mx95"
@@ -39,7 +42,7 @@ OEI_DDR_CONFIG_ECC = ""
 
 IMXBOOT_VARIANTS = ""
 
-SYSTEM_MANAGER_CONFIG = "tx95"
+SYSTEM_MANAGER_CONFIG = "krimx95"
 
 IMXBOOT_TARGETS = "${IMXBOOT_TARGETS_BASENAME}_a55"
 
