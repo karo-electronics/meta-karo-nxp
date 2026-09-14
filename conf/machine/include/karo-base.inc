@@ -16,6 +16,8 @@ MACHINE_HAS_VIVANTE_KERNEL_DRIVER_SUPPORT = "0"
 SOC_FAMILY ??= "${SOC_PREFIX}"
 MACHINEOVERRIDES =. "${@ "${SOC_FAMILY}:" if "${SOC_FAMILY}" != "${SOC_PREFIX}" else ""}"
 
+KARO_BOARD_PMIC ??= ""
+
 UBOOT_CONFIG ??= "default mfg noenv"
 UBOOT_FEATURES ??= ""
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
@@ -26,9 +28,11 @@ SOC_DEFAULT_IMAGE_FSTYPES = "tar.bz2"
 # Set U-Boot DTB
 KARO_BASEBOARD ??= ""
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
-U_BOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
+UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 KERNEL_DEVICETREE += "freescale/${DTB_BASENAME}.dtb"
+
+KERNEL_IMAGETYPE = "Image"
 
 BOOT_TOOLS = "imx-boot-tools"
 

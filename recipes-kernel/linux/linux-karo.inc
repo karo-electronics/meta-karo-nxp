@@ -4,7 +4,8 @@
 LICENSE = "GPL-2.0-only"
 
 inherit kernel fsl-vivante-kernel-driver-handler
-LINUX_VERSION_EXTENSION ?= "-karo"
+inherit fsl-kernel-localversion
+LOCALVERSION = "-karo"
 
 S = "${WORKDIR}/git"
 

@@ -1,5 +1,3 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}:${THISDIR}/${BP}/patches:${THISDIR}/${BP}/env:"
-
 SRC_URI:append = " \
     file://karo.bmp;subdir=git/tools/logos \
 "

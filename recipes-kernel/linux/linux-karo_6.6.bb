@@ -1,6 +1,7 @@
 SUMMARY = "Linux Kernel for Ka-Ro electronics Computer-On-Modules"
 
 require recipes-kernel/linux/linux-karo.inc
+require conf/machine/include/${SOC_PREFIX}-overlays.inc
 
 DEPENDS += "lzop-native bc-native dtc-native"
 
@@ -27,30 +28,18 @@ SRC_URI = "${KERNEL_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "${KERNEL_BRANCH}"
 SRCREV = "${KERNEL_REV}"
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-${PV}/patches:${THISDIR}/${PN}-${PV}:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/cfg:${THISDIR}/${BP}/defconfigs:"
 
 PROVIDES += "linux"
-
-SRC_URI:append = "${@ "".join(map(lambda f: " file://cfg/" + f, "${KERNEL_FEATURES}".split()))}"
 
 # automatically add all .dts files referenced by ${KERNEL_DEVICETREE} to SRC_URI
 SRC_URI:append = "${@"".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"
 
-SRC_URI:append = " \
-    file://dts/freescale/imx8m-qs8m.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-    file://dts/freescale/imx8m-tx8m.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-    file://dts/freescale/imx8mm-tx8m.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-    file://dts/freescale/imx8mp-karo.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-    file://dts/freescale/imx93-karo.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-    file://dts/freescale/imx91-karo.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-"
-
-KARO_BOARD_PMIC ??= ""
+SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/includes/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
 
 SRC_URI:append = " file://${KBUILD_DEFCONFIG}"
 
-KERNEL_LOCALVERSION = "${LINUX_VERSION_EXTENSION}"
-KERNEL_IMAGETYPE = "Image"
+SRC_URI:append = "${@ "".join(map(lambda f: " file://" + f, "${KERNEL_FEATURES}".split()))}"
 
 KBUILD_DEFCONFIG ?= "${SOC_FAMILY}_defconfig"
 
@@ -98,19 +87,19 @@ do_check_config() {
     fi
 
     for f in ${KERNEL_FEATURES};do
-        applied=$(fgrep -f ${WORKDIR}/cfg/$f ${B}/.config | wc -l)
-        configured=$(cat ${WORKDIR}/cfg/$f | wc -l)
+        applied=$(fgrep -f ${WORKDIR}/$f ${B}/.config | wc -l)
+        configured=$(cat ${WORKDIR}/$f | wc -l)
         if [ $applied != $configured ];then
             bbwarn "The following items of config fragment $f have not been accepted by Kconfig:"
-            bbwarn "$(fgrep -f ${WORKDIR}/cfg/$f ${B}/.config | fgrep -vf - ${WORKDIR}/cfg/${f})"
+            bbwarn "$(fgrep -f ${WORKDIR}/$f ${B}/.config | fgrep -vf - ${WORKDIR}/${f})"
         fi
-        applied="$(fgrep -f "${WORKDIR}/cfg/${f}" "${B}/defconfig" | wc -l)"
+        applied="$(fgrep -f "${WORKDIR}/${f}" "${B}/defconfig" | wc -l)"
         if [ $applied != $configured ];then
-            p="$(fgrep -f "${WORKDIR}/cfg/${f}" "${B}/defconfig" | \
-                    fgrep -vf - "${WORKDIR}/cfg/${f}" | \
+            p="$(fgrep -f "${WORKDIR}/${f}" "${B}/defconfig" | \
+                    fgrep -vf - "${WORKDIR}/${f}" | \
                     sed 's/^# //;s/[= ].*$//')"
             for pat in $p;do
-                bbwarn "'$(fgrep -w "$pat" "${WORKDIR}/cfg/${f}")' is obsolete in '$f')'"
+                bbwarn "'$(fgrep -w "$pat" "${WORKDIR}/${f}")' is obsolete in '$f')'"
             done
         fi
     done
@@ -119,17 +108,10 @@ addtask do_check_config after do_savedefconfig
 do_check_config[nostamp] = "1"
 
 do_configure:prepend() {
-    # Add GIT revision to the local version
-    head=`git --git-dir=${S}/.git rev-parse --verify --short HEAD 2> /dev/null`
-    if ! [ -s "${S}/.scmversion" ] || ! grep -q "$head" ${S}/.scmversion;then
-        echo "+g$head" > "${S}/.scmversion"
-    fi
     install -v "${WORKDIR}/${KBUILD_DEFCONFIG}" "${B}/.config"
-    sed -i '/CONFIG_LOCALVERSION/d' "${B}/.config"
-    echo 'CONFIG_LOCALVERSION="${KERNEL_LOCALVERSION}"' >> "${B}/.config"
-
+    
     for f in ${KERNEL_FEATURES};do
-         ${S}/scripts/kconfig/merge_config.sh -O ${B} -m ${B}/.config ${WORKDIR}/cfg/$f
+         ${S}/scripts/kconfig/merge_config.sh -O ${B} -m ${B}/.config ${WORKDIR}/$f
     done
 }
 addtask do_configure before do_devshell

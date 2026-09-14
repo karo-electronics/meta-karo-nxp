@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/imx219:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}/patches:"
 
 SRC_URI:append = " \
     file://0001-isp-imx-add-imx219.patch \

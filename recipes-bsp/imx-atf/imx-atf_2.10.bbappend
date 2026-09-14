@@ -1,9 +1,10 @@
 PV = "2.10"
-FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}-${PV}:"
+
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/patches:"
 
 SRC_URI:append = " \
-        file://patches/errata-report-msg.patch \
-        file://patches/get-console-from-fdt.patch \
-        file://patches/bl31-addr-configurable.patch \
-        file://patches/debug-verbosity.patch \
+    file://errata-report-msg.patch \
+    file://get-console-from-fdt.patch \
+    file://bl31-addr-configurable.patch \
+    file://debug-verbosity.patch \
 "
