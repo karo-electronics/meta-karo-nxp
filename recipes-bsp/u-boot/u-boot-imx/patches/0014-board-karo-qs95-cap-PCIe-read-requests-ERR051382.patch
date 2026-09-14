@@ -1,0 +1,46 @@
+From 6ee7cfee38c70b340e38d22c54c80c7909eda025 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Mon, 14 Sep 2026 14:51:14 +0200
+Subject: [PATCH] board: karo: qs95: cap PCIe read requests, ERR051382
+
+- IMX95_P21N ERR051382 p.37: reads over 256 bytes stall the bus
+- pci=pcie_bus_perf bounds MRRS by the MPS
+- Root complex MaxPayload capability is 256 bytes
+
+Upstream-Status: Pending
+---
+ board/karo/imx95/qs95-5610-qsbase95.env | 3 ++-
+ board/karo/imx95/qs95-5610.env          | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/board/karo/imx95/qs95-5610-qsbase95.env b/board/karo/imx95/qs95-5610-qsbase95.env
+index f29c42f3638..207795f2cbd 100644
+--- a/board/karo/imx95/qs95-5610-qsbase95.env
++++ b/board/karo/imx95/qs95-5610-qsbase95.env
+@@ -10,7 +10,8 @@ bootcmd_nfs=run loadkernel bootargs_nfs
+ bootm_cmd=booti ${loadaddr} ${initrd_addr} ${fdt_addr}
+ console=ttyLP0,115200 earlycon
+ debug_overlays=yes
+-default_bootargs=setenv bootargs console=${console} panic=-1
++# ERR051382: PCIe read requests capped at 256 bytes
++default_bootargs=setenv bootargs console=${console} panic=-1 pci=pcie_bus_perf
+ dyndbg=dyndbg=\\"-p\\"
+ emmc_boot_ack=1
+ emmc_boot_part=1
+diff --git a/board/karo/imx95/qs95-5610.env b/board/karo/imx95/qs95-5610.env
+index d47375e1199..29129f83e42 100644
+--- a/board/karo/imx95/qs95-5610.env
++++ b/board/karo/imx95/qs95-5610.env
+@@ -10,7 +10,8 @@ bootcmd_nfs=run loadkernel bootargs_nfs
+ bootm_cmd=booti ${loadaddr} ${initrd_addr} ${fdt_addr}
+ console=ttyLP0,115200 earlycon
+ debug_overlays=yes
+-default_bootargs=setenv bootargs console=${console} panic=-1
++# ERR051382: PCIe read requests capped at 256 bytes
++default_bootargs=setenv bootargs console=${console} panic=-1 pci=pcie_bus_perf
+ dyndbg=dyndbg=\\"-p\\"
+ emmc_boot_ack=1
+ emmc_boot_part=1
+-- 
+2.43.0
+

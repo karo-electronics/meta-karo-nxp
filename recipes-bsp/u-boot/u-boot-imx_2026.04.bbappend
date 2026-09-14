@@ -17,6 +17,7 @@ SRC_URI:append = " \
     file://0011-dts-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
     file://0012-dts-qs95-no-eDMA1-on-LPUART1-ERR052900.patch \
     file://0013-dts-qs95-disable-USB-park-mode-in-HS-ERR052487.patch \
+    file://0014-board-karo-qs95-cap-PCIe-read-requests-ERR051382.patch \
 "
 
 UBOOT_FEATURES:append:qs95 = " fastboot"
