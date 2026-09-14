@@ -14,6 +14,7 @@ SRC_URI:append = " \
     file://0008-dts-qs95-use-a-3.3-V-drive-strength-on-the-PHY-reset.patch \
     file://0009-dts-qs95-write-the-KSZ9131-pad-skews-in-the-KSZ9131-.patch \
     file://0010-dts-qs95-drive-PCIE_PWR_EN-from-the-M.2-regulator.patch \
+    file://0011-dts-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
 "
 
 UBOOT_FEATURES:append:qs95 = " fastboot"
