@@ -1,0 +1,49 @@
+From 22962e0ceb3e2678b2c8172e3dc9231cd7310be3 Mon Sep 17 00:00:00 2001
+From: Chedy Souffargi <cs@karo-electronics.de>
+Date: Mon, 14 Sep 2026 14:21:51 +0200
+Subject: [PATCH] boards: qs95-5610: name the DDR timing file after its 3733
+ MT/s
+
+- File and Makefile default renamed 4000MTS to 3733MTS
+- Header names the fitted Micron part, one rank, 2 GiB
+- 3733 MT/s locked: Longsys second source maximum
+- No register value changed
+
+Upstream-Status: Inappropriate [board-specific]
+---
+ boards/qs95-5610/ddr/Makefile                                 | 2 +-
+ ...W2024.09_timing.c => QS95_5610_3733MTS_FW2024.09_timing.c} | 4 +++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+ rename boards/qs95-5610/ddr/{QS95_5610_4000MTS_FW2024.09_timing.c => QS95_5610_3733MTS_FW2024.09_timing.c} (99%)
+
+diff --git a/boards/qs95-5610/ddr/Makefile b/boards/qs95-5610/ddr/Makefile
+index f3c9e73..61201f3 100644
+--- a/boards/qs95-5610/ddr/Makefile
++++ b/boards/qs95-5610/ddr/Makefile
+@@ -1,4 +1,4 @@
+-DDR_CONFIG ?= QS95_5610_4000MTS_FW2024.09_timing
++DDR_CONFIG ?= QS95_5610_3733MTS_FW2024.09_timing
+ OBJS  += $(OUT)/$(DDR_CONFIG).o
+ 
+ VPATH += boards/qs95-5610/ddr
+diff --git a/boards/qs95-5610/ddr/QS95_5610_4000MTS_FW2024.09_timing.c b/boards/qs95-5610/ddr/QS95_5610_3733MTS_FW2024.09_timing.c
+similarity index 99%
+rename from boards/qs95-5610/ddr/QS95_5610_4000MTS_FW2024.09_timing.c
+rename to boards/qs95-5610/ddr/QS95_5610_3733MTS_FW2024.09_timing.c
+index da5b8b3..74cf8b0 100644
+--- a/boards/qs95-5610/ddr/QS95_5610_4000MTS_FW2024.09_timing.c
++++ b/boards/qs95-5610/ddr/QS95_5610_3733MTS_FW2024.09_timing.c
+@@ -6,7 +6,9 @@
+  * Code generated with DDR Tool v4.0.0_1.2-1eade933a.
+  * DDR PHY FW2024.09-SP2
+  * Chip revision: B0
+- * Part number: NXP LPDDR4X EVK and FRDM 15x15 board's default DDR part
++ * Part number: Micron MT53E1G32D2FW-046 WT:B, BOM K700-201 U5
++ * Rank 0 only, 2 GiB: QS95 product sheet p.1 says 2 GB
++ * 3733 MT/s max: Longsys FLXC2002G-26 second source, data sheet p.4
+  */
+ 
+ #include "ddr.h"
+-- 
+2.43.0
+
