@@ -16,15 +16,15 @@ DTB_OVERLAYS ??= ""
 
 DTB_OVERLAYS_generic = "\
         ${@ mach_overlay(d, "karo-dsi83")} \
-        ${@ mach_overlay(d, ":karo-gpu", "imx8mp")} \
+        ${@ mach_overlay(d, ":karo-gpu", "mx8mp")} \
         ${@ mach_overlay(d, "karo-mb7", "tx8m")} \
         karo-rtc \
         ${@ mach_overlay(d, "qs8m-tc358867", "qs8m,qsxm", "tc358867")} \
-        ${@ mach_overlay(d, ":karo-panel-et0570", "qs8m,qsxm,tx8m-1622,imx8mp")} \
-        ${@ mach_overlay(d, ":karo-panel-etm0350", "qs8m,qsxm,tx8m-1622,imx8mp")} \
-        ${@ mach_overlay(d, ":karo-panel-etm0430", "qs8m,qsxm,tx8m-1622,imx8mp")} \
-        ${@ mach_overlay(d, ":karo-panel-etm0700", "qs8m,qsxm,tx8m-1622,imx8mp")} \
-        ${@ mach_overlay(d, ":karo-panel-tm101jvhg32", "qs8m,qsxm,tx8m-1622,imx8mp")} \
+        ${@ mach_overlay(d, ":karo-panel-et0570", "qs8m,qsxm,tx8m-1622,mx8mp")} \
+        ${@ mach_overlay(d, ":karo-panel-etm0350", "qs8m,qsxm,tx8m-1622,mx8mp")} \
+        ${@ mach_overlay(d, ":karo-panel-etm0430", "qs8m,qsxm,tx8m-1622,mx8mp")} \
+        ${@ mach_overlay(d, ":karo-panel-etm0700", "qs8m,qsxm,tx8m-1622,mx8mp")} \
+        ${@ mach_overlay(d, ":karo-panel-tm101jvhg32", "qs8m,qsxm,tx8m-1622,mx8mp")} \
 "
 
 DTB_OVERLAYS_generic:append:tx8m = "\
@@ -34,8 +34,8 @@ DTB_OVERLAYS_generic:append:tx8m = "\
 
 DTB_OVERLAYS:append = " \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
-        ${@ mach_overlay(d, ":karo-vpu", "imx8mn")} \
-        ${@ mach_overlay(d, ":tx8m-wifi", "imx8mn")} \
+        ${@ mach_overlay(d, ":karo-vpu", "mx8mn")} \
+        ${@ mach_overlay(d, ":tx8m-wifi", "mx8mn")} \
 "
 
 DTB_OVERLAYS:append:mx8mp-generic-bsp = "\
@@ -43,11 +43,11 @@ DTB_OVERLAYS:append:mx8mp-generic-bsp = "\
 "
 
 DTB_OVERLAYS:append:tx8m = "\
-        ${@ mach_overlay(d, "tx8m-bd718xx-restart:", "imx8mm")} \
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart:", "mx8mm")} \
         karo-lvds-panel \
         tx8m-leds \
         tx8m-mcp2515 \
-        ${@ mach_overlay(d, ":tx8m-pcie", "imx8mn")} \
+        ${@ mach_overlay(d, ":tx8m-pcie", "mx8mn")} \
         tx8m-sound \
         tx8m-spidev \
 "
@@ -153,38 +153,38 @@ KARO_BASEBOARDS:qsxp ?= "\
 
 # baseboard DTB specific overlays
 KARO_DTB_OVERLAYS[mb7] += "\
-        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "imx8mm")} \
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "mx8mm")} \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         karo-mb7 \
-        ${@ mach_overlay(d, "karo-lvds-panel", "imx8mp")} \
+        ${@ mach_overlay(d, "karo-lvds-panel", "mx8mp")} \
         ${@ mach_overlay(d, "tx8m-1620-lvds-panel", "tx8m-1620")} \
-        ${@ mach_overlay(d, "karo-panel-et0570,karo-panel-etm0350,karo-panel-etm0430,karo-panel-etm0700,karo-panel-tm101jvhg32", "imx8mp,tx8m-1620")} \
-        ${@ mach_overlay(d, "tx8p-flexcan", "imx8mp", "flexcan")} \
+        ${@ mach_overlay(d, "karo-panel-et0570,karo-panel-etm0350,karo-panel-etm0430,karo-panel-etm0700,karo-panel-tm101jvhg32", "mx8mp,tx8m-1620")} \
+        ${@ mach_overlay(d, "tx8p-flexcan", "mx8mp", "flexcan")} \
         ${@ mach_overlay(d, "tx8m-ft5x06", "tx8m-1620")} \
-        ${@ mach_overlay(d, ":tx8m-leds", "imx8mp")} \
-        ${@ mach_overlay(d, "tx8p-ft5x06", "imx8mp")} \
-        ${@ mach_overlay(d, "tx8p-sound:tx8m-sound", "imx8mp")} \
-        ${@ mach_overlay(d, "tx8p-spidev:tx8m-spidev", "imx8mp")} \
+        ${@ mach_overlay(d, ":tx8m-leds", "mx8mp")} \
+        ${@ mach_overlay(d, "tx8p-ft5x06", "mx8mp")} \
+        ${@ mach_overlay(d, "tx8p-sound:tx8m-sound", "mx8mp")} \
+        ${@ mach_overlay(d, "tx8p-spidev:tx8m-spidev", "mx8mp")} \
 "
 
 KARO_DTB_OVERLAYS[lvds-mb] += "\
-        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "imx8mm")} \
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "mx8mm")} \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         ${@ mach_overlay(d, "tx8m-1620-lvds-panel:karo-lvds-panel", "tx8m-1620")} \
         karo-panel-tm101jvhg32 \
         karo-rtc \
-        ${@ mach_overlay(d, "tx8m-leds", "imx8mm")} \
-        ${@ mach_overlay(d, "tx8m-wifi", "imx8mm", "wifi")} \
-        ${@ mach_overlay(d, "tx8p-lvds-mb", "imx8mp")} \
-        ${@ mach_overlay(d, "tx8p-sound:tx8m-sound", "imx8mp")} \
-        ${@ mach_overlay(d, "tx8p-spidev:tx8m-spidev", "imx8mp")} \
-        ${@ mach_overlay(d, "tx8p-pcie:tx8m-pcie", "imx8mp")} \
+        ${@ mach_overlay(d, "tx8m-leds", "mx8mm")} \
+        ${@ mach_overlay(d, "tx8m-wifi", "mx8mm", "wifi")} \
+        ${@ mach_overlay(d, "tx8p-lvds-mb", "mx8mp")} \
+        ${@ mach_overlay(d, "tx8p-sound:tx8m-sound", "mx8mp")} \
+        ${@ mach_overlay(d, "tx8p-spidev:tx8m-spidev", "mx8mp")} \
+        ${@ mach_overlay(d, "tx8p-pcie:tx8m-pcie", "mx8mp")} \
 "
 
 KARO_DTB_OVERLAYS[mipi-mb] += "\
-        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "imx8mm")} \
+        ${@ mach_overlay(d, "tx8m-bd718xx-restart", "mx8mm")} \
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         ${@ mach_overlay(d, ":karo-dsi83", "tx8m-1622")} \
         karo-gpu \
@@ -194,13 +194,13 @@ KARO_DTB_OVERLAYS[mipi-mb] += "\
         tx8m-leds \
         tx8m-sound \
         tx8m-spidev \
-        ${@ mach_overlay(d, "tx8m-wifi", "imx8mm", "wifi")} \
+        ${@ mach_overlay(d, "tx8m-wifi", "mx8mm", "wifi")} \
 "
 
 KARO_DTB_OVERLAYS[qsbase2] += "\
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
-        ${@ mach_overlay(d, "qs8m-cam", "imx8mm", "imx219")} \
+        ${@ mach_overlay(d, "qs8m-cam", "mx8mm", "imx219")} \
         qs8m-ksz9031 \
         ${@ mach_overlay(d, "qs8m-raspi-display", dist="raspi-display")} \
         qs8m-spidev \
@@ -210,23 +210,23 @@ KARO_DTB_OVERLAYS[qsbase3] += "\
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
         ${@ mach_overlay(d, "qsxp-flexcan", dist="flexcan")} \
-        ${@ mach_overlay(d, "qs8m-cam", "imx8mm", "csi-camera")} \
-        ${@ mach_overlay(d, "qsxp-ksz9031:qs8m-ksz9031", "imx8mp")} \
-        ${@ mach_overlay(d, "qsxp-laird:qsxm-laird", "imx8mp", "wifi")} \
-        ${@ mach_overlay(d, "qsxp-pcie:qsxm-pcie", "imx8mp", "pcie")} \
-        ${@ mach_overlay(d, "qsxp-qsbase3:qsxm-qsbase3", "imx8mp")} \
-        ${@ mach_overlay(d, "qsxp-raspi-display:qs8m-raspi-display", "imx8mp", "raspi-display")} \
-        ${@ mach_overlay(d, "qsxp-spidev:qs8m-spidev", "imx8mp")} \
+        ${@ mach_overlay(d, "qs8m-cam", "mx8mm", "csi-camera")} \
+        ${@ mach_overlay(d, "qsxp-ksz9031:qs8m-ksz9031", "mx8mp")} \
+        ${@ mach_overlay(d, "qsxp-laird:qsxm-laird", "mx8mp", "wifi")} \
+        ${@ mach_overlay(d, "qsxp-pcie:qsxm-pcie", "mx8mp", "pcie")} \
+        ${@ mach_overlay(d, "qsxp-qsbase3:qsxm-qsbase3", "mx8mp")} \
+        ${@ mach_overlay(d, "qsxp-raspi-display:qs8m-raspi-display", "mx8mp", "raspi-display")} \
+        ${@ mach_overlay(d, "qsxp-spidev:qs8m-spidev", "mx8mp")} \
 "
 
 KARO_DTB_OVERLAYS[qsbase4] += "\
         ${@ mach_overlay(d, "karo-copro", dist="copro")} \
         karo-gpu \
-        ${@ mach_overlay(d, "qsxp-cam:qs8m-cam", "imx8mp", "csi-camera")} \
+        ${@ mach_overlay(d, "qsxp-cam:qs8m-cam", "mx8mp", "csi-camera")} \
         ${@ mach_overlay(d, "qsxp-flexcan", dist="flexcan")} \
-        ${@ mach_overlay(d, "qsxp-ksz9131:qs8m-ksz9131", "imx8mp")} \
-        ${@ mach_overlay(d, "qsxp-raspi-display:qs8m-raspi-display", "imx8mp", "raspi-display")} \
-        ${@ mach_overlay(d, "qsxp-spidev:qs8m-spidev", "imx8mp")} \
+        ${@ mach_overlay(d, "qsxp-ksz9131:qs8m-ksz9131", "mx8mp")} \
+        ${@ mach_overlay(d, "qsxp-raspi-display:qs8m-raspi-display", "mx8mp", "raspi-display")} \
+        ${@ mach_overlay(d, "qsxp-spidev:qs8m-spidev", "mx8mp")} \
 "
 
 KARO_DTB_OVERLAYS = "${@ d.getVarFlag('KARO_DTB_OVERLAYS', (d.getVar('KARO_BASEBOARD') or "None"), True) or ""}"
