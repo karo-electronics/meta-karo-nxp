@@ -7,6 +7,8 @@ SOC_PREFIX = "imx93"
 
 KARO_BOARD_PMIC ?= "pca9450"
 
+UBOOT_DTB_NAME:mx93-generic-bsp = "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
+
 ATF_PLATFORM ?= "imx93"
 
 ATF_BL31_BASE ??= "0x204e0000"
