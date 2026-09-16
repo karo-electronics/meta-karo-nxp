@@ -23,6 +23,7 @@ SOC_DEFAULT_IMAGE_FSTYPES = "wic.zst"
 
 # Set DTB variables
 KARO_BASEBOARD ??= ""
+DTB_VENDOR_DIR ?= "freescale"
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
 UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 

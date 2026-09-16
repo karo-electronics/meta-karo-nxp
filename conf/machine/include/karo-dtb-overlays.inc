@@ -50,7 +50,7 @@ def get_overlays(d):
     o = d.getVar('DTB_OVERLAYS') or ""
     for ov in g.split():
         for fn in ov.split(","):
-            fn = " freescale/%s-%s.dtbo" % (d.getVar('SOC_PREFIX'), fn)
+            fn = " %s/%s-%s.dtbo" % (d.getVar('DTB_VENDOR_DIR'), d.getVar('SOC_PREFIX'), fn)
             if fn in ovlist:
                 bb.debug(2, "'%s' is already in overlays" % fn)
             else:
@@ -59,7 +59,7 @@ def get_overlays(d):
 
     for ov in o.split():
         for fn in ov.split(","):
-            fn = " freescale/%s-%s.dtbo" % (d.getVar('SOC_FAMILY'), fn)
+            fn = " %s/%s-%s.dtbo" % (d.getVar('DTB_VENDOR_DIR'), d.getVar('SOC_FAMILY'), fn)
             if fn in ovlist:
                 bb.debug(2, "'%s' is already in overlays" % fn)
             else:

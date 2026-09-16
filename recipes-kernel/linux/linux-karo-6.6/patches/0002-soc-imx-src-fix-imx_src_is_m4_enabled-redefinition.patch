@@ -1,0 +1,30 @@
+From: CSouffargi <cs@karo-electronics.de>
+Date: Thu, 9 Jul 2026 17:00:00 +0200
+Subject: [PATCH] soc: imx: src: fix imx_src_is_m4_enabled redefinition on
+ 32-bit i.MX
+
+The header guards the real prototype with CONFIG_SOC_IMX8M, but
+arch/arm/mach-imx/src.c also provides the function whenever
+CONFIG_HAVE_IMX_SRC is set (i.MX5/6/7, 32-bit). Building for i.MX6ULL
+then hits a redefinition between the static inline stub and the real
+definition. Align the guard with the condition that actually builds
+src.c (obj-$(CONFIG_HAVE_IMX_SRC) += src.o) so declaration and
+definition can never diverge, on any platform.
+
+Signed-off-by: CSouffargi <cs@karo-electronics.de>
+---
+ include/soc/imx/src.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/soc/imx/src.h b/include/soc/imx/src.h
+--- a/include/soc/imx/src.h
++++ b/include/soc/imx/src.h
+@@ -1,7 +1,7 @@
+ #ifndef __SOC_IMX_SRC_H
+ #define __SOC_IMX_SRC_H
+ 
+-#if IS_ENABLED(CONFIG_SOC_IMX8M)
++#if IS_ENABLED(CONFIG_HAVE_IMX_SRC)
+ bool imx_src_is_m4_enabled(void);
+ #else
+ static inline bool imx_src_is_m4_enabled(void) { return false; }

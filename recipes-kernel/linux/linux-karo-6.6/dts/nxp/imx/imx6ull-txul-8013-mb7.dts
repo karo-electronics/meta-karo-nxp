@@ -1,0 +1,13 @@
+// SPDX-License-Identifier: GPL-2.0-only OR MIT
+/*
+ * Ka-Ro electronics TXUL-8013 module on MB7 baseboard.
+ */
+
+/dts-v1/;
+
+#include "imx6ull-txul-8013.dts"
+#include "imx6ul-txul-mb7.dtsi"
+
+/ {
+	model = "Ka-Ro electronics TXUL-8013 Module on MB7 baseboard";
+};

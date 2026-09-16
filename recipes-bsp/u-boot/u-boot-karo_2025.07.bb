@@ -23,8 +23,7 @@ DEPENDS += "\
 "
 
 require recipes-bsp/u-boot/u-boot.inc
-require conf/machine/include/${SOC_PREFIX}-overlays.inc
-inherit use-imx-security-controller-firmware
+inherit ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "use-imx-security-controller-firmware"}
 inherit fsl-u-boot-localversion
 LOCALVERSION = "-karo"
 
@@ -36,7 +35,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "4443bcd2df45efcd48cc07418e6531a708bf4a6a"
+UBOOT_REV_DEFAULT = "ca3693de875b5fd45e18124b8f1c8e434622b979"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
@@ -63,6 +62,20 @@ ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-o
 UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
 UBOOT_BOARD_DIR:mx93-nxp-bsp = "board/karo/imx93"
 UBOOT_BOARD_DIR:mx91-nxp-bsp = "board/karo/imx91"
+UBOOT_BOARD_DIR:mx6-nxp-bsp = "board/karo/imx6"
+# No ATF or DDR firmware on i.MX6.
+DEPENDS:remove:mx6-nxp-bsp = "imx-atf ${IMX_EXTRA_FIRMWARE}"
+
+# UBOOT_CONFIG types that keep their own defconfig environment.
+UBOOT_ENV_FILE_KEEP_TYPES ?= ""
+
+# Build from the in-tree defconfig, device trees and environment.
+KARO_UBOOT_INTREE ?= "0"
+
+# Generate and deploy fw_env.config for the u-boot-fw-utils feature.
+KARO_UBOOT_FW_ENV_CONFIG ?= "1"
+# libubootenv already ships the same file on i.MX6.
+KARO_UBOOT_FW_ENV_CONFIG:mx6-nxp-bsp = "0"
 
 UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
@@ -75,20 +88,24 @@ UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
                        "-" + d.getVar('KARO_BASEBOARD') \
                        if d.getVar('KARO_BASEBOARD') != "" else "")}"
 
-SRC_URI:append = "${@ " file://${UBOOT_ENV_FILE}.env" if d.getVar('UBOOT_ENV_FILE') != None else ""}"
+SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else \
+                      " file://${UBOOT_ENV_FILE}.env" if d.getVar('UBOOT_ENV_FILE') != None else ""}"
 SRC_URI:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', " file://rauc.env", "", d)}"
 
-SRC_URI:append = " \
+SRC_URI:append:txul = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " file://dts/txul-mb7-lcd-u-boot.dtsi;subdir=git/arch/arm"}"
+
+SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " \
     file://dts/${UBOOT_DTB_NAME}.dts;subdir=git/arch/arm \
     file://dts/${UBOOT_DTB_NAME}-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
     file://dts/${DTB_BASENAME}-u-boot.dtsi;subdir=git/arch/arm \
-"
+"}"
 
-SRC_URI:append = " file://u-boot-cfg.${SOC_PREFIX}"
-SRC_URI:append = " file://u-boot-cfg.${SOC_FAMILY}"
-SRC_URI:append = " file://u-boot-cfg.${MACHINE}"
-SRC_URI:append = "${@ "".join(map(lambda f: " file://u-boot-cfg.%s" % f, d.getVar('UBOOT_CONFIG').split()))}"
+SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " file://u-boot-cfg.${SOC_PREFIX}"}"
+SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " file://u-boot-cfg.${SOC_FAMILY}"}"
+SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " file://u-boot-cfg.${MACHINE}"}"
+SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else \
+                      "".join(map(lambda f: " file://u-boot-cfg.%s" % f, d.getVar('UBOOT_CONFIG').split()))}"
 SRC_URI:append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
 
 EXTRA_OEMAKE:append = " V=0"
@@ -111,7 +128,37 @@ python karo_check_baseboard () {
                                "\n".join(d.getVar('KARO_BASEBOARDS').split())), d)
 }
 
+# The in-tree defconfig already carries device tree, environment and features.
+karo_configure_intree() {
+    if [ -n "${KARO_BASEBOARD}" ];then
+        mach="${MACHINE}-${KARO_BASEBOARD}"
+    else
+        mach="${MACHINE}"
+    fi
+    if [ -n "${UBOOT_CONFIG}" ];then
+        for config in ${UBOOT_MACHINE};do
+            bbnote "Configuring '${config}' from the in-tree defconfig"
+            mkdir -p "${B}/${config}"
+            oe_runmake -C ${S} O=${B}/${config} ${config}
+            oe_runmake -C ${B}/${config} oldconfig
+        done
+    else
+        bbnote "Configuring '${mach}_defconfig' from the in-tree defconfig"
+        mkdir -p "${B}"
+        oe_runmake -C ${S} O=${B} "${mach}_defconfig"
+        oe_runmake -C ${B} oldconfig
+    fi
+}
+
 do_configure() {
+    # A stale copy would reach the rootfs through u-boot.inc.
+    rm -f "${W}/fw_env.config"
+
+    if [ "${KARO_UBOOT_INTREE}" = "1" ];then
+        karo_configure_intree
+        return
+    fi
+
     if [ -n "${KARO_BASEBOARD}" ];then
         mach="${MACHINE}-${KARO_BASEBOARD}"
     else
@@ -168,9 +215,18 @@ do_configure() {
     if [ -z "$tmpfile" ];then
         bbfatal "Failed to create tmpfile"
     fi
+    envfile="`mktemp cfg-env-XXXXXX.tmp`"
+    if [ -z "$envfile" ];then
+        bbfatal "Failed to create envfile"
+    fi
     add_conf() {
         [ $# = 2 ] || return 0
         echo "$1=$2" >> "$tmpfile"
+    }
+    # UBOOT_ENV_FILE_KEEP_TYPES variants keep their own environment.
+    add_env_conf() {
+        [ $# = 2 ] || return 0
+        echo "$1=$2" >> "$envfile"
     }
 
     add_conf CONFIG_DEFAULT_DEVICE_TREE "\"${UBOOT_DTB_NAME}\""
@@ -183,15 +239,15 @@ do_configure() {
 
     bbnote "UBOOT_ENV_FILE='${UBOOT_ENV_FILE}'"
     if [ -n "${UBOOT_ENV_FILE}" ];then
-        add_conf CONFIG_USE_DEFAULT_ENV_FILE y
-        add_conf CONFIG_DEFAULT_ENV_FILE "\"board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}.env\""
+        add_env_conf CONFIG_USE_DEFAULT_ENV_FILE y
+        add_env_conf CONFIG_DEFAULT_ENV_FILE "\"board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}.env\""
         if  ${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "true", "false", d)};then
             LC_ALL=C sort ${WORKDIR}/${UBOOT_ENV_FILE}.env ${WORKDIR}/rauc.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
         else
             LC_ALL=C sort ${WORKDIR}/${UBOOT_ENV_FILE}.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
         fi
     else
-        echo "# CONFIG_USE_DEFAULT_ENV_FILE is not set" >> "$tmpfile"
+        echo "# CONFIG_USE_DEFAULT_ENV_FILE is not set" >> "$envfile"
     fi
 
     # convey common settings for imx-atf and U-Boot to U-Boot config
@@ -200,21 +256,43 @@ do_configure() {
     add_conf CONFIG_SAVED_DRAM_TIMING_BASE ${UBOOT_SAVED_DRAM_TIMING_BASE}
 
     if [ -n "${UBOOT_CONFIG}" ];then
+        i=0
         for config in ${UBOOT_MACHINE};do
-            c="${B}/${config}"
-            oe_runmake -C "${c}" oldconfig
-            merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
-            oe_runmake -C "${c}" oldconfig
+            i=$(expr $i + 1)
+            j=0
+            for type in ${UBOOT_CONFIG};do
+                j=$(expr $j + 1)
+                [ $j = $i ] || continue
+                c="${B}/${config}"
+                oe_runmake -C "${c}" oldconfig
+                merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
+                keep=0
+                for t in ${UBOOT_ENV_FILE_KEEP_TYPES};do
+                    [ "$t" = "$type" ] && keep=1
+                done
+                if [ $keep = 0 ];then
+                    merge_config.sh -m -r -O "${c}" "${c}/.config" "$envfile"
+                else
+                    bbnote "Keeping the environment selected by '${config}' itself"
+                fi
+                oe_runmake -C "${c}" oldconfig
+                break
+            done
         done
+        unset i j
     else
         c=${B}
         oe_runmake -C "${B}" oldconfig
         merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
+        if [ -s "$envfile" ];then
+            merge_config.sh -m -r -O "${B}" "${B}/.config" "$envfile"
+        fi
         oe_runmake -C "${B}" oldconfig
     fi
-    rm -f "$tmpfile"
+    rm -f "$tmpfile" "$envfile"
 
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)} && \
+       [ "${KARO_UBOOT_FW_ENV_CONFIG}" = "1" ];then
         env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
         env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
         printf "/dev/mmcblk0boot0\t0x%08x\t0x%08x\n" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
@@ -255,7 +333,27 @@ check_config() {
     fi
 }
 
+# In-tree mode: warn when the build needs settings the defconfig lacks.
+karo_check_defconfig_drift() {
+    for config in ${UBOOT_MACHINE};do
+        oe_runmake -C "${B}/${config}" savedefconfig
+        missing="$(grep -Fxv -f "${S}/configs/${config}" "${B}/${config}/defconfig" || true)"
+        extra="$(grep -Fxv -f "${B}/${config}/defconfig" "${S}/configs/${config}" || true)"
+        if [ -n "$extra" ];then
+            bbnote "'${config}' carries redundant settings: $(echo $extra)"
+        fi
+        if [ -n "$missing" ];then
+            bbwarn "defconfig drift: '${config}' lacks: $(echo $missing)"
+        fi
+    done
+}
+
 do_check_config() {
+    if [ "${KARO_UBOOT_INTREE}" = "1" ];then
+        karo_check_defconfig_drift
+        return
+    fi
+
     bbnote "Checking defconfig consistency"
     if [ -n "${UBOOT_CONFIG}" ];then
         i=0
@@ -327,15 +425,24 @@ do_check_config() {
 addtask do_check_config after do_savedefconfig
 do_check_config[nostamp] = "1"
 
+# In-tree mode makes the drift guard part of the build. Drop the nostamp
+# do_savedefconfig dependency: its taint would rebuild U-Boot every time.
+python () {
+    if d.getVar('KARO_UBOOT_INTREE') == "1":
+        d.delVarFlag('do_check_config', 'nostamp')
+        d.setVarFlag('do_check_config', 'deps', [])
+        bb.build.addtask('do_check_config', 'do_compile', 'do_configure', d)
+}
+
 # This package aggregates output deployed by other packages,
 # so set the appropriate dependencies
 do_compile[depends] += " \
     ${@ "".join(map(lambda f: " %s:do_deploy" % f, d.getVar('IMX_EXTRA_FIRMWARE').split()))} \
-    imx-atf:do_deploy \
+    ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "imx-atf:do_deploy"} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
-do_compile:prepend() {
+karo_copy_atf_firmware() {
     if [ -n "${UBOOT_CONFIG}" ];then
         for m in ${UBOOT_MACHINE};do
             bbnote "Copy ATF: '${ATF_MACHINE_NAME}' from '${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}' to '${B}/${m}/bl31.bin'"
@@ -355,7 +462,7 @@ do_compile:prepend() {
     fi
 }
 
-do_deploy:append() {
+karo_deploy_uboot_container() {
     if [ -n "${UBOOT_CONFIG}" ];then
         i=0
         for config in ${UBOOT_MACHINE};do
@@ -373,7 +480,8 @@ do_deploy:append() {
     else
         install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
     fi
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
+    if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)} && \
+       [ "${KARO_UBOOT_FW_ENV_CONFIG}" = "1" ];then
         install -vD "${WORKDIR}/fw_env.config" u-boot/fw_env.config
     fi
 }
@@ -472,6 +580,8 @@ python do_env_overlays () {
         f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
         f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
         f.close()
+        # The make rule does not depend on the environment file.
+        bb.utils.remove(os.path.join(d.getVar('B'), config, "u-boot-initial-env"))
 }
 addtask do_env_overlays before do_compile after do_configure
 do_env_overlays[vardeps] += "KARO_BASEBOARDS KARO_DTB_OVERLAYS"
@@ -491,4 +601,40 @@ uboot_install_spl_config() {
 }
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
-COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx9-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx8m-nxp-bsp|mx9-nxp-bsp)"
+
+# ATF copy and imx-boot container deploy only apply to SoCs booting through
+# an imx-boot container. Attach them per SoC family instead of running them
+# unconditionally, so other families can reuse this recipe.
+do_compile:prepend:mx8m-nxp-bsp() {
+    karo_copy_atf_firmware
+}
+do_compile:prepend:mx9-nxp-bsp() {
+    karo_copy_atf_firmware
+}
+
+do_deploy:append:mx8m-nxp-bsp() {
+    karo_deploy_uboot_container
+}
+do_deploy:append:mx9-nxp-bsp() {
+    karo_deploy_uboot_container
+}
+
+# i.MX6 has no boot container; deploy the monolithic image under the same
+# names, which karo-nxp.inc expects.
+do_deploy:append:mx6-nxp-bsp() {
+    i=0
+    for config in ${UBOOT_MACHINE};do
+        i=$(expr $i + 1)
+        j=0
+        for type in ${UBOOT_CONFIG};do
+            j=$(expr $j + 1)
+            [ $j = $i ] || continue
+            install -v "${B}/${config}/${UBOOT_BINARY}" \
+                "${DEPLOYDIR}/u-boot-${MACHINE}-${type}.${UBOOT_SUFFIX}"
+            break
+        done
+        unset j
+    done
+    unset i
+}
