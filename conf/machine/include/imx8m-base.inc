@@ -1,11 +1,7 @@
-require karo-base.inc
-require conf/machine/include/arm/armv8a/tune-cortexa53.inc
-
 MACHINEOVERRIDES =. "mx8:mx8m:"
 
-require ${@ "imx8mm-base.inc" if 'mx8mm' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-require ${@ "imx8mn-base.inc" if 'mx8mn' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
-require ${@ "imx8mp-base.inc" if 'mx8mp' in d.getVar('MACHINEOVERRIDES').split(':') else ""}
+require karo-base.inc
+require conf/machine/include/arm/armv8a/tune-cortexa53.inc
 
 SOC_PREFIX = "imx8m"
 

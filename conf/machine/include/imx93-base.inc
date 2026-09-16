@@ -1,7 +1,7 @@
+MACHINEOVERRIDES =. "mx93:"
+
 require karo-base.inc
 require conf/machine/include/arm/armv8-2a/tune-cortexa55.inc
-
-MACHINEOVERRIDES =. "mx93:"
 
 SOC_PREFIX = "imx93"
 

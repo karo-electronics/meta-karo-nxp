@@ -38,7 +38,7 @@ DTB_OVERLAYS:append = " \
         ${@ mach_overlay(d, ":tx8m-wifi", "imx8mn")} \
 "
 
-DTB_OVERLAYS:append:imx8mp = "\
+DTB_OVERLAYS:append:mx8mp-generic-bsp = "\
         karo-gpu \
 "
 
