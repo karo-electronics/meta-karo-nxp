@@ -28,3 +28,5 @@ DDR_FIRMWARE_NAME ?= " \
 "
 
 PREFERRED_VERSION_opengl-es-cts:aarch64 = "3.2.7.0"
+
+require imx93-overlays.inc

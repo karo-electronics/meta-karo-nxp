@@ -96,3 +96,5 @@ KARO_DTB_OVERLAYS[qsbase93] += " \
         qs93-fec-lan8710 \
         qs93-lvds-panel karo-panel-tm101jvhg32 \
 "
+
+KERNEL_DEVICETREE:append = "${@ get_overlays(d) }"

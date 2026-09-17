@@ -7,35 +7,22 @@ inherit kernel fsl-vivante-kernel-driver-handler
 inherit fsl-kernel-localversion
 LOCALVERSION = "-karo"
 
+PROVIDES += "linux"
+DEPENDS += "lzop-native bc-native dtc-native"
+
 S = "${WORKDIR}/git"
 
-def get_overlays(d):
-    ovlist = []
-    g = d.getVar('DTB_OVERLAYS_generic') or ""
-    o = d.getVar('DTB_OVERLAYS') or ""
-    for ov in g.split():
-        for fn in ov.split(","):
-            fn = " freescale/%s-%s.dtbo" % (d.getVar('SOC_PREFIX'), fn)
-            if fn in ovlist:
-                bb.debug(2, "'%s' is already in overlays" % fn)
-            else:
-                bb.debug(2, "Adding '%s' to overlays" % fn)
-                ovlist += [fn]
+KARO_KERNEL_SRC ?= "${KERNEL_SRC_DEFAULT}"
+KARO_KERNEL_BRANCH ?= "${KERNEL_BRANCH_DEFAULT}"
+KARO_KERNEL_REV ?= "${KERNEL_REV_DEFAULT}"
 
-    for ov in o.split():
-        for fn in ov.split(","):
-            fn = " freescale/%s-%s.dtbo" % (d.getVar('SOC_FAMILY'), fn)
-            if fn in ovlist:
-                bb.debug(2, "'%s' is already in overlays" % fn)
-            else:
-                bb.debug(2, "Adding '%s' to overlays" % fn)
-                ovlist += [fn]
+KERNEL_SRC = "${KARO_KERNEL_SRC}"
+KERNEL_BRANCH = "${KARO_KERNEL_BRANCH}"
+KERNEL_REV = "${KARO_KERNEL_REV}"
 
-    if len(ovlist) == 0:
-        return ""
-    return " ".join(ovlist)
-
-KERNEL_DEVICETREE:append = "${@ get_overlays(d) }"
+SRC_URI = "${KERNEL_SRC};branch=${SRCBRANCH}"
+SRCBRANCH = "${KERNEL_BRANCH}"
+SRCREV = "${KERNEL_REV}"
 
 python do_check_overlays() {
     import itertools

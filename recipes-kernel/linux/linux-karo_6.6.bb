@@ -1,9 +1,8 @@
 SUMMARY = "Linux Kernel for Ka-Ro electronics Computer-On-Modules"
 
-require recipes-kernel/linux/linux-karo.inc
-require conf/machine/include/${SOC_PREFIX}-overlays.inc
+FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/cfg:${THISDIR}/${BP}/defconfigs:"
 
-DEPENDS += "lzop-native bc-native dtc-native"
+require recipes-kernel/linux/linux-karo.inc
 
 LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
@@ -15,22 +14,6 @@ CVE_PRODUCT = "linux:linux_kernel"
 CVE_VERSION = "6.6.52"
 
 SPDX_INCLUDE_KERNEL_CONFIG = "1"
-
-KARO_KERNEL_SRC ?= "${KERNEL_SRC_DEFAULT}"
-KARO_KERNEL_BRANCH ?= "${KERNEL_BRANCH_DEFAULT}"
-KARO_KERNEL_REV ?= "${KERNEL_REV_DEFAULT}"
-
-KERNEL_SRC = "${KARO_KERNEL_SRC}"
-KERNEL_BRANCH = "${KARO_KERNEL_BRANCH}"
-KERNEL_REV = "${KARO_KERNEL_REV}"
-
-SRC_URI = "${KERNEL_SRC};branch=${SRCBRANCH}"
-SRCBRANCH = "${KERNEL_BRANCH}"
-SRCREV = "${KERNEL_REV}"
-
-FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/cfg:${THISDIR}/${BP}/defconfigs:"
-
-PROVIDES += "linux"
 
 # automatically add all .dts files referenced by ${KERNEL_DEVICETREE} to SRC_URI
 SRC_URI:append = "${@"".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"

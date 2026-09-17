@@ -230,3 +230,5 @@ KARO_DTB_OVERLAYS[qsbase4] += "\
 "
 
 KARO_DTB_OVERLAYS = "${@ d.getVarFlag('KARO_DTB_OVERLAYS', (d.getVar('KARO_BASEBOARD') or "None"), True) or ""}"
+
+KERNEL_DEVICETREE:append = "${@ get_overlays(d) }"

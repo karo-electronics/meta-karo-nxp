@@ -18,13 +18,10 @@ SOC_FAMILY ??= "${SOC_PREFIX}"
 KARO_BOARD_PMIC ??= ""
 
 UBOOT_CONFIG ??= "default mfg noenv"
-UBOOT_FEATURES ??= ""
-UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
-UBOOT_FEATURES:append = "${@ " optee" if 'optee' in d.getVar('MACHINE_FEATURES').split() else ""}"
 
 SOC_DEFAULT_IMAGE_FSTYPES = "wic.zst"
 
-# Set U-Boot DTB
+# Set DTB variables
 KARO_BASEBOARD ??= ""
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
 UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"

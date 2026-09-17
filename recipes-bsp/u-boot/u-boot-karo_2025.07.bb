@@ -54,8 +54,6 @@ SRC_URI = "${UBOOT_SRC};branch=${SRCBRANCH}"
 SRCBRANCH = "${UBOOT_BRANCH}"
 SRCREV = "${UBOOT_REV}"
 
-SRC_URI:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', " file://rauc.env", "", d)}"
-
 S = "${WORKDIR}/git"
 B = "${WORKDIR}/build"
 
@@ -66,19 +64,19 @@ UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
 UBOOT_BOARD_DIR:mx93-nxp-bsp = "board/karo/imx93"
 UBOOT_BOARD_DIR:mx91-nxp-bsp = "board/karo/imx91"
 
-UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
-                       "-" + d.getVar('KARO_BASEBOARD') \
-                       if d.getVar('KARO_BASEBOARD') != "" else "")}"
-
 UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
-
+UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
+UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "optee", " optee", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
 
-SRC_URI:append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
+UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
+                       "-" + d.getVar('KARO_BASEBOARD') \
+                       if d.getVar('KARO_BASEBOARD') != "" else "")}"
 
 SRC_URI:append = "${@ " file://${UBOOT_ENV_FILE}.env" if d.getVar('UBOOT_ENV_FILE') != None else ""}"
+SRC_URI:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', " file://rauc.env", "", d)}"
 
 SRC_URI:append = " \
     file://dts/${UBOOT_DTB_NAME}.dts;subdir=git/arch/arm \
@@ -91,6 +89,7 @@ SRC_URI:append = " file://u-boot-cfg.${SOC_PREFIX}"
 SRC_URI:append = " file://u-boot-cfg.${SOC_FAMILY}"
 SRC_URI:append = " file://u-boot-cfg.${MACHINE}"
 SRC_URI:append = "${@ "".join(map(lambda f: " file://u-boot-cfg.%s" % f, d.getVar('UBOOT_CONFIG').split()))}"
+SRC_URI:append = "${@ "".join(map(lambda f: " file://%s.cfg" % f, d.getVar('UBOOT_FEATURES').split()))}"
 
 EXTRA_OEMAKE:append = " V=0"
 

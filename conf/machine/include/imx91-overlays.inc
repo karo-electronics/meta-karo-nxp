@@ -86,3 +86,5 @@ KARO_DTB_OVERLAYS[qsbase1] += " \
         qs91-qsbase1 \
         qs91-ft5x06,qs91-ili2130 \
 "
+
+KERNEL_DEVICETREE:append = "${@ get_overlays(d) }"
