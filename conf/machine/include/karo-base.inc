@@ -25,6 +25,8 @@ SOC_DEFAULT_IMAGE_FSTYPES = "wic.zst"
 KARO_BASEBOARD ??= ""
 DTB_VENDOR_DIR ?= "freescale"
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
+# U-Boot control DT stem; sibling modules override it.
+KARO_UBOOT_DTB_BASENAME ?= "${DTB_BASENAME}"
 UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 KERNEL_DEVICETREE += "freescale/${DTB_BASENAME}.dtb"
