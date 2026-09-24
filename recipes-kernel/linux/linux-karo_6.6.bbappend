@@ -5,6 +5,8 @@ SRC_URI:append = " \
     file://0002-soc-imx-src-fix-imx_src_is_m4_enabled-redefinition.patch \
 "
 
+SRC_URI:append:mx6-nxp-bsp = " file://0003-drm-imx-fix-the-tx6-txul-display-support.patch"
+
 SRC_URI:append = " \
     file://dts/freescale/imx8m-qs8m.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
     file://dts/freescale/imx8m-tx8m.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
