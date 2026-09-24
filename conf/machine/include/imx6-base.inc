@@ -10,9 +10,6 @@ UBOOT_SUFFIX = "imx"
 UBOOT_BINARY = "u-boot-dtb.imx"
 SPL_BINARY = ""
 
-# The mfg env has its own bootcmd; keep it.
-UBOOT_ENV_FILE_KEEP_TYPES = "mfg"
-
 # i.MX6 fastboot options come from the defconfig.
 UBOOT_FEATURES:remove = "fastboot"
 

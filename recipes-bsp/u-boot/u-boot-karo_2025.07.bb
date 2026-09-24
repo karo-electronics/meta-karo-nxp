@@ -66,9 +66,6 @@ UBOOT_BOARD_DIR:mx6-nxp-bsp = "board/karo/imx6"
 # No ATF or DDR firmware on i.MX6.
 DEPENDS:remove:mx6-nxp-bsp = "imx-atf ${IMX_EXTRA_FIRMWARE}"
 
-# UBOOT_CONFIG types that keep their own defconfig environment.
-UBOOT_ENV_FILE_KEEP_TYPES ?= ""
-
 # Build from the in-tree defconfig, device trees and environment.
 KARO_UBOOT_INTREE ?= "0"
 
@@ -215,18 +212,9 @@ do_configure() {
     if [ -z "$tmpfile" ];then
         bbfatal "Failed to create tmpfile"
     fi
-    envfile="`mktemp cfg-env-XXXXXX.tmp`"
-    if [ -z "$envfile" ];then
-        bbfatal "Failed to create envfile"
-    fi
     add_conf() {
         [ $# = 2 ] || return 0
         echo "$1=$2" >> "$tmpfile"
-    }
-    # UBOOT_ENV_FILE_KEEP_TYPES variants keep their own environment.
-    add_env_conf() {
-        [ $# = 2 ] || return 0
-        echo "$1=$2" >> "$envfile"
     }
 
     add_conf CONFIG_DEFAULT_DEVICE_TREE "\"${UBOOT_DTB_NAME}\""
@@ -239,15 +227,15 @@ do_configure() {
 
     bbnote "UBOOT_ENV_FILE='${UBOOT_ENV_FILE}'"
     if [ -n "${UBOOT_ENV_FILE}" ];then
-        add_env_conf CONFIG_USE_DEFAULT_ENV_FILE y
-        add_env_conf CONFIG_DEFAULT_ENV_FILE "\"board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}.env\""
+        add_conf CONFIG_USE_DEFAULT_ENV_FILE y
+        add_conf CONFIG_DEFAULT_ENV_FILE "\"board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}.env\""
         if  ${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "true", "false", d)};then
             LC_ALL=C sort ${WORKDIR}/${UBOOT_ENV_FILE}.env ${WORKDIR}/rauc.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
         else
             LC_ALL=C sort ${WORKDIR}/${UBOOT_ENV_FILE}.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
         fi
     else
-        echo "# CONFIG_USE_DEFAULT_ENV_FILE is not set" >> "$envfile"
+        echo "# CONFIG_USE_DEFAULT_ENV_FILE is not set" >> "$tmpfile"
     fi
 
     # convey common settings for imx-atf and U-Boot to U-Boot config
@@ -256,40 +244,19 @@ do_configure() {
     add_conf CONFIG_SAVED_DRAM_TIMING_BASE ${UBOOT_SAVED_DRAM_TIMING_BASE}
 
     if [ -n "${UBOOT_CONFIG}" ];then
-        i=0
         for config in ${UBOOT_MACHINE};do
-            i=$(expr $i + 1)
-            j=0
-            for type in ${UBOOT_CONFIG};do
-                j=$(expr $j + 1)
-                [ $j = $i ] || continue
-                c="${B}/${config}"
-                oe_runmake -C "${c}" oldconfig
-                merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
-                keep=0
-                for t in ${UBOOT_ENV_FILE_KEEP_TYPES};do
-                    [ "$t" = "$type" ] && keep=1
-                done
-                if [ $keep = 0 ];then
-                    merge_config.sh -m -r -O "${c}" "${c}/.config" "$envfile"
-                else
-                    bbnote "Keeping the environment selected by '${config}' itself"
-                fi
-                oe_runmake -C "${c}" oldconfig
-                break
-            done
+            c="${B}/${config}"
+            oe_runmake -C "${c}" oldconfig
+            merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
+            oe_runmake -C "${c}" oldconfig
         done
-        unset i j
     else
         c=${B}
         oe_runmake -C "${B}" oldconfig
         merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
-        if [ -s "$envfile" ];then
-            merge_config.sh -m -r -O "${B}" "${B}/.config" "$envfile"
-        fi
         oe_runmake -C "${B}" oldconfig
     fi
-    rm -f "$tmpfile" "$envfile"
+    rm -f "$tmpfile"
 
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)} && \
        [ "${KARO_UBOOT_FW_ENV_CONFIG}" = "1" ];then
