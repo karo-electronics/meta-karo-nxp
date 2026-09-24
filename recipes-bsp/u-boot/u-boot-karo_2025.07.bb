@@ -69,6 +69,11 @@ DEPENDS:remove:mx6-nxp-bsp = "imx-atf ${IMX_EXTRA_FIRMWARE}"
 # Build from the in-tree defconfig, device trees and environment.
 KARO_UBOOT_INTREE ?= "0"
 
+# Carriers whose control DT goes into the U-Boot FIT.
+KARO_UBOOT_BASEBOARDS ?= "${KARO_BASEBOARDS}"
+# The runtime selection picks among these, module DT first.
+KARO_UBOOT_OF_LIST = "${@ ' '.join([d.getVar('KARO_UBOOT_DTB_BASENAME')] + ['%s-%s' % (d.getVar('KARO_UBOOT_DTB_BASENAME'), b) for b in (d.getVar('KARO_UBOOT_BASEBOARDS') or '').split()])}"
+
 # Generate and deploy fw_env.config for the u-boot-fw-utils feature.
 KARO_UBOOT_FW_ENV_CONFIG ?= "1"
 # libubootenv already ships the same file on i.MX6.
@@ -125,6 +130,17 @@ python karo_check_baseboard () {
                                "\n".join(d.getVar('KARO_BASEBOARDS').split())), d)
 }
 
+# Narrow the in-tree FIT; set the fallback carrier.
+karo_apply_dtb_select_conf() {
+    cfg="$1"
+    frag="$2"
+
+    merge_config.sh -m -r -O "$cfg" "$cfg/.config" "$frag"
+    oe_runmake -C "$cfg" oldconfig
+    grep -q "^CONFIG_KARO_DTB_SELECT=y" "$cfg/.config" || \
+        bbfatal "kconfig rejected CONFIG_KARO_DTB_SELECT in '$(basename "$cfg")'"
+}
+
 # The in-tree defconfig already carries device tree, environment and features.
 karo_configure_intree() {
     if [ -n "${KARO_BASEBOARD}" ];then
@@ -132,19 +148,31 @@ karo_configure_intree() {
     else
         mach="${MACHINE}"
     fi
+    frag="`mktemp cfg-dtb-XXXXXX.tmp`"
+    if [ -z "$frag" ];then
+        bbfatal "Failed to create tmpfile"
+    fi
+    echo "CONFIG_KARO_DTB_SELECT=y" >> "$frag"
+    echo "CONFIG_DEFAULT_DEVICE_TREE=\"${KARO_UBOOT_DTB_BASENAME}\"" >> "$frag"
+    echo "CONFIG_OF_LIST=\"${KARO_UBOOT_OF_LIST}\"" >> "$frag"
+    echo "CONFIG_KARO_DEFAULT_BASEBOARD=\"${KARO_BASEBOARD}\"" >> "$frag"
+
     if [ -n "${UBOOT_CONFIG}" ];then
         for config in ${UBOOT_MACHINE};do
             bbnote "Configuring '${config}' from the in-tree defconfig"
             mkdir -p "${B}/${config}"
             oe_runmake -C ${S} O=${B}/${config} ${config}
             oe_runmake -C ${B}/${config} oldconfig
+            karo_apply_dtb_select_conf "${B}/${config}" "$frag"
         done
     else
         bbnote "Configuring '${mach}_defconfig' from the in-tree defconfig"
         mkdir -p "${B}"
         oe_runmake -C ${S} O=${B} "${mach}_defconfig"
         oe_runmake -C ${B} oldconfig
+        karo_apply_dtb_select_conf "${B}" "$frag"
     fi
+    rm -f "$frag"
 }
 
 do_configure() {
@@ -266,6 +294,7 @@ do_configure() {
     fi
 }
 addtask do_configure before do_devshell
+do_configure[vardeps] += "KARO_UBOOT_DTB_BASENAME KARO_UBOOT_OF_LIST KARO_BASEBOARD"
 
 # Helper function for do_check_config task
 check_config() {
@@ -304,8 +333,9 @@ check_config() {
 karo_check_defconfig_drift() {
     for config in ${UBOOT_MACHINE};do
         oe_runmake -C "${B}/${config}" savedefconfig
-        missing="$(grep -Fxv -f "${S}/configs/${config}" "${B}/${config}/defconfig" || true)"
-        extra="$(grep -Fxv -f "${B}/${config}/defconfig" "${S}/configs/${config}" || true)"
+        # CONFIG_OF_LIST and CONFIG_KARO_DEFAULT_BASEBOARD come from the machine.
+        missing="$(grep -Fxv -f "${S}/configs/${config}" "${B}/${config}/defconfig" | grep -v "^CONFIG_OF_LIST=\|^CONFIG_KARO_DEFAULT_BASEBOARD=" || true)"
+        extra="$(grep -Fxv -f "${B}/${config}/defconfig" "${S}/configs/${config}" | grep -v "^CONFIG_OF_LIST=\|^CONFIG_KARO_DEFAULT_BASEBOARD=" || true)"
         if [ -n "$extra" ];then
             bbnote "'${config}' carries redundant settings: $(echo $extra)"
         fi
