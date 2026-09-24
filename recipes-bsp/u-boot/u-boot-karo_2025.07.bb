@@ -149,7 +149,7 @@ karo_configure_intree() {
 
 do_configure() {
     # A stale copy would reach the rootfs through u-boot.inc.
-    rm -f "${W}/fw_env.config"
+    rm -f "${WORKDIR}/fw_env.config"
 
     if [ "${KARO_UBOOT_INTREE}" = "1" ];then
         karo_configure_intree
