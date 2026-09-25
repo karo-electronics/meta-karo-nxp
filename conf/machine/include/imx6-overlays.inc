@@ -6,6 +6,9 @@ DTB_OVERLAYS_generic = "\
 "
 DTB_OVERLAYS_generic:append:mx6q-nxp-bsp = " karo-lvds-panel-etml1010"
 DTB_OVERLAYS_generic:append:mx6dl-nxp-bsp = " karo-lvds-panel-etml1010"
+# ULL panel overlay uses iomuxc_snvs: name it per family.
+DTB_OVERLAYS_generic:remove:mx6ull-nxp-bsp = "karo-panel-etm0700"
+DTB_OVERLAYS:append:mx6ull-nxp-bsp = " karo-panel-etm0700"
 
 DTB_OVERLAYS ??= ""
 DTB_OVERLAY_INCLUDES ??= ""
