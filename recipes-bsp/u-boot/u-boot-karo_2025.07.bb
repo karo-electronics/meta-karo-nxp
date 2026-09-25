@@ -530,11 +530,15 @@ python do_env_overlays () {
         f.write("soc_prefix=%s\n" % (d.getVar('SOC_PREFIX') or ""))
         f.write("soc_family=%s\n" % (d.getVar('SOC_FAMILY') or ""))
         f.close()
-        # The make rule does not depend on the environment file.
-        bb.utils.remove(os.path.join(d.getVar('B'), config, "u-boot-initial-env"))
 }
 addtask do_env_overlays before do_compile after do_configure
 do_env_overlays[vardeps] += "KARO_BASEBOARDS KARO_DTB_OVERLAYS"
+
+# i.MX6: the make rule ignores the edited environment file.
+python do_env_overlays:append:mx6-nxp-bsp () {
+    for config in (d.getVar('UBOOT_MACHINE') or "").split():
+        bb.utils.remove(os.path.join(d.getVar('B'), config, "u-boot-initial-env"))
+}
 
 uboot_install_config() {
     config=$1
