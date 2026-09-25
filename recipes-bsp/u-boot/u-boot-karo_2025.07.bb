@@ -94,14 +94,19 @@ SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else \
                       " file://${UBOOT_ENV_FILE}.env" if d.getVar('UBOOT_ENV_FILE') != None else ""}"
 SRC_URI:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', " file://rauc.env", "", d)}"
 
-SRC_URI:append:txul = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " file://dts/txul-mb7-lcd-u-boot.dtsi;subdir=git/arch/arm"}"
-
 SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " \
     file://dts/${UBOOT_DTB_NAME}.dts;subdir=git/arch/arm \
     file://dts/${UBOOT_DTB_NAME}-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
     file://dts/${DTB_BASENAME}-u-boot.dtsi;subdir=git/arch/arm \
 "}"
+# i.MX6: the device trees come from the U-Boot tree.
+SRC_URI:remove:mx6-nxp-bsp = " \
+    file://dts/${UBOOT_DTB_NAME}.dts;subdir=git/arch/arm \
+    file://dts/${UBOOT_DTB_NAME}-u-boot.dtsi;subdir=git/arch/arm \
+    file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
+    file://dts/${DTB_BASENAME}-u-boot.dtsi;subdir=git/arch/arm \
+"
 
 SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " file://u-boot-cfg.${SOC_PREFIX}"}"
 SRC_URI:append = "${@ "" if d.getVar('KARO_UBOOT_INTREE') == "1" else " file://u-boot-cfg.${SOC_FAMILY}"}"
@@ -295,6 +300,33 @@ do_configure() {
 }
 addtask do_configure before do_devshell
 do_configure[vardeps] += "KARO_UBOOT_DTB_BASENAME KARO_UBOOT_OF_LIST KARO_BASEBOARD"
+
+# i.MX6: runtime DT selection list; libubootenv owns fw_env.config.
+karo_configure_mx6() {
+    frag="`mktemp cfg-dtb-XXXXXX.tmp`"
+    if [ -z "$frag" ];then
+        bbfatal "Failed to create tmpfile"
+    fi
+    echo "CONFIG_KARO_DTB_SELECT=y" >> "$frag"
+    echo "CONFIG_DEFAULT_DEVICE_TREE=\"${KARO_UBOOT_DTB_BASENAME}\"" >> "$frag"
+    echo "CONFIG_OF_LIST=\"${KARO_UBOOT_OF_LIST}\"" >> "$frag"
+    echo "CONFIG_KARO_DEFAULT_BASEBOARD=\"${KARO_BASEBOARD}\"" >> "$frag"
+    if [ -n "${UBOOT_CONFIG}" ];then
+        for config in ${UBOOT_MACHINE};do
+            karo_apply_dtb_select_conf "${B}/${config}" "$frag"
+        done
+    else
+        karo_apply_dtb_select_conf "${B}" "$frag"
+    fi
+    rm -f "$frag"
+    if [ "${KARO_UBOOT_FW_ENV_CONFIG}" != "1" ];then
+        rm -f "${WORKDIR}/fw_env.config"
+    fi
+}
+
+do_configure:append:mx6-nxp-bsp() {
+    karo_configure_mx6
+}
 
 # Helper function for do_check_config task
 check_config() {

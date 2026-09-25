@@ -10,12 +10,6 @@ UBOOT_SUFFIX = "imx"
 UBOOT_BINARY = "u-boot-dtb.imx"
 SPL_BINARY = ""
 
-# i.MX6 fastboot options come from the defconfig.
-UBOOT_FEATURES:remove = "fastboot"
-
-# defconfig, device trees and environment come from the U-Boot tree.
-KARO_UBOOT_INTREE = "1"
-
 # Device trees come from the kernel tree.
 
 # Empty by design; otherwise karo-base.inc appends a pmic fragment.
