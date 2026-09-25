@@ -63,7 +63,11 @@ python deploy_nand_dtb_merge () {
         os.replace(target + ".merged", target)
 }
 deploy_nand_dtb_merge[vardeps] += "KARO_DTB_OVERLAYS KARO_BASEBOARDS UBOOT_DTB_NAME MACHINEOVERRIDES"
-do_deploy[postfuncs] += "deploy_nand_dtb_merge"
+# NAND modules only; run before the sstate capture.
+python () {
+    if "tx6-nand" in d.getVar("MACHINEOVERRIDES").split(":"):
+        d.prependVarFlag("do_deploy", "postfuncs", "deploy_nand_dtb_merge ")
+}
 
 KBUILD_DEFCONFIG ?= "${SOC_FAMILY}_defconfig"
 
