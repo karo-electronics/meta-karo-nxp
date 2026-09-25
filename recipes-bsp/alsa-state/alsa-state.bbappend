@@ -1,6 +1,6 @@
 # Silence the boot-time ALSA errors on the i.MX6 modules.
 
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend:mx6-nxp-bsp := "${THISDIR}/${PN}:"
 
 # No Ka-Ro card has a UCM profile; skip the lookup.
 do_install:append:mx6-nxp-bsp() {
