@@ -23,6 +23,8 @@ DEPENDS += "\
 "
 
 require recipes-bsp/u-boot/u-boot.inc
+# i.MX6 machines already require imx6-overlays.inc.
+require ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "conf/machine/include/${SOC_PREFIX}-overlays.inc"}
 inherit ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "use-imx-security-controller-firmware"}
 inherit fsl-u-boot-localversion
 LOCALVERSION = "-karo"
