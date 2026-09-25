@@ -1,7 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/patches:"
 
 SRC_URI:append = " \
-    file://0001-karo-spidev-test.patch \
+    file://karo-spidev-test.patch \
     file://0002-soc-imx-src-fix-imx_src_is_m4_enabled-redefinition.patch \
 "
 
