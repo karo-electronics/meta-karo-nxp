@@ -1,4 +1,4 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend:mx6-nxp-bsp := "${THISDIR}/${PN}:"
 
 # i.MX6 ships fw_env.config here; U-Boot provides it elsewhere.
 PACKAGE_ARCH:mx6-nxp-bsp = "${MACHINE_ARCH}"
