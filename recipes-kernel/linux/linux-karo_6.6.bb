@@ -15,12 +15,8 @@ CVE_VERSION = "6.6.52"
 
 SPDX_INCLUDE_KERNEL_CONFIG = "1"
 
-# Take the device trees from the kernel tree instead of the layer.
-KARO_KERNEL_INTREE ?= "0"
-
 # automatically add all .dts files referenced by ${KERNEL_DEVICETREE} to SRC_URI
-SRC_URI:append = "${@ "" if d.getVar('KARO_KERNEL_INTREE') == "1" else \
-                      "".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"
+SRC_URI:append = "${@"".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/includes/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
 
