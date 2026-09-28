@@ -37,8 +37,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "4443bcd2df45efcd48cc07418e6531a708bf4a6a"
-UBOOT_REV_DEFAULT:mx6-nxp-bsp = "1bef8aa0cd33d984446e216fefa972772f01f576"
+UBOOT_REV_DEFAULT = "1bef8aa0cd33d984446e216fefa972772f01f576"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
