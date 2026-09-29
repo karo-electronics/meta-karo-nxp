@@ -58,6 +58,8 @@ PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 PREFERRED_VERSION_linux-karo ?= "6.6"
 
 IMX_DEFAULT_BOOTLOADER = "u-boot-karo"
+# meta-imx imx-base-extend.inc sets the imx-nxp-bsp override to u-boot-imx.
+IMX_DEFAULT_BOOTLOADER:imx-nxp-bsp = "u-boot-karo"
 PREFERRED_VERSION_u-boot-karo ?= "2025.07"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
