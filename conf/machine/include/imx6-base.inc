@@ -23,7 +23,5 @@ KERNEL_IMAGETYPE:mx6-nxp-bsp = "uImage"
 
 # Ka-Ro device trees live under nxp/imx in the kernel.
 DTB_VENDOR_DIR = "nxp/imx"
-# CI builds once without baseboard; TX6 is only qualified on MB7.
-KARO_BASEBOARD := "${@d.getVar('KARO_BASEBOARD') or 'mb7'}"
 
 require imx6-overlays.inc
