@@ -15,9 +15,9 @@ DTB_OVERLAY_INCLUDES ??= ""
 
 KARO_BASEBOARDS ?= "mb7"
 
-# MB7 default: the RGB panel on TTL modules, LVDS on x1xx.
+# MB7 default: LVDS panel on the x1xx modules, RGB panel elsewhere.
 KARO_DTB_OVERLAYS[mb7] += " \
-        ${@ mach_overlay(d, "karo-panel-etm0700:karo-lvds-panel-etml1010", "tx6s-8034,tx6s-8035,tx6u-8030,tx6u-8033,tx6q-1030,tx6q-1036,tx6q-8037,txul-5010,txul-5011,txul-8013")} \
+        ${@ mach_overlay(d, "karo-lvds-panel-etml1010:karo-panel-etm0700", "tx6-lvds")} \
 "
 
 KERNEL_DEVICETREE:append = "${@ get_overlays(d) }"
