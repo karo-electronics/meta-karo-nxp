@@ -1,7 +1,8 @@
 require karo-dtb-overlays.inc
 
-# Display panels are overlays; the IPU SoCs also drive LVDS.
+# MB7 carrier and display panels are overlays; the IPU SoCs also drive LVDS.
 DTB_OVERLAYS_generic = "\
+        karo-mb7 \
         karo-panel-etm0700 \
 "
 DTB_OVERLAYS_generic:append:mx6q-nxp-bsp = " karo-lvds-panel-etml1010"
@@ -15,8 +16,9 @@ DTB_OVERLAY_INCLUDES ??= ""
 
 KARO_BASEBOARDS ?= "mb7"
 
-# MB7 default: LVDS panel on the x1xx modules, RGB panel elsewhere.
+# MB7 default: carrier first, then LVDS panel on the x1xx modules, RGB panel elsewhere.
 KARO_DTB_OVERLAYS[mb7] += " \
+        karo-mb7 \
         ${@ mach_overlay(d, "karo-lvds-panel-etml1010:karo-panel-etm0700", "tx6-lvds")} \
 "
 

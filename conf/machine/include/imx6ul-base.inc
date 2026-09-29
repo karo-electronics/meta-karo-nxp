@@ -6,5 +6,5 @@ require conf/machine/include/arm/armv7a/tune-cortexa7.inc
 SOC_PREFIX = "imx6ul"
 SOC_FAMILY = "imx6ul"
 
-# Overlay defaults; i.MX6 baseboards use full device trees.
+# Overlay defaults; the MB7 carrier is the karo-mb7 overlay.
 DTB_OVERLAY_INCLUDES ??= ""

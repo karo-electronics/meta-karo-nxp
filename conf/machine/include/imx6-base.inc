@@ -15,8 +15,8 @@ SPL_BINARY = ""
 # Empty by design; otherwise karo-base.inc appends a pmic fragment.
 KARO_BOARD_PMIC = ""
 
-# DTB paths under nxp/imx/, built from the kernel tree.
-KERNEL_DEVICETREE = "nxp/imx/${DTB_BASENAME}.dtb nxp/imx/${UBOOT_DTB_NAME}.dtb"
+# Module DTB only, under nxp/imx/; the carrier comes as an overlay.
+KERNEL_DEVICETREE = "nxp/imx/${DTB_BASENAME}.dtb"
 
 # ARM32 boots a uImage; U-Boot on i.MX6 has bootm only.
 KERNEL_IMAGETYPE:mx6-nxp-bsp = "uImage"

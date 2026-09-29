@@ -30,14 +30,14 @@ KERNEL_EXTRA_ARGS:append:mx6q-nxp-bsp = " LOADADDR=0x10008000"
 KERNEL_EXTRA_ARGS:append:mx6dl-nxp-bsp = " LOADADDR=0x10008000"
 
 # do_check_dtbs/do_check_overlays chdir into a hardcoded dts/freescale, which
-# only exists on arm64. i.MX6 uses nxp/imx and wires up no overlay.
+# only exists on arm64; i.MX6 overlays live under nxp/imx.
 python () {
     if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":"):
         d.setVarFlag("do_check_dtbs", "noexec", "1")
         d.setVarFlag("do_check_overlays", "noexec", "1")
 }
 
-# NAND modules cannot load overlays at boot: merge the default ones into the deployed DTB.
+# NAND modules cannot load overlays at boot: merge the default ones into the deployed module DTB.
 python deploy_nand_dtb_merge () {
     import os, subprocess
     if "tx6-nand" not in d.getVar("MACHINEOVERRIDES").split(":"):
@@ -45,7 +45,7 @@ python deploy_nand_dtb_merge () {
     deploydir = d.getVar('DEPLOYDIR')
     for baseboard in (d.getVar('KARO_BASEBOARDS') or "").split():
         ovlist = d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True) or ""
-        dtb = os.path.join(deploydir, "%s.dtb" % d.getVar('UBOOT_DTB_NAME'))
+        dtb = os.path.join(deploydir, "%s.dtb" % d.getVar('DTB_BASENAME'))
         target = os.path.realpath(dtb)
         dtbos = []
         for ov in ovlist.split():
@@ -62,7 +62,7 @@ python deploy_nand_dtb_merge () {
         subprocess.check_call(["fdtoverlay", "-i", target, "-o", target + ".merged"] + dtbos)
         os.replace(target + ".merged", target)
 }
-deploy_nand_dtb_merge[vardeps] += "KARO_DTB_OVERLAYS KARO_BASEBOARDS UBOOT_DTB_NAME MACHINEOVERRIDES"
+deploy_nand_dtb_merge[vardeps] += "KARO_DTB_OVERLAYS KARO_BASEBOARDS DTB_BASENAME MACHINEOVERRIDES"
 # NAND modules only; run before the sstate capture.
 python () {
     if "tx6-nand" in d.getVar("MACHINEOVERRIDES").split(":"):
