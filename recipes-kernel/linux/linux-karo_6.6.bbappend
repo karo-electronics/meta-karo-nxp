@@ -22,7 +22,5 @@ SRC_URI:append:mx6-nxp-bsp = " \
     file://dts/nxp/imx/imx6qdl-tx6.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
     file://dts/nxp/imx/imx6qdl-tx6-lcd.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
     file://dts/nxp/imx/imx6qdl-tx6-lvds.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-    file://dts/nxp/imx/imx6qdl-tx6-mb7.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
     file://dts/nxp/imx/imx6ul-txul.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
-    file://dts/nxp/imx/imx6ul-txul-mb7.dtsi;subdir=git/${KERNEL_OUTPUT_DIR} \
 "

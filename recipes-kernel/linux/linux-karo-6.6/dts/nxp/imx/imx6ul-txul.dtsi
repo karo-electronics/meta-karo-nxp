@@ -200,7 +200,7 @@
 		status = "disabled";
 	};
 
-	sound {
+	sound: sound {
 		compatible = "karo,imx6ul-tx6ul-sgtl5000",
 			     "simple-audio-card";
 		simple-audio-card,name = "imx6ul-tx6ul-sgtl5000-audio";
@@ -553,12 +553,6 @@
 };
 
 &iomuxc {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_hog>;
-
-	pinctrl_hog: hoggrp {
-	};
-
 	pinctrl_led: ledgrp {
 		fsl,pins = <
 			MX6UL_PAD_SNVS_TAMPER9__GPIO5_IO09	0x0b0b0 /* LED */
