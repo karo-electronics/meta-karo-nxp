@@ -10,8 +10,3 @@ SOC_FAMILY = "imx6q"
 MACHINEOVERRIDES_EXTENDER:mx6q:use-nxp-bsp = "imx-generic-bsp:imx-nxp-bsp:imxfbdev:imxipu:imxvpu:mx6-generic-bsp:mx6-nxp-bsp:mx6q-generic-bsp:mx6q-nxp-bsp"
 # No GPU: mainline weston, not the fbdev fork.
 PREFERRED_VERSION_weston:mx6q-nxp-bsp = "13.0.1"
-
-# Overlay defaults; the MB7 carrier is the karo-mb7 overlay.
-DTB_OVERLAY_INCLUDES ??= ""
-DTB_OVERLAYS ??= ""
-DTB_OVERLAYS_generic ??= ""

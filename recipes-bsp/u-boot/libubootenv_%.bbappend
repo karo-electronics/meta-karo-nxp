@@ -1,13 +1,12 @@
-FILESEXTRAPATHS:prepend:mx6-nxp-bsp := "${THISDIR}/${PN}:"
+FILESEXTRAPATHS:prepend:tx6-nand := "${THISDIR}/${PN}:"
 
-# i.MX6 ships fw_env.config here; U-Boot provides it elsewhere.
-PACKAGE_ARCH:mx6-nxp-bsp = "${MACHINE_ARCH}"
+# i.MX6 NAND ships fw_env.config here; elsewhere u-boot-karo-env provides it.
+PACKAGE_ARCH:tx6-nand = "${MACHINE_ARCH}"
 
-KARO_FW_ENV_STORAGE = "${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'nand', 'emmc', d)}"
-SRC_URI:append:mx6-nxp-bsp = " file://fw_env_${KARO_FW_ENV_STORAGE}.config"
+SRC_URI:append:tx6-nand = " file://fw_env_nand.config"
 
-# Install our file by name: another layer may drop a fw_env.config in WORKDIR.
-do_install:append:mx6-nxp-bsp () {
+# poky libubootenv ships no fw_env.config; the U-Boot generator has no NAND line.
+do_install:append:tx6-nand () {
     install -d ${D}${sysconfdir}
-    install -m 644 ${WORKDIR}/fw_env_${KARO_FW_ENV_STORAGE}.config ${D}${sysconfdir}/fw_env.config
+    install -m 644 ${WORKDIR}/fw_env_nand.config ${D}${sysconfdir}/fw_env.config
 }

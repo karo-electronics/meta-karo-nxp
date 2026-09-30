@@ -1,12 +1,13 @@
 require karo-dtb-overlays.inc
 
-# MB7 carrier and display panels are overlays; the IPU SoCs also drive LVDS.
+# MB7 carrier and display panels are overlays.
 DTB_OVERLAYS_generic = "\
         karo-mb7 \
         karo-panel-etm0700 \
 "
-DTB_OVERLAYS_generic:append:mx6q-nxp-bsp = " karo-lvds-panel-etml1010"
-DTB_OVERLAYS_generic:append:mx6dl-nxp-bsp = " karo-lvds-panel-etml1010"
+# imx6qdl-tx6-lvds.dtsi: lvds0_panel/lvds1_panel exist only on LVDS modules, lcd_panel only on RGB ones.
+DTB_OVERLAYS_generic:append:tx6-lvds = " karo-lvds-panel-etml1010"
+DTB_OVERLAYS_generic:remove:tx6-lvds = "karo-panel-etm0700"
 # ULL panel overlay uses iomuxc_snvs: name it per family.
 DTB_OVERLAYS_generic:remove:mx6ull-nxp-bsp = "karo-panel-etm0700"
 DTB_OVERLAYS:append:mx6ull-nxp-bsp = " karo-panel-etm0700"

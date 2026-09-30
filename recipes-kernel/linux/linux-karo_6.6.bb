@@ -18,55 +18,20 @@ SPDX_INCLUDE_KERNEL_CONFIG = "1"
 # automatically add all .dts files referenced by ${KERNEL_DEVICETREE} to SRC_URI
 SRC_URI:append = "${@"".join(map(lambda f: " file://dts/%s;subdir=git/${KERNEL_OUTPUT_DIR}" % f.replace(".dtb", ".dts"), "${KERNEL_DEVICETREE}".split()))}"
 
-SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/freescale/includes/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
+SRC_URI:append = "${@ "".join(map(lambda f: " file://dts/${DTB_VENDOR_DIR}/includes/%s-%s.dtsi;subdir=git/${KERNEL_OUTPUT_DIR}" % (d.getVar('SOC_PREFIX'), f), d.getVar('DTB_OVERLAY_INCLUDES').split()))}"
 
 SRC_URI:append = " file://${KBUILD_DEFCONFIG}"
 
 SRC_URI:append = "${@ "".join(map(lambda f: " file://" + f, "${KERNEL_FEATURES}".split()))}"
 
-# uImage load address follows the DRAM base of each SoC.
-KERNEL_EXTRA_ARGS:append:mx6ul-nxp-bsp = " LOADADDR=0x80008000"
-KERNEL_EXTRA_ARGS:append:mx6q-nxp-bsp = " LOADADDR=0x10008000"
-KERNEL_EXTRA_ARGS:append:mx6dl-nxp-bsp = " LOADADDR=0x10008000"
+# meta-freescale linux-imx.inc:40: uImage load address from imx-base.inc per SoC.
+KERNEL_EXTRA_ARGS:append:mx6-nxp-bsp = " LOADADDR=${UBOOT_ENTRYPOINT}"
 
-# do_check_dtbs/do_check_overlays chdir into a hardcoded dts/freescale, which
-# only exists on arm64; i.MX6 overlays live under nxp/imx.
-python () {
-    if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":"):
-        d.setVarFlag("do_check_dtbs", "noexec", "1")
-        d.setVarFlag("do_check_overlays", "noexec", "1")
-}
-
-# NAND modules cannot load overlays at boot: merge the default ones into the deployed module DTB.
-python deploy_nand_dtb_merge () {
-    import os, subprocess
-    if "tx6-nand" not in d.getVar("MACHINEOVERRIDES").split(":"):
-        return
-    deploydir = d.getVar('DEPLOYDIR')
-    for baseboard in (d.getVar('KARO_BASEBOARDS') or "").split():
-        ovlist = d.getVarFlag('KARO_DTB_OVERLAYS', baseboard, True) or ""
-        dtb = os.path.join(deploydir, "%s.dtb" % d.getVar('DTB_BASENAME'))
-        target = os.path.realpath(dtb)
-        dtbos = []
-        for ov in ovlist.split():
-            ov = ov.split(",")[0]
-            for pfx in (d.getVar('SOC_FAMILY'), d.getVar('SOC_PREFIX')):
-                f = os.path.join(deploydir, "%s-%s.dtbo" % (pfx, ov))
-                if os.path.exists(f):
-                    dtbos.append(os.path.realpath(f)); break
-            else:
-                bb.fatal("overlay '%s' not found in %s" % (ov, deploydir))
-        if not dtbos:
-            continue
-        bb.note("merging %s into %s" % (" ".join(map(os.path.basename, dtbos)), os.path.basename(target)))
-        subprocess.check_call(["fdtoverlay", "-i", target, "-o", target + ".merged"] + dtbos)
-        os.replace(target + ".merged", target)
-}
-deploy_nand_dtb_merge[vardeps] += "KARO_DTB_OVERLAYS KARO_BASEBOARDS DTB_BASENAME MACHINEOVERRIDES"
-# NAND modules only; run before the sstate capture.
-python () {
-    if "tx6-nand" in d.getVar("MACHINEOVERRIDES").split(":"):
-        d.prependVarFlag("do_deploy", "postfuncs", "deploy_nand_dtb_merge ")
+# NAND cannot load overlays at boot: deploy the do_check_dtbs merge for KARO_BASEBOARD.
+do_deploy:append:tx6-nand() {
+    if [ -n "${KARO_BASEBOARD}" ]; then
+        install -m 0644 ${B}/${KERNEL_OUTPUT_DIR}/dts/${DTB_VENDOR_DIR}/${DTB_BASENAME}-${KARO_BASEBOARD}.dtb ${DEPLOYDIR}/
+    fi
 }
 
 KBUILD_DEFCONFIG ?= "${SOC_FAMILY}_defconfig"
@@ -205,7 +170,7 @@ python do_check_dtbs () {
     if basename == None:
         bb.warn("DTB_BASENAME is not set; cannot process FDT overlays")
         return
-    os.chdir(os.path.join(d.getVar('B'), d.getVar('KERNEL_OUTPUT_DIR'), "dts", "freescale"))
+    os.chdir(os.path.join(d.getVar('B'), d.getVar('KERNEL_OUTPUT_DIR'), "dts", d.getVar('DTB_VENDOR_DIR')))
     for baseboard in baseboards.split():
         bb.debug(2, "creating %s-%s.dtb from %s.dtb" % (basename, baseboard, basename))
         outfile = "%s-%s" % (basename, baseboard)

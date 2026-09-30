@@ -37,7 +37,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "d632ddbd5d57707c273556382809f39e35c7a064"
+UBOOT_REV_DEFAULT = "09666a099b2ab939add7ebd356130d41b4554867"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
@@ -73,9 +73,13 @@ KARO_UBOOT_BASEBOARDS ?= "${KARO_BASEBOARDS}"
 # The runtime selection picks among these, module DT first.
 KARO_UBOOT_OF_LIST = "${@ ' '.join([d.getVar('KARO_UBOOT_DTB_BASENAME')] + ['%s-%s' % (d.getVar('KARO_UBOOT_DTB_BASENAME'), b) for b in (d.getVar('KARO_UBOOT_BASEBOARDS') or '').split()])}"
 
-# i.MX6: libubootenv ships fw_env.config; drop the generated one.
+# i.MX6 NAND: libubootenv ships the mtd fw_env.config; drop the generated one.
 KARO_UBOOT_FW_ENV_CONFIG ?= "1"
-KARO_UBOOT_FW_ENV_CONFIG:mx6-nxp-bsp = "0"
+KARO_UBOOT_FW_ENV_CONFIG:tx6-nand = "0"
+# imx6ul-txul-5011.dts:14 mmc0 = &usdhc2; TX6 keeps imx6qdl.dtsi mmc3 = &usdhc4.
+KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
+KARO_FW_ENV_DEV:mx6q-nxp-bsp = "/dev/mmcblk3boot0"
+KARO_FW_ENV_DEV:mx6dl-nxp-bsp = "/dev/mmcblk3boot0"
 
 UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
@@ -248,12 +252,12 @@ do_configure() {
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
         env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
         env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
-        printf "/dev/mmcblk0boot0\t0x%08x\t0x%08x\n" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
+        printf "${KARO_FW_ENV_DEV}\t0x%08x\t0x%08x\n" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
     fi
 }
 addtask do_configure before do_devshell
 
-# i.MX6: runtime DT selection list; libubootenv owns fw_env.config.
+# i.MX6: runtime DT selection list; libubootenv owns fw_env.config on NAND.
 karo_configure_mx6() {
     frag="`mktemp cfg-dtb-XXXXXX.tmp`"
     if [ -z "$frag" ];then
