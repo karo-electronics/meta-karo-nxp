@@ -16,3 +16,7 @@
 &ipu2 {
 	status = "disabled";
 };
+
+&gpu_vg {
+	status = "okay";
+};

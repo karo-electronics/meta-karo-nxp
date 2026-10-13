@@ -48,3 +48,7 @@
 		>;
 	};
 };
+
+&gpu_vg {
+	status = "okay";
+};

@@ -20,3 +20,7 @@
 &sata {
 	status = "okay";
 };
+
+&gpu_vg {
+	status = "okay";
+};

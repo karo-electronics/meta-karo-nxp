@@ -107,3 +107,7 @@
 	fsl,pres = <&pre4>, <&pre2>, <&pre3>;
 	status = "okay";
 };
+
+&gpu_vg {
+	status = "okay";
+};

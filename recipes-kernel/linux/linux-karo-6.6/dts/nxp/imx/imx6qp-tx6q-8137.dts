@@ -122,3 +122,7 @@
 		      "di0_sel", "di1_sel", "di2_sel", "di3_sel",
 		      "di0", "di1";
 };
+
+&gpu_vg {
+	status = "okay";
+};

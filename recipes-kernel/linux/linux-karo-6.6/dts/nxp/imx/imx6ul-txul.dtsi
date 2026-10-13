@@ -202,6 +202,18 @@
 			&gpio1 10 GPIO_ACTIVE_HIGH
 		>;
 		status = "disabled";
+
+		spi@0 {
+			compatible = "spidev";
+			reg = <0>;
+			spi-max-frequency = <660000>;
+		};
+
+		spi@1 {
+			compatible = "spidev";
+			reg = <1>;
+			spi-max-frequency = <660000>;
+		};
 	};
 
 	sound: sound {
@@ -254,6 +266,18 @@
 		&gpio1 10 GPIO_ACTIVE_HIGH
 	>;
 	status = "disabled";
+
+	spidev0: spi@0 {
+		compatible = "spidev";
+		reg = <0>;
+		spi-max-frequency = <54000000>;
+	};
+
+	spidev1: spi@1 {
+		compatible = "spidev";
+		reg = <1>;
+		spi-max-frequency = <54000000>;
+	};
 };
 
 &fec1 {
