@@ -14,8 +14,3 @@
 		/delete-property/ mmc1;
 	};
 };
-
-&gpmi {
-	/* Mainline block-mark swapping; matches v2 NAND format. */
-	/delete-property/ fsl,no-blockmark-swap;
-};
