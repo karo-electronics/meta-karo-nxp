@@ -73,13 +73,12 @@ KARO_UBOOT_BASEBOARDS ?= "${KARO_BASEBOARDS}"
 # The runtime selection picks among these, module DT first.
 KARO_UBOOT_OF_LIST = "${@ ' '.join([d.getVar('KARO_UBOOT_DTB_BASENAME')] + ['%s-%s' % (d.getVar('KARO_UBOOT_DTB_BASENAME'), b) for b in (d.getVar('KARO_UBOOT_BASEBOARDS') or '').split()])}"
 
-# i.MX6 NAND: libubootenv ships the mtd fw_env.config; drop the generated one.
-KARO_UBOOT_FW_ENV_CONFIG ?= "1"
-KARO_UBOOT_FW_ENV_CONFIG:tx6-nand = "0"
-# imx6ul-txul-5011.dts:14 mmc0 = &usdhc2; TX6 keeps imx6qdl.dtsi mmc3 = &usdhc4.
-KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
-KARO_FW_ENV_DEV:mx6q-nxp-bsp = "/dev/mmcblk3boot0"
-KARO_FW_ENV_DEV:mx6dl-nxp-bsp = "/dev/mmcblk3boot0"
+KARO_FW_ENV_MMC ?= "/dev/mmcblk0boot0"
+KARO_FW_ENV_MMC:mx6q-nxp-bsp = "/dev/mmcblk3boot0"
+KARO_FW_ENV_MMC:mx6dl-nxp-bsp = "/dev/mmcblk3boot0"
+
+KARO_FW_ENV_NAND ?= "/dev/mtd0"
+KARO_FW_ENV_NAND:mx6-nxp-bsp = "/dev/mtd1"
 
 UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
@@ -251,14 +250,20 @@ do_configure() {
     rm -f "$tmpfile"
 
     if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
-        env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
         env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
-        printf "${KARO_FW_ENV_DEV}\t0x%08x\t0x%08x\n" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
+        env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
+        if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', "true", "false", d)};then
+            printf "%s\t0x%08x\t0x%08x\t0x%08x\t%d\n" \
+                "${KARO_FW_ENV_NAND}" "$env_offset" "$env_size" "$env_size" > ${WORKDIR}/fw_env.config
+        else
+            printf "%s\t0x%08x\t0x%08x\n" \
+                "${KARO_FW_ENV_MMC}" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
+        fi
     fi
 }
 addtask do_configure before do_devshell
 
-# i.MX6: runtime DT selection list; libubootenv owns fw_env.config on NAND.
+# i.MX6: runtime DT selection list.
 karo_configure_mx6() {
     frag="`mktemp cfg-dtb-XXXXXX.tmp`"
     if [ -z "$frag" ];then
@@ -276,9 +281,6 @@ karo_configure_mx6() {
         karo_apply_dtb_select_conf "${B}" "$frag"
     fi
     rm -f "$frag"
-    if [ "${KARO_UBOOT_FW_ENV_CONFIG}" != "1" ];then
-        rm -f "${WORKDIR}/fw_env.config"
-    fi
 }
 
 do_configure:append:mx6-nxp-bsp() {

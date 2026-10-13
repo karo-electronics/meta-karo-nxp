@@ -28,9 +28,11 @@ SRC_URI:append = "${@ "".join(map(lambda f: " file://" + f, "${KERNEL_FEATURES}"
 KERNEL_EXTRA_ARGS:append:mx6-nxp-bsp = " LOADADDR=${UBOOT_ENTRYPOINT}"
 
 # NAND cannot load overlays at boot: deploy the do_check_dtbs merge for KARO_BASEBOARD.
-do_deploy:append:tx6-nand() {
-    if [ -n "${KARO_BASEBOARD}" ]; then
-        install -m 0644 ${B}/${KERNEL_OUTPUT_DIR}/dts/${DTB_VENDOR_DIR}/${DTB_BASENAME}-${KARO_BASEBOARD}.dtb ${DEPLOYDIR}/
+do_deploy:append() {
+    if ${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'true', 'false', d)}; then
+        if [ -n "${KARO_BASEBOARD}" ]; then
+            install -m 0644 ${B}/${KERNEL_OUTPUT_DIR}/dts/${DTB_VENDOR_DIR}/${DTB_BASENAME}-${KARO_BASEBOARD}.dtb ${DEPLOYDIR}/
+        fi
     fi
 }
 
