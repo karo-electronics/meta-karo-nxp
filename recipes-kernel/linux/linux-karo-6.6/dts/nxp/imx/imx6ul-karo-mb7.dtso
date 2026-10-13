@@ -16,27 +16,9 @@
 	};
 };
 
-&sound {
-	/* No audio: SAI2 pins are muxed as JTAG. */
-	status = "disabled";
-};
-
-&can1 {
-	status = "disabled";
-};
-
 &can2 {
 	xceiver-supply = <&reg_3v3>;
-};
-
-&sai2 {
-	/* SAI2 pads double as JTAG; U-Boot muxes them JTAG. */
-	status = "disabled";
-};
-
-&sgtl5000 {
-	/* Codec unusable: its I2S lines are the JTAG pads. */
-	status = "disabled";
+	status = "okay";
 };
 
 &fec1 {
@@ -91,9 +73,4 @@
 			remote-endpoint = <&panel_in>;
 		};
 	};
-};
-
-/* Frees LCD_DATA00 (GPIO3_IO05): unused on MB7 and it would claim the pad. */
-&reg_can_xcvr {
-	status = "disabled";
 };

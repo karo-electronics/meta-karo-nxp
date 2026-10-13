@@ -39,12 +39,13 @@
 	};
 };
 
-&can1 {
-	status = "disabled";
+&audmux {
+	status = "okay";
 };
 
 &can2 {
 	xceiver-supply = <&reg_3v3>;
+	status = "okay";
 };
 
 /* The module RTC backup voltage is not wired on the MB7 */
@@ -62,11 +63,18 @@
 	};
 };
 
-/* Frees DISP0_DAT0 (GPIO4_IO21): unused on MB7 (can2 uses reg_3v3). */
-&reg_can_xcvr {
+&reg_lcd0_pwr {
 	status = "disabled";
 };
 
-&reg_lcd0_pwr {
-	status = "disabled";
+&sgtl5000 {
+	status = "okay";
+};
+
+&sound {
+	status = "okay";
+};
+
+&ssi1 {
+	status = "okay";
 };

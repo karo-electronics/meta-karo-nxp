@@ -20,7 +20,15 @@
 	};
 };
 
+&backlight {
+	status = "okay";
+};
+
 &display {
+	status = "okay";
+};
+
+&pwm2 {
 	status = "okay";
 };
 
@@ -50,7 +58,7 @@
 
 /* FT5x06 touch on the MB7 panel connector */
 &i2c3 {
-	polytouch: edt-ft5x06@38 {
+	polytouch: polytouch@38 {
 		compatible = "edt,edt-ft5x06";
 		reg = <0x38>;
 		pinctrl-names = "default";

@@ -6,7 +6,6 @@ require karo-base.inc
 
 # Monolithic DCD image; karo-base.inc and imx-base.inc assume SPL + u-boot.bin.
 UBOOT_MAKE_TARGET = "u-boot-dtb.imx"
-UBOOT_SUFFIX = "imx"
 UBOOT_BINARY = "u-boot-dtb.imx"
 SPL_BINARY = ""
 

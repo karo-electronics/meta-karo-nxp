@@ -37,7 +37,7 @@ LICENSE = "GPL-2.0-or-later"
 LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "09666a099b2ab939add7ebd356130d41b4554867"
+UBOOT_REV_DEFAULT = "593f439ddf425b02aec9ac71c613a6bb2fa8e6e8"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
@@ -87,6 +87,7 @@ UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "optee", " op
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
+UBOOT_FEATURES:remove:mx6-nxp-bsp = "fastboot"
 
 UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
                        "-" + d.getVar('KARO_BASEBOARD') \

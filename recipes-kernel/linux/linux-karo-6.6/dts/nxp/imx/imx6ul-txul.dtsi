@@ -11,6 +11,9 @@
 	aliases {
 		can0 = &can2;
 		can1 = &can1;
+		edt-ft5x06 = "/soc/bus@2100000/i2c@21a4000/polytouch@38";
+		tsc2007 = &touchscreen;
+		usbotgvbus = &reg_usbotg_vbus;
 		i2c0 = &i2c2;
 		i2c1 = &i2c_gpio;
 		i2c2 = &i2c1;
@@ -53,6 +56,7 @@
 		enable-gpios = <&gpio3 4 GPIO_ACTIVE_HIGH>;
 		pwms = <&pwm5 0 500000 PWM_POLARITY_INVERTED>;
 		power-supply = <&reg_lcd_pwr>;
+		status = "disabled";
 		/*
 		 * a poor man's way to create a 1:1 relationship between
 		 * the PWM value and the actual duty cycle
@@ -145,6 +149,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_flexcan_xcvr>;
 		gpio = <&gpio3 5 GPIO_ACTIVE_LOW>;
+		status = "disabled";
 	};
 
 	reg_lcd_pwr: regulator-lcdpwr {
@@ -202,6 +207,7 @@
 	sound: sound {
 		compatible = "karo,imx6ul-tx6ul-sgtl5000",
 			     "simple-audio-card";
+		status = "disabled";
 		simple-audio-card,name = "imx6ul-tx6ul-sgtl5000-audio";
 		simple-audio-card,format = "i2s";
 		simple-audio-card,bitclock-master = <&codec_dai>;
@@ -230,14 +236,14 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
 	xceiver-supply = <&reg_can_xcvr>;
-	status = "okay";
+	status = "disabled";
 };
 
 &can2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan2>;
 	xceiver-supply = <&reg_can_xcvr>;
-	status = "okay";
+	status = "disabled";
 };
 
 &ecspi2 {
@@ -330,6 +336,7 @@
 		VDDA-supply = <&reg_2v5>;
 		VDDIO-supply = <&reg_3v3>;
 		clocks = <&mclk>;
+		status = "disabled";
 	};
 
 	touchscreen: touchscreen@48 {
@@ -370,19 +377,19 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_disp0_1>;
 	lcd-supply = <&reg_lcd_pwr>;
-	status = "okay";
+	status = "disabled";
 };
 
 &pwm5 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm5>;
-	status = "okay";
+	status = "disabled";
 };
 
 &sai2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_sai2>;
-	status = "okay";
+	status = "disabled";
 };
 
 &uart1 {

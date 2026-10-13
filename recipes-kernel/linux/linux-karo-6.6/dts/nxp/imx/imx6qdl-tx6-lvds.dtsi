@@ -14,6 +14,7 @@
 		compatible = "pwm-backlight";
 		pwms = <&pwm2 0 500000 0>;
 		power-supply = <&reg_lcd0_pwr>;
+		status = "disabled";
 		brightness-levels = < 0  1  2  3  4  5  6  7  8  9
 				     10 11 12 13 14 15 16 17 18 19
 				     20 21 22 23 24 25 26 27 28 29
@@ -32,6 +33,7 @@
 		compatible = "pwm-backlight";
 		pwms = <&pwm1 0 500000 0>;
 		power-supply = <&reg_lcd1_pwr>;
+		status = "disabled";
 		brightness-levels = < 0  1  2  3  4  5  6  7  8  9
 				     10 11 12 13 14 15 16 17 18 19
 				     20 21 22 23 24 25 26 27 28 29
@@ -106,7 +108,7 @@
 	clock-names = "di0_pll", "di1_pll",
 		      "di0_sel", "di1_sel", "di2_sel", "di3_sel",
 		      "di0", "di1";
-	status = "okay";
+	status = "disabled";
 
 	lvds0: lvds-channel@0 {
 		fsl,data-width = <18>;
@@ -138,7 +140,7 @@
 };
 
 &pwm1 {
-	status = "okay";
+	status = "disabled";
 };
 
 &reg_lcd0_pwr {

@@ -20,6 +20,18 @@
 	};
 };
 
+&lcdif {
+	status = "okay";
+};
+
+&backlight {
+	status = "okay";
+};
+
+&pwm5 {
+	status = "okay";
+};
+
 &lcd_panel {
 	compatible = "panel-dpi";
 	data-mapping = "rgb24";
@@ -50,7 +62,7 @@
 		compatible = "edt,edt-ft5x06";
 		reg = <0x38>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_edt_ft5x06_snvs>;
+		pinctrl-0 = <&pinctrl_polytouch_snvs>;
 		interrupt-parent = <&gpio5>;
 		interrupts = <2 IRQ_TYPE_EDGE_FALLING>;
 		reset-gpios = <&gpio5 3 GPIO_ACTIVE_LOW>;
@@ -60,7 +72,7 @@
 };
 
 &iomuxc_snvs {
-	pinctrl_edt_ft5x06_snvs: edt-ft5x06grp {
+	pinctrl_polytouch_snvs: edt-ft5x06grp {
 		fsl,pins = <
 			MX6ULL_PAD_SNVS_TAMPER2__GPIO5_IO02	0x1b0b0
 			MX6ULL_PAD_SNVS_TAMPER3__GPIO5_IO03	0x1b0b0

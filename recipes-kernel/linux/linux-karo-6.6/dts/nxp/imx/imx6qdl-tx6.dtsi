@@ -13,6 +13,7 @@
 	aliases {
 		can0 = &can2;
 		can1 = &can1;
+		edt-ft5x06 = "/soc/bus@2100000/i2c@21a8000/polytouch@38";
 		ethernet0 = &fec;
 		lcdif-23bit-pins-a = &pinctrl_disp0_1;
 		lcdif-24bit-pins-a = &pinctrl_disp0_2;
@@ -20,7 +21,9 @@
 		pwm1 = &pwm2;
 		reg-can-xcvr = &reg_can_xcvr;
 		stk5led = &user_led;
+		tsc2007 = &touchscreen;
 		usbotg = &usbotg;
+		usbotgvbus = &reg_usbotg_vbus;
 		sdhc0 = &usdhc1;
 		sdhc1 = &usdhc2;
 	};
@@ -111,6 +114,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_flexcan_xcvr>;
 		gpio = <&gpio4 21 GPIO_ACTIVE_LOW>;
+		status = "disabled";
 	};
 
 	reg_lcd0_pwr: regulator-lcd0-pwr {
@@ -159,9 +163,10 @@
 		enable-active-high;
 	};
 
-	sound {
+	sound: sound {
 		compatible = "karo,imx6qdl-tx6-sgtl5000",
 			     "simple-audio-card";
+		status = "disabled";
 		simple-audio-card,name = "imx6qdl-tx6-sgtl5000-audio";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_audmux>;
@@ -189,7 +194,7 @@
 };
 
 &audmux {
-	status = "okay";
+	status = "disabled";
 
 	mux-ssi1 {
 		fsl,audmux-port = <0>;
@@ -216,14 +221,14 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan1>;
 	xceiver-supply = <&reg_can_xcvr>;
-	status = "okay";
+	status = "disabled";
 };
 
 &can2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_flexcan2>;
 	xceiver-supply = <&reg_can_xcvr>;
-	status = "okay";
+	status = "disabled";
 };
 
 &ecspi1 {
@@ -324,6 +329,7 @@
 		VDDA-supply = <&reg_2v5>;
 		VDDIO-supply = <&reg_3v3>;
 		clocks = <&mclk>;
+		status = "disabled";
 	};
 
 	touchscreen: tsc2007@48 {
@@ -704,11 +710,11 @@
 &pwm2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_pwm2>;
-	status = "okay";
+	status = "disabled";
 };
 
 &ssi1 {
-	status = "okay";
+	status = "disabled";
 };
 
 &uart1 {

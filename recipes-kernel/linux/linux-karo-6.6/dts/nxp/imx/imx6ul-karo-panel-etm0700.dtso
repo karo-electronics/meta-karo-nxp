@@ -20,6 +20,18 @@
 	};
 };
 
+&lcdif {
+	status = "okay";
+};
+
+&backlight {
+	status = "okay";
+};
+
+&pwm5 {
+	status = "okay";
+};
+
 &lcd_panel {
 	compatible = "panel-dpi";
 	data-mapping = "rgb24";
