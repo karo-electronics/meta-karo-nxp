@@ -367,6 +367,7 @@
 		gpios = <&gpio3 26 GPIO_ACTIVE_LOW>;
 		ti,x-plate-ohms = <660>;
 		wakeup-source;
+		status = "disabled";
 	};
 };
 
