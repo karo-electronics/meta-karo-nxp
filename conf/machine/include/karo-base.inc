@@ -19,7 +19,7 @@ KARO_BOARD_PMIC ??= ""
 
 UBOOT_CONFIG ??= "default mfg noenv"
 
-SOC_DEFAULT_IMAGE_FSTYPES = "wic.zst"
+SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz"
 
 # Set DTB variables
 KARO_BASEBOARD ??= ""
