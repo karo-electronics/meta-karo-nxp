@@ -7,6 +7,8 @@
 DESCRIPTION = "i.MX U-Boot suppporting Ka-Ro electronics boards."
 HOMEPAGE = "http://www.denx.de/wiki/U-Boot/WebHome"
 SECTION = "bootloaders"
+LICENSE = "GPL-2.0-or-later"
+LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
 
 DEPENDS += "\
     bc-native \
@@ -23,8 +25,7 @@ DEPENDS += "\
 "
 
 require recipes-bsp/u-boot/u-boot.inc
-# i.MX6 machines already require imx6-overlays.inc.
-require ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "conf/machine/include/${SOC_PREFIX}-overlays.inc"}
+require u-boot-karo-configure.inc
 inherit ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "use-imx-security-controller-firmware"}
 inherit fsl-u-boot-localversion
 LOCALVERSION = "-karo"
@@ -33,8 +34,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/defconfigs:${THISDIR}/${BP}/cfg:${T
 
 PROVIDES += "u-boot"
 
-LICENSE = "GPL-2.0-or-later"
-LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a4263"
+KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 UBOOT_REV_DEFAULT = "dc09b1a4e5119eddfeaf4d4ea2ed77b48e6b0da4"
@@ -135,160 +135,8 @@ python karo_check_baseboard () {
                                "\n".join(d.getVar('KARO_BASEBOARDS').split())), d)
 }
 
-# Merge the DT list; fail if kconfig drops it.
-karo_apply_dtb_select_conf() {
-    cfg="$1"
-    frag="$2"
-
-    merge_config.sh -m -r -O "$cfg" "$cfg/.config" "$frag"
-    oe_runmake -C "$cfg" oldconfig
-    grep -q "^CONFIG_KARO_DTB_SELECT=y" "$cfg/.config" || \
-        bbfatal "kconfig rejected CONFIG_KARO_DTB_SELECT in '$(basename "$cfg")'"
-}
-
-do_configure() {
-    if [ -n "${KARO_BASEBOARD}" ];then
-        mach="${MACHINE}-${KARO_BASEBOARD}"
-    else
-        mach="${MACHINE}"
-    fi
-
-    bbnote "SRC_URI='${SRC_URI}'"
-    if [ -n "${UBOOT_CONFIG}" ];then
-        i=0
-        for config in ${UBOOT_MACHINE};do
-            i=$(expr $i + 1)
-            j=0
-            for type in ${UBOOT_CONFIG};do
-                j=$(expr $j + 1)
-                [ $j = $i ] || continue
-                c="${mach}_${type}_defconfig"
-                bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to '${B}/${config}/.config'"
-                mkdir -p "${B}/${config}"
-                cat "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" > "${B}/${config}/.config"
-                if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-                    bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to '${B}/${config}/.config'"
-                    cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${B}/${config}/.config"
-                fi
-                bbnote "Appending 'u-boot-cfg.${MACHINE}' to '${B}/${config}/.config'"
-                cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${B}/${config}/.config"
-                if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
-                    bbnote "Appending 'u-boot-cfg.${type}' to '${B}/${config}/.config'"
-                    cat "${WORKDIR}/u-boot-cfg.${type}" >> "${B}/${config}/.config"
-                fi
-                oe_runmake -C ${S} O=${B}/${config} olddefconfig
-                if [ -n "${@' '.join(find_cfgs(d))}" ]; then
-                    merge_config.sh -m -r -O ${B}/${config} ${B}/${config}/.config ${@" ".join(find_cfgs(d))}
-                    oe_runmake -C ${S} O=${B}/${config} oldconfig
-                fi
-                break
-            done
-        done
-        unset i j
-    else
-        c="${mach}_defconfig"
-        bbnote "Copying 'u-boot-cfg.${SOC_PREFIX}' to '${B}/.config'"
-        mkdir -p "${B}"
-        cat "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" > "${B}/.config"
-        if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-            bbnote "Appending 'u-boot-cfg.${SOC_FAMILY}' to '${B}/.config'"
-            cat "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}" >> "${B}/.config"
-        fi
-        bbnote "Appending 'u-boot-cfg.${MACHINE}' to '${B}/.config'"
-        cat "${WORKDIR}/u-boot-cfg.${MACHINE}" >> "${B}/.config"
-        oe_runmake -C ${S} O=${B} olddefconfig
-    fi
-
-    tmpfile="`mktemp cfg-XXXXXX.tmp`"
-    if [ -z "$tmpfile" ];then
-        bbfatal "Failed to create tmpfile"
-    fi
-    add_conf() {
-        [ $# = 2 ] || return 0
-        echo "$1=$2" >> "$tmpfile"
-    }
-
-    add_conf CONFIG_DEFAULT_DEVICE_TREE "\"${UBOOT_DTB_NAME}\""
-
-    if [ -n "${KARO_BASEBOARD}" ];then
-        add_conf CONFIG_OF_LIST "\"${UBOOT_DTB_NAME} ${DTB_BASENAME}\""
-    else
-        add_conf CONFIG_OF_LIST "\"${DTB_BASENAME}\""
-    fi
-
-    bbnote "UBOOT_ENV_FILE='${UBOOT_ENV_FILE}'"
-    if [ -n "${UBOOT_ENV_FILE}" ];then
-        add_conf CONFIG_USE_DEFAULT_ENV_FILE y
-        add_conf CONFIG_DEFAULT_ENV_FILE "\"board/\$(VENDOR)/\$(BOARD)/${UBOOT_ENV_FILE}.env\""
-        if  ${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', "true", "false", d)};then
-            LC_ALL=C sort ${WORKDIR}/${UBOOT_ENV_FILE}.env ${WORKDIR}/rauc.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
-        else
-            LC_ALL=C sort ${WORKDIR}/${UBOOT_ENV_FILE}.env > ${S}/${UBOOT_BOARD_DIR}/${UBOOT_ENV_FILE}.env
-        fi
-    else
-        echo "# CONFIG_USE_DEFAULT_ENV_FILE is not set" >> "$tmpfile"
-    fi
-
-    # convey common settings for imx-atf and U-Boot to U-Boot config
-    add_conf CONFIG_BL31_BASE              ${ATF_BL31_BASE}
-    add_conf CONFIG_BL31_SIZE              ${ATF_BL31_SIZE}
-    add_conf CONFIG_SAVED_DRAM_TIMING_BASE ${UBOOT_SAVED_DRAM_TIMING_BASE}
-
-    if [ -n "${UBOOT_CONFIG}" ];then
-        for config in ${UBOOT_MACHINE};do
-            c="${B}/${config}"
-            oe_runmake -C "${c}" oldconfig
-            merge_config.sh -m -r -O "${c}" "${c}/.config" "$tmpfile"
-            oe_runmake -C "${c}" oldconfig
-        done
-    else
-        c=${B}
-        oe_runmake -C "${B}" oldconfig
-        merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
-        oe_runmake -C "${B}" oldconfig
-    fi
-    rm -f "$tmpfile"
-
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
-        env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
-        env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
-        if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', "true", "false", d)};then
-            printf "%s\t0x%08x\t0x%08x\t0x%08x\t%d\n" \
-                "${KARO_FW_ENV_NAND}" "$env_offset" "$env_size" "$env_size" > ${WORKDIR}/fw_env.config
-        else
-            printf "%s\t0x%08x\t0x%08x\n" \
-                "${KARO_FW_ENV_MMC}" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
-        fi
-    fi
-}
-addtask do_configure before do_devshell
-
-# i.MX6: runtime DT selection list.
-karo_configure_mx6() {
-    frag="`mktemp cfg-dtb-XXXXXX.tmp`"
-    if [ -z "$frag" ];then
-        bbfatal "Failed to create tmpfile"
-    fi
-    echo "CONFIG_KARO_DTB_SELECT=y" >> "$frag"
-    echo "CONFIG_DEFAULT_DEVICE_TREE=\"${KARO_UBOOT_DTB_BASENAME}\"" >> "$frag"
-    echo "CONFIG_OF_LIST=\"${KARO_UBOOT_OF_LIST}\"" >> "$frag"
-    echo "CONFIG_KARO_DEFAULT_BASEBOARD=\"${KARO_BASEBOARD}\"" >> "$frag"
-    if [ -n "${UBOOT_CONFIG}" ];then
-        for config in ${UBOOT_MACHINE};do
-            karo_apply_dtb_select_conf "${B}/${config}" "$frag"
-        done
-    else
-        karo_apply_dtb_select_conf "${B}" "$frag"
-    fi
-    rm -f "$frag"
-}
-
-do_configure:append:mx6-nxp-bsp() {
-    karo_configure_mx6
-}
-
-# Helper function for do_check_config task
-check_config() {
+# Verify that a config fragment is accepted by kconfig
+karo_check_config() {
     local cfg="$1"
     shift
     fgrep -f "$@" "${cfg}/.config" || true
@@ -341,22 +189,21 @@ do_check_config() {
                 if [ -s "${WORKDIR}/u-boot-cfg.${type}" ];then
                     bbnote "Appending '$type' specific config to '$(basename "${c}")/.config'"
                     merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/u-boot-cfg.${type}"
-                    check_config "${c}" "${WORKDIR}/u-boot-cfg.${type}"
+                    karo_check_config "${c}" "${WORKDIR}/u-boot-cfg.${type}"
                 fi
                 break
             done
             if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-                check_config "${c}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" \
+                karo_check_config "${c}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" \
                                  "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
             else
-                check_config "${c}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}"
+                karo_check_config "${c}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}"
             fi
-            check_config "${c}" "${WORKDIR}/u-boot-cfg.${MACHINE}"
-
+            karo_check_config "${c}" "${WORKDIR}/u-boot-cfg.${MACHINE}"
             for feature in ${UBOOT_FEATURES};do
                 bbnote "Appending '$feature' specific config to '$(basename "${c}")/.config'"
                 merge_config.sh -m -r -O "${c}" "${c}/.config" "${WORKDIR}/${feature}.cfg"
-                check_config "${c}" "${WORKDIR}/${feature}.cfg"
+                karo_check_config "${c}" "${WORKDIR}/${feature}.cfg"
             done
 
             # restore the original config
@@ -372,16 +219,16 @@ do_check_config() {
         merge_config.sh -m -r -O "${B}" "${B}/.config" "${WORKDIR}/u-boot-cfg.${MACHINE}"
         oe_runmake -C ${B} olddefconfig
         if [ "${SOC_FAMILY}" != "${SOC_PREFIX}" ];then
-            check_config "${B}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" \
+            karo_check_config "${B}" "${WORKDIR}/u-boot-cfg.${SOC_PREFIX}" \
                              "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
         else
-            check_config "${B}" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
+            karo_check_config "${B}" "${WORKDIR}/u-boot-cfg.${SOC_FAMILY}"
         fi
-        check_config "${B}" "${WORKDIR}/u-boot-cfg.${MACHINE}"
+        karo_check_config "${B}" "${WORKDIR}/u-boot-cfg.${MACHINE}"
         for feature in ${UBOOT_FEATURES};do
             bbnote "Appending '$feature' specific config to '.config'"
             merge_config.sh -m -r -O "${c}" "${B}/.config" "${WORKDIR}/${feature}.cfg"
-            check_config "${B}" "${WORKDIR}/${feature}.cfg"
+            karo_check_config "${B}" "${WORKDIR}/${feature}.cfg"
         done
 
         # restore the original config
@@ -429,17 +276,14 @@ karo_deploy_uboot_container() {
             for type in ${UBOOT_CONFIG};do
                 j=$(expr $j + 1)
                 [ $j = $i ] || continue
-                install -v "${B}/${config}/flash.bin" "u-boot-${MACHINE}-${type}.${UBOOT_SUFFIX}"
+                install -v "${B}/${config}/flash.bin" "${DEPLOYDIR}/u-boot-${MACHINE}-${type}.${UBOOT_SUFFIX}"
                 break
             done
             unset j
         done
         unset i
     else
-        install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
-    fi
-    if ${@ bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', "true", "false", d)};then
-        install -vD "${WORKDIR}/fw_env.config" u-boot/fw_env.config
+        install -v "${B}/flash.bin" "${DEPLOYDIR}/u-boot-${MACHINE}.${UBOOT_SUFFIX}"
     fi
 }
 
@@ -456,8 +300,6 @@ do_savedefconfig() {
         oe_runmake -C ${B} savedefconfig
     fi
 }
-do_savedefconfig[nostamp] = "1"
-addtask do_savedefconfig after do_configure
 
 do_updatedefconfig() {
     if [ -n "${KARO_BASEBOARD}" ];then
@@ -474,8 +316,8 @@ do_updatedefconfig() {
                 j=$(expr $j + 1)
                 [ $j = $i ] || continue
                 if [ "$type" = "default" ];then
-                    bbplain "Saving defconfig to:\n${S}/configs/${mach}_defconfig"
-                    install -v "${B}/${config}/defconfig" "${S}/configs/${mach}_defconfig"
+                    bbplain "Saving defconfig to:\n${S}/configs/${mach}_${type}_defconfig"
+                    install -v "${B}/${config}/defconfig" "${S}/configs/${mach}_${type}_defconfig"
                 else
                     bbplain "Saving defconfig to:\n${S}/configs/${mach}_${type}_defconfig"
                     install -v "${B}/${config}/defconfig" "${S}/configs/${mach}_${type}_defconfig"
@@ -486,7 +328,8 @@ do_updatedefconfig() {
         done
         unset i
     else
-        install -v "${B}/flash.bin" "u-boot-${MACHINE}.${UBOOT_SUFFIX}"
+        bbplain "Saving defconfig to:\n${S}/configs/${mach}_defconfig"
+        install -v "${B}/defconfig" "${S}/configs/${mach}_defconfig"
     fi
 }
 addtask do_updatedefconfig after do_savedefconfig
@@ -547,21 +390,6 @@ python do_env_overlays:append:mx6-nxp-bsp () {
         bb.utils.remove(os.path.join(d.getVar('B'), config, "u-boot-initial-env"))
 }
 
-uboot_install_config() {
-    config=$1
-    type=$2
-
-    # Install the uboot-initial-env
-    if [ -n "${UBOOT_INITIAL_ENV}" -a "$type" = "default" ]; then
-        install -D -m 644 ${B}/${config}/u-boot-initial-env-${type} ${D}${sysconfdir}/${UBOOT_INITIAL_ENV}
-    fi
-}
-
-uboot_install_spl_config() {
-    : nothing to be seen here
-}
-
-PACKAGE_ARCH = "${MACHINE_ARCH}"
 COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx8m-nxp-bsp|mx9-nxp-bsp)"
 
 # ATF copy and imx-boot container deploy only apply to SoCs booting through
