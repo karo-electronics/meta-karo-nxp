@@ -37,7 +37,7 @@ PROVIDES += "u-boot"
 KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "dc09b1a4e5119eddfeaf4d4ea2ed77b48e6b0da4"
+UBOOT_REV_DEFAULT = "15bd30dfdec8010d6e94621c44645eb563a24539"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
@@ -86,7 +86,6 @@ UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "optee", " op
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
-UBOOT_FEATURES:remove:mx6-nxp-bsp = "fastboot"
 
 UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
                        "-" + d.getVar('KARO_BASEBOARD') \
