@@ -96,8 +96,17 @@ do_configure:append() {
         env_offset=$(sed -n '/^CONFIG_ENV_OFFSET=/{s/^.*=//;p}' ${c}/.config)
         env_size=$(sed -n '/^CONFIG_ENV_SIZE=/{s/^.*=//;p}' ${c}/.config)
         if ${@ bb.utils.contains('MACHINE_FEATURES', 'nand', "true", "false", d)};then
+            # CONFIG_ENV_OFFSET is relative to the whole NAND chip, whereas
+            # KARO_FW_ENV_NAND is the env partition on Linux, where the
+            # environment sits at offset 0. CONFIG_ENV_RANGE spans the
+            # bad-block area, given as a sector count.
+            env_range=$(sed -n '/^CONFIG_ENV_RANGE=/{s/^.*=//;p}' ${c}/.config)
+            if [ -z "$env_range" ];then
+                env_range=$env_size
+            fi
+            sectors=$(expr "$(printf '%d' "$env_range")" / "$(printf '%d' "$env_size")")
             printf "%s\t0x%08x\t0x%08x\t0x%08x\t%d\n" \
-                "${KARO_FW_ENV_NAND}" "$env_offset" "$env_size" "$env_size" > ${WORKDIR}/fw_env.config
+                "${KARO_FW_ENV_NAND}" 0 "$env_size" "$env_size" "$sectors" > ${WORKDIR}/fw_env.config
         else
             printf "%s\t0x%08x\t0x%08x\n" \
                 "${KARO_FW_ENV_MMC}" "$env_offset" "$env_size" > ${WORKDIR}/fw_env.config
