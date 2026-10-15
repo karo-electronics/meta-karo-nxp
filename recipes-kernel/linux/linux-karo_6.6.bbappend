@@ -7,6 +7,7 @@ SRC_URI:append = " \
 SRC_URI:append:mx6-nxp-bsp = " \
     file://0002-soc-imx-src-fix-imx_src_is_m4_enabled-redefinition.patch \
     file://0003-drm-imx-fix-the-tx6-txul-display-support.patch \
+    file://0004-ARM-imx-fix-imx6ul-and-imx6-busfreq-build.patch \
 "
 
 SRC_URI:append = " \
