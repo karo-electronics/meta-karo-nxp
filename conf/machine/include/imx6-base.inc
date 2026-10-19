@@ -9,6 +9,11 @@ UBOOT_MAKE_TARGET = "u-boot-dtb.imx"
 UBOOT_BINARY = "u-boot-dtb.imx"
 SPL_BINARY = ""
 
+# U-Boot config names follow the module, not the baseboard.
+UBOOT_CONFIG[default] = "${MACHINE}_defconfig"
+UBOOT_CONFIG[mfg] = "${MACHINE}_mfg_defconfig"
+UBOOT_CONFIG[noenv] = "${MACHINE}_noenv_defconfig"
+
 # Empty by design; otherwise karo-base.inc appends a pmic fragment.
 KARO_BOARD_PMIC = ""
 
