@@ -23,6 +23,8 @@ DEPENDS += "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
     u-boot-mkimage-native \
 "
+# No ATF on i.MX6.
+DEPENDS:remove:mx6-nxp-bsp = "imx-atf"
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-karo-configure.inc
@@ -65,8 +67,6 @@ UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
 UBOOT_BOARD_DIR:mx93-nxp-bsp = "board/karo/imx93"
 UBOOT_BOARD_DIR:mx91-nxp-bsp = "board/karo/imx91"
 UBOOT_BOARD_DIR:mx6-nxp-bsp = "board/karo/imx6"
-# No ATF or DDR firmware on i.MX6.
-DEPENDS:remove:mx6-nxp-bsp = "imx-atf ${IMX_EXTRA_FIRMWARE}"
 
 # Carriers whose control DT goes into the U-Boot FIT.
 KARO_UBOOT_BASEBOARDS ?= "${KARO_BASEBOARDS}"
