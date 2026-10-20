@@ -85,6 +85,7 @@ UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" 
 UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "optee", " optee", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
+UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "nand", " ubi", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
 
 UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
