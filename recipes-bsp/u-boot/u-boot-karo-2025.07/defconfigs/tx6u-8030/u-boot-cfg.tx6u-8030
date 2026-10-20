@@ -5,6 +5,6 @@ CONFIG_DEFAULT_DEVICE_TREE="imx6dl-tx6u-8030"
 CONFIG_DEFAULT_FDT_FILE="imx6dl-tx6u-8030.dtb"
 CONFIG_SYS_PROMPT="TX6U U-Boot > "
 CONFIG_MTDIDS_DEFAULT="nand0=gpmi-nand"
-CONFIG_MTDPARTS_DEFAULT="mtdparts=gpmi-nand:4m(nandboot),384k@0x400000(env),12m@0x460000(linux),40m@0x1060000(rootfs),72320k@0x3860000(userfs),512k@0x7f00000(dtb),512k@0x7f80000(bbt)ro"
+CONFIG_MTDPARTS_DEFAULT="mtdparts=gpmi-nand:4m(nandboot),384k@0x400000(env),12m@0x460000(linux),113280k@0x1060000(rootfs),512k@0x7f00000(dtb),512k@0x7f80000(bbt)ro"
 CONFIG_ENV_RANGE=0x60000
 CONFIG_MX6DL=y
