@@ -18,15 +18,6 @@ SPDX_INCLUDE_KERNEL_CONFIG = "1"
 # meta-freescale linux-imx.inc:40: uImage load address from imx-base.inc per SoC.
 KERNEL_EXTRA_ARGS:append:mx6-nxp-bsp = " LOADADDR=${UBOOT_ENTRYPOINT}"
 
-# NAND cannot load overlays at boot: deploy the do_check_dtbs merge for KARO_BASEBOARD.
-do_deploy:append() {
-    if ${@bb.utils.contains('MACHINE_FEATURES', 'nand', 'true', 'false', d)}; then
-        if [ -n "${KARO_BASEBOARD}" ]; then
-            install -m 0644 ${B}/${KERNEL_OUTPUT_DIR}/dts/${DTB_VENDOR_DIR}/${DTB_BASENAME}-${KARO_BASEBOARD}.dtb ${DEPLOYDIR}/
-        fi
-    fi
-}
-
 KBUILD_DEFCONFIG ?= "${SOC_FAMILY}_defconfig"
 
 KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES','bluetooth',' bluetooth.cfg','',d)}"
