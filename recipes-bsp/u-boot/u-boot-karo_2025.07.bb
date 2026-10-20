@@ -39,7 +39,7 @@ PROVIDES += "u-boot"
 KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "7cf2f1fbc7d7fbd785f5bf14956d021436b1bfb0"
+UBOOT_REV_DEFAULT = "3fae2a8067dc28dbff3bc12899c26b623c3352f8"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
