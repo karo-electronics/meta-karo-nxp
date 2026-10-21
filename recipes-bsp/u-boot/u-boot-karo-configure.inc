@@ -114,37 +114,35 @@ do_configure:append() {
     fi
 }
 
-# Merge the DT list; fail if kconfig drops it.
-karo_apply_dtb_select_conf() {
-    cfg="$1"
-    frag="$2"
-
-    merge_config.sh -m -r -O "$cfg" "$cfg/.config" "$frag"
-    oe_runmake -C "$cfg" oldconfig
-    grep -q "^CONFIG_KARO_DTB_SELECT=y" "$cfg/.config" || \
-        bbfatal "kconfig rejected CONFIG_KARO_DTB_SELECT in '$(basename "$cfg")'"
-}
-
-# i.MX6: runtime DT selection list.
-karo_configure_mx6() {
-    frag="`mktemp cfg-dtb-XXXXXX.tmp`"
-    if [ -z "$frag" ];then
+do_configure:append:mx6-nxp-bsp() {
+    tmpfile="`mktemp cfg-XXXXXX.tmp`"
+    if [ -z "$tmpfile" ];then
         bbfatal "Failed to create tmpfile"
     fi
-    echo "CONFIG_KARO_DTB_SELECT=y" >> "$frag"
-    echo "CONFIG_DEFAULT_DEVICE_TREE=\"${KARO_UBOOT_DTB_BASENAME}\"" >> "$frag"
-    echo "CONFIG_OF_LIST=\"${KARO_UBOOT_OF_LIST}\"" >> "$frag"
-    echo "CONFIG_KARO_DEFAULT_BASEBOARD=\"${KARO_BASEBOARD}\"" >> "$frag"
+    add_conf() {
+        [ $# = 2 ] || return 0
+        echo "$1=$2" >> "$tmpfile"
+    }
+
+    add_conf CONFIG_KARO_DTB_SELECT         y
+    add_conf CONFIG_DEFAULT_DEVICE_TREE     "\"${KARO_UBOOT_DTB_BASENAME}\""
+    add_conf CONFIG_OF_LIST                 "\"${KARO_UBOOT_OF_LIST}\""
+    add_conf CONFIG_KARO_DEFAULT_BASEBOARD  "\"${KARO_BASEBOARD}\""
+    
     if [ -n "${UBOOT_CONFIG}" ];then
         for config in ${UBOOT_MACHINE};do
-            karo_apply_dtb_select_conf "${B}/${config}" "$frag"
+            c="${B}/${config}"
+            merge_config.sh -m -r -O "$c" "$c/.config" "$tmpfile"
+            oe_runmake -C "$c" oldconfig
+            grep -q "^CONFIG_KARO_DTB_SELECT=y" "$c/.config" || \
+                bbfatal "kconfig rejected CONFIG_KARO_DTB_SELECT in '$(basename "$c")'"
         done
     else
-        karo_apply_dtb_select_conf "${B}" "$frag"
+        merge_config.sh -m -r -O "${B}" "${B}/.config" "$tmpfile"
+        oe_runmake -C "${B}" oldconfig
+        grep -q "^CONFIG_KARO_DTB_SELECT=y" "${B}/.config" || \
+            bbfatal "kconfig rejected CONFIG_KARO_DTB_SELECT in '$(basename "${B}")'"
     fi
-    rm -f "$frag"
-}
 
-do_configure:append:mx6-nxp-bsp() {
-    karo_configure_mx6
+    rm -f "$tmpfile"
 }

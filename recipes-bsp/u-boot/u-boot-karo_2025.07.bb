@@ -39,7 +39,7 @@ PROVIDES += "u-boot"
 KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "3fae2a8067dc28dbff3bc12899c26b623c3352f8"
+UBOOT_REV_DEFAULT = "8cd0f98650873f4745ed21fe36f6d5f2ab4be719"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
@@ -96,13 +96,6 @@ SRC_URI:append = "${@ " file://${UBOOT_ENV_FILE}.env" if d.getVar('UBOOT_ENV_FIL
 SRC_URI:append = "${@ bb.utils.contains('DISTRO_FEATURES', 'rauc', " file://rauc.env", "", d)}"
 
 SRC_URI:append = " \
-    file://dts/${UBOOT_DTB_NAME}.dts;subdir=git/arch/arm \
-    file://dts/${UBOOT_DTB_NAME}-u-boot.dtsi;subdir=git/arch/arm \
-    file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
-    file://dts/${DTB_BASENAME}-u-boot.dtsi;subdir=git/arch/arm \
-"
-# i.MX6: the device trees come from the U-Boot tree.
-SRC_URI:remove:mx6-nxp-bsp = " \
     file://dts/${UBOOT_DTB_NAME}.dts;subdir=git/arch/arm \
     file://dts/${UBOOT_DTB_NAME}-u-boot.dtsi;subdir=git/arch/arm \
     file://dts/${DTB_BASENAME}.dts;subdir=git/arch/arm \
@@ -392,12 +385,10 @@ python do_env_overlays:append:mx6-nxp-bsp () {
 
 COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx8m-nxp-bsp|mx9-nxp-bsp)"
 
-# ATF copy and imx-boot container deploy only apply to SoCs booting through
-# an imx-boot container. Attach them per SoC family instead of running them
-# unconditionally, so other families can reuse this recipe.
 do_compile:prepend:mx8m-nxp-bsp() {
     karo_copy_atf_firmware
 }
+
 do_compile:prepend:mx9-nxp-bsp() {
     karo_copy_atf_firmware
 }
@@ -405,6 +396,7 @@ do_compile:prepend:mx9-nxp-bsp() {
 do_deploy:append:mx8m-nxp-bsp() {
     karo_deploy_uboot_container
 }
+
 do_deploy:append:mx9-nxp-bsp() {
     karo_deploy_uboot_container
 }
