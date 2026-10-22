@@ -12,3 +12,4 @@ SRC_URI += "file://0009-configs-krimx95-SM-console-on-LPUART1-LPUART2-given-.pat
 SRC_URI += "file://0010-configs-krimx95-regenerate-headers-after-LPUART2-han.patch"
 SRC_URI += "file://0011-configs-krimx95-let-Linux-boot-the-M7-through-remote.patch"
 SRC_URI += "file://0012-boards-krimx95-read-back-and-guard-the-PMIC-rails-at.patch"
+SRC_URI += "file://0013-boards-krimx95-supervise-the-32.768-kHz-crystal.patch"
