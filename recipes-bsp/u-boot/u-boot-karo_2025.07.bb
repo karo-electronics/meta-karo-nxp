@@ -23,10 +23,12 @@ DEPENDS += "\
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os', '', d)} \
     u-boot-mkimage-native \
 "
+# No ATF on i.MX6.
+DEPENDS:remove:mx6-nxp-bsp = "imx-atf"
 
 require recipes-bsp/u-boot/u-boot.inc
 require u-boot-karo-configure.inc
-inherit use-imx-security-controller-firmware
+inherit ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "use-imx-security-controller-firmware"}
 inherit fsl-u-boot-localversion
 LOCALVERSION = "-karo"
 
@@ -37,7 +39,7 @@ PROVIDES += "u-boot"
 KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "4443bcd2df45efcd48cc07418e6531a708bf4a6a"
+UBOOT_REV_DEFAULT = "b99943695ac8c98b1b6d2b29a0e4bd498ecac1e1"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
@@ -64,12 +66,26 @@ ATF_MACHINE_NAME:append = "${@bb.utils.contains('MACHINE_FEATURES', 'optee', '-o
 UBOOT_BOARD_DIR:mx8-nxp-bsp = "board/karo/tx8m"
 UBOOT_BOARD_DIR:mx93-nxp-bsp = "board/karo/imx93"
 UBOOT_BOARD_DIR:mx91-nxp-bsp = "board/karo/imx91"
+UBOOT_BOARD_DIR:mx6-nxp-bsp = "board/karo/imx6"
+
+# Carriers whose control DT goes into the U-Boot FIT.
+KARO_UBOOT_BASEBOARDS ?= "${KARO_BASEBOARDS}"
+# The runtime selection picks among these, module DT first.
+KARO_UBOOT_OF_LIST = "${@ ' '.join([d.getVar('KARO_UBOOT_DTB_BASENAME')] + ['%s-%s' % (d.getVar('KARO_UBOOT_DTB_BASENAME'), b) for b in (d.getVar('KARO_UBOOT_BASEBOARDS') or '').split()])}"
+
+KARO_FW_ENV_MMC ?= "/dev/mmcblk0boot0"
+KARO_FW_ENV_MMC:mx6q-nxp-bsp = "/dev/mmcblk3boot0"
+KARO_FW_ENV_MMC:mx6dl-nxp-bsp = "/dev/mmcblk3boot0"
+
+KARO_FW_ENV_NAND ?= "/dev/mtd0"
+KARO_FW_ENV_NAND:mx6-nxp-bsp = "/dev/mtd1"
 
 UBOOT_FEATURES:append = "${@ " ksz9x-phy" if d.getVar('KARO_BASEBOARD') in "qsbase1 qsbase4".split() else ""}"
 UBOOT_FEATURES:append = "${@ " pmic-${KARO_BOARD_PMIC}" if "${KARO_BOARD_PMIC}" != "" else ""}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "optee", " optee", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "rauc", " rauc", "", d)}"
+UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "nand", " ubi", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
 
 UBOOT_ENV_FILE ?= "${@ "%s%s" % (d.getVar('MACHINE'), \
@@ -220,11 +236,11 @@ do_check_config[nostamp] = "1"
 # so set the appropriate dependencies
 do_compile[depends] += " \
     ${@ "".join(map(lambda f: " %s:do_deploy" % f, d.getVar('IMX_EXTRA_FIRMWARE').split()))} \
-    imx-atf:do_deploy \
+    ${@ "" if "mx6-nxp-bsp" in d.getVar("MACHINEOVERRIDES").split(":") else "imx-atf:do_deploy"} \
     ${@bb.utils.contains('MACHINE_FEATURES', 'optee', 'optee-os:do_deploy', '', d)} \
 "
 
-do_compile:prepend() {
+karo_copy_atf_firmware() {
     if [ -n "${UBOOT_CONFIG}" ];then
         for m in ${UBOOT_MACHINE};do
             bbnote "Copy ATF: '${ATF_MACHINE_NAME}' from '${DEPLOY_DIR_IMAGE}/${BOOT_TOOLS}' to '${B}/${m}/bl31.bin'"
@@ -244,7 +260,7 @@ do_compile:prepend() {
     fi
 }
 
-do_deploy:append() {
+karo_deploy_uboot_container() {
     if [ -n "${UBOOT_CONFIG}" ];then
         i=0
         for config in ${UBOOT_MACHINE};do
@@ -361,4 +377,39 @@ python do_env_overlays () {
 addtask do_env_overlays before do_compile after do_configure
 do_env_overlays[vardeps] += "KARO_BASEBOARDS KARO_DTB_OVERLAYS"
 
-COMPATIBLE_MACHINE = "(mx8m-nxp-bsp|mx9-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx8m-nxp-bsp|mx9-nxp-bsp)"
+
+do_compile:prepend:mx8m-nxp-bsp() {
+    karo_copy_atf_firmware
+}
+
+do_compile:prepend:mx9-nxp-bsp() {
+    karo_copy_atf_firmware
+}
+
+do_deploy:append:mx8m-nxp-bsp() {
+    karo_deploy_uboot_container
+}
+
+do_deploy:append:mx9-nxp-bsp() {
+    karo_deploy_uboot_container
+}
+
+# i.MX6 has no boot container; deploy the monolithic image under the same
+# names, which karo-nxp.inc expects.
+do_deploy:append:mx6-nxp-bsp() {
+    i=0
+    for config in ${UBOOT_MACHINE};do
+        i=$(expr $i + 1)
+        j=0
+        for type in ${UBOOT_CONFIG};do
+            j=$(expr $j + 1)
+            [ $j = $i ] || continue
+            install -v "${B}/${config}/${UBOOT_BINARY}" \
+                "${DEPLOYDIR}/u-boot-${MACHINE}-${type}.${UBOOT_SUFFIX}"
+            break
+        done
+        unset j
+    done
+    unset i
+}

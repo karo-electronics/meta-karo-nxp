@@ -1,8 +1,17 @@
-Index: linux-tx93-5210/drivers/spi/spidev.c
-===================================================================
---- linux-tx93-5210.orig/drivers/spi/spidev.c
-+++ linux-tx93-5210/drivers/spi/spidev.c
-@@ -715,36 +715,25 @@ static const struct spi_device_id spidev
+From ee6702f5c39e01971f732dbf1dceb165a8b61842 Mon Sep 17 00:00:00 2001
+From: OpenEmbedded <oe.patch@oe>
+Date: Mon, 26 Jun 2023 12:21:41 +0200
+Subject: [PATCH] spidev: support listing spidev in DT
+
+---
+ drivers/spi/spidev.c | 41 +++++++++++++++--------------------------
+ 1 file changed, 15 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index b97206d47ec6..ad93d986b653 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -715,36 +715,25 @@ static const struct spi_device_id spidev_spi_ids[] = {
  	{ .name = "spi-authenta" },
  	{ .name = "em3581" },
  	{ .name = "si3210" },
@@ -53,7 +62,7 @@ Index: linux-tx93-5210/drivers/spi/spidev.c
  };
  MODULE_DEVICE_TABLE(of, spidev_dt_ids);
  
-@@ -765,7 +754,7 @@ static const struct acpi_device_id spide
+@@ -765,7 +754,7 @@ static const struct acpi_device_id spidev_acpi_ids[] = {
  	{ "SPT0001", (kernel_ulong_t)&spidev_acpi_check },
  	{ "SPT0002", (kernel_ulong_t)&spidev_acpi_check },
  	{ "SPT0003", (kernel_ulong_t)&spidev_acpi_check },

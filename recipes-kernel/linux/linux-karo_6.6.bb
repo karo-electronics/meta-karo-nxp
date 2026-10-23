@@ -8,12 +8,15 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=6bc538ed5bd9a7fc9398086aedcd7e46"
 
 KERNEL_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-linux.git;protocol=https"
 KERNEL_BRANCH_DEFAULT = "lf-6.6.y-karo-2"
-KERNEL_REV_DEFAULT = "3ebeb74e758d6c8c1625662d2d229b4740659cd7"
+KERNEL_REV_DEFAULT = "15946d291d174c52c0874918ba6eb0fe0e2c6f61"
 
 CVE_PRODUCT = "linux:linux_kernel"
 CVE_VERSION = "6.6.52"
 
 SPDX_INCLUDE_KERNEL_CONFIG = "1"
+
+# meta-freescale linux-imx.inc:40: uImage load address from imx-base.inc per SoC.
+KERNEL_EXTRA_ARGS:append:mx6-nxp-bsp = " LOADADDR=${UBOOT_ENTRYPOINT}"
 
 KBUILD_DEFCONFIG ?= "${SOC_FAMILY}_defconfig"
 
@@ -37,4 +40,4 @@ KERNEL_FEATURES:append = "${@bb.utils.contains('DISTRO_FEATURES',"edac"," edac.c
 
 KERNEL_FEATURES:append:mx93-nxp-bsp = " lvds.cfg"
 
-COMPATIBLE_MACHINE = "(mx[89]-nxp-bsp)"
+COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx[89]-nxp-bsp)"

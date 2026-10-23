@@ -145,7 +145,7 @@ python do_check_dtbs () {
     if basename == None:
         bb.warn("DTB_BASENAME is not set; cannot process FDT overlays")
         return
-    os.chdir(os.path.join(d.getVar('B'), d.getVar('KERNEL_OUTPUT_DIR'), "dts", "freescale"))
+    os.chdir(os.path.join(d.getVar('B'), d.getVar('KERNEL_OUTPUT_DIR'), "dts", d.getVar('DTB_VENDOR_DIR')))
     for baseboard in baseboards.split():
         bb.debug(2, "creating %s-%s.dtb from %s.dtb" % (basename, baseboard, basename))
         outfile = "%s-%s" % (basename, baseboard)

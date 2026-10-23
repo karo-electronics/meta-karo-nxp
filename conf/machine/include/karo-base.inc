@@ -23,10 +23,13 @@ SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz"
 
 # Set DTB variables
 KARO_BASEBOARD ??= ""
+DTB_VENDOR_DIR ?= "freescale"
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
+# U-Boot control DT stem; defaults to the module DT.
+KARO_UBOOT_DTB_BASENAME ?= "${DTB_BASENAME}"
 UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
-KERNEL_DEVICETREE += "freescale/${DTB_BASENAME}.dtb"
+KERNEL_DEVICETREE += "${DTB_VENDOR_DIR}/${DTB_BASENAME}.dtb"
 
 KERNEL_IMAGETYPE = "Image"
 
@@ -54,7 +57,9 @@ IMX_DEFAULT_BSP = "nxp"
 PREFERRED_PROVIDER_virtual/kernel = "linux-karo"
 PREFERRED_VERSION_linux-karo ?= "6.6"
 
-PREFERRED_PROVIDER_virtual/bootloader = "u-boot-karo"
+IMX_DEFAULT_BOOTLOADER = "u-boot-karo"
+# meta-imx imx-base-extend.inc sets the imx-nxp-bsp override to u-boot-imx.
+IMX_DEFAULT_BOOTLOADER:imx-nxp-bsp = "u-boot-karo"
 PREFERRED_VERSION_u-boot-karo ?= "2025.07"
 
 PREFERRED_PROVIDER_ptpd = "ptpd"
