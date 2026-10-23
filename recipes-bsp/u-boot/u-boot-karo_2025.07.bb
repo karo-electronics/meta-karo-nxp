@@ -71,7 +71,7 @@ UBOOT_BOARD_DIR:mx6-nxp-bsp = "board/karo/imx6"
 # Carriers whose control DT goes into the U-Boot FIT.
 KARO_UBOOT_BASEBOARDS ?= "${KARO_BASEBOARDS}"
 # The runtime selection picks among these, module DT first.
-KARO_UBOOT_OF_LIST = "${@ ' '.join([d.getVar('KARO_UBOOT_DTB_BASENAME')] + ['%s-%s' % (d.getVar('KARO_UBOOT_DTB_BASENAME'), b) for b in (d.getVar('KARO_UBOOT_BASEBOARDS') or '').split()])}"
+KARO_UBOOT_OF_LIST = "${@ ' '.join([d.getVar('DTB_BASENAME')] + ['%s-%s' % (d.getVar('DTB_BASENAME'), b) for b in (d.getVar('KARO_UBOOT_BASEBOARDS') or '').split()])}"
 
 KARO_FW_ENV_MMC ?= "/dev/mmcblk0boot0"
 KARO_FW_ENV_MMC:mx6q-nxp-bsp = "/dev/mmcblk3boot0"

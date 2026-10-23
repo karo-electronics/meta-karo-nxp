@@ -125,7 +125,7 @@ do_configure:append:mx6-nxp-bsp() {
     }
 
     add_conf CONFIG_KARO_DTB_SELECT         y
-    add_conf CONFIG_DEFAULT_DEVICE_TREE     "\"${KARO_UBOOT_DTB_BASENAME}\""
+    add_conf CONFIG_DEFAULT_DEVICE_TREE     "\"${DTB_BASENAME}\""
     add_conf CONFIG_OF_LIST                 "\"${KARO_UBOOT_OF_LIST}\""
     add_conf CONFIG_KARO_DEFAULT_BASEBOARD  "\"${KARO_BASEBOARD}\""
     

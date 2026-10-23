@@ -25,8 +25,6 @@ SOC_DEFAULT_IMAGE_FSTYPES = "tar.gz"
 KARO_BASEBOARD ??= ""
 DTB_VENDOR_DIR ?= "freescale"
 DTB_BASENAME ?= "${SOC_FAMILY}-${MACHINE}"
-# U-Boot control DT stem; defaults to the module DT.
-KARO_UBOOT_DTB_BASENAME ?= "${DTB_BASENAME}"
 UBOOT_DTB_NAME ?= "${@ "${DTB_BASENAME}%s" % ("-${KARO_BASEBOARD}" if "${KARO_BASEBOARD}" != "" else "")}"
 
 KERNEL_DEVICETREE += "${DTB_VENDOR_DIR}/${DTB_BASENAME}.dtb"
