@@ -39,7 +39,7 @@ PROVIDES += "u-boot"
 KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "8cd0f98650873f4745ed21fe36f6d5f2ab4be719"
+UBOOT_REV_DEFAULT = "b99943695ac8c98b1b6d2b29a0e4bd498ecac1e1"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
@@ -376,12 +376,6 @@ python do_env_overlays () {
 }
 addtask do_env_overlays before do_compile after do_configure
 do_env_overlays[vardeps] += "KARO_BASEBOARDS KARO_DTB_OVERLAYS"
-
-# i.MX6: the make rule ignores the edited environment file.
-python do_env_overlays:append:mx6-nxp-bsp () {
-    for config in (d.getVar('UBOOT_MACHINE') or "").split():
-        bb.utils.remove(os.path.join(d.getVar('B'), config, "u-boot-initial-env"))
-}
 
 COMPATIBLE_MACHINE = "(mx6-nxp-bsp|mx8m-nxp-bsp|mx9-nxp-bsp)"
 
