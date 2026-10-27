@@ -51,11 +51,6 @@ IMXBOOT_TARGETS = "${IMXBOOT_TARGETS_BASENAME}_a55"
 IMX_BOOT_SOC_TARGET = "iMX95"
 IMX_BOOT_SEEK = "32"
 
-# The i.MX95 root filesystem (kernel modules, NXP firmware, debug tools)
-# does not fit into the 128 MiB default rootfs partition used by the karo
-# images. Give it 192 MiB with headroom for package management.
-ROOTFS_PARTITION_SIZE ?= "196608"
-
 # ttyLP1 = customer UART_B, ttyLP2 pads drive PCIe (QSBASE95)
 SERIAL_CONSOLES = "115200;ttyLP0"
 
