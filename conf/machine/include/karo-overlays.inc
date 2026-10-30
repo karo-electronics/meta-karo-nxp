@@ -23,5 +23,3 @@ def get_overlays(d):
     if len(ovlist) == 0:
         return ""
     return " ".join(ovlist)
-
-KERNEL_DEVICETREE:append = "${@ get_overlays(d) }"

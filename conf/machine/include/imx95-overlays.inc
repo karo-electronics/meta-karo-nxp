@@ -1,4 +1,4 @@
-# Overlay lists for i.MX95 modules; same model as the QS93 layer
+require karo-overlays.inc
 
 DTB_OVERLAYS_generic ??= ""
 
@@ -27,4 +27,4 @@ KARO_DTB_OVERLAYS[qsbase95] += " \
     qs95-raspi-display \
 "
 
-require karo-overlays.inc
+KERNEL_DEVICETREE:append = "${@ get_overlays(d) }"
