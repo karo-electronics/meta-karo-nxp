@@ -3,19 +3,11 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:${THISDIR}/${PN}/patches:${THISDIR}
 inherit fsl-kernel-localversion
 LOCALVERSION = "-karo"
 
-SRC_URI:append = " \
-    file://0001-dts-add-dts-files-for-qs95-5610-module-and-qsbase95-.patch \
-    file://0002-imx219-update-driver.patch \
-    file://0003-drm-add-support-for-the-raspberry-7inch-panel.patch \
-    file://0004-dts-split-qsbase95-baseboard-dts-into-per-device-ove.patch \
-    file://0005-arm64-dts-imx95-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
-    file://0006-arm64-dts-imx95-qs95-thermal-trips-for-the-industria.patch \
-    file://0007-arm64-dts-imx95-qs95-add-usdhc2-and-VDD_SD2_3V3-regu.patch \
-    file://0008-arm64-dts-imx95-qs95-no-eDMA1-on-LPUART1-ERR052900.patch \
-    file://0009-arm64-dts-imx95-qs95-disable-USB-park-mode-in-HS-ERR.patch \
-    file://0010-arm64-dts-imx95-qs95-note-errata-without-software-wo.patch \
-    file://0011-arm64-dts-imx95-qs95-enable-UART_B-lpuart2.patch \
-"
+SRC_URI += "file://0001-media-i2c-imx219-rework-timing-setup-and-stream-cont.patch"
+SRC_URI += "file://0002-Input-edt-ft5x06-add-polling-fallback-and-touch-rele.patch"
+SRC_URI += "file://0003-drm-bridge-tc358762-program-panel-timing-registers-f.patch"
+SRC_URI += "file://0004-drm-panel-panel-simple-honor-data-mapping-for-panel-.patch"
+SRC_URI += "file://0005-arm64-dts-add-the-imx95-qs95-5610-module-dts-and-ove.patch"
 
 SRC_URI:append = " file://${SOC_FAMILY}_defconfig"
 

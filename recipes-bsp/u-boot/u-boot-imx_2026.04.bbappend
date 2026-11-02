@@ -5,23 +5,11 @@ require u-boot-karo-configure.inc
 inherit fsl-u-boot-localversion
 LOCALVERSION = "-karo"
 
-SRC_URI:append = " \
-    file://0001-fastboot-add-support-for-non-fsl-fastboot.patch \
-    file://0002-board-add-board-specific-logic-and-for-qs95-module.patch \
-    file://0003-configs-add-defconfigs-for-qs95-5610-module.patch \
-    file://0004-dts-add-files-for-qs95-5610-module.patch \
-    file://0005-board-add-qs95-specific-mac-readout-function.patch \
-    file://0006-mmc-fsl_esdhc_imx-fail-HS400-setup-when-the-strobe-D.patch \
-    file://0007-dts-qs95-use-a-documented-slew-rate-on-ENET-TXC-MDC-.patch \
-    file://0008-dts-qs95-use-a-3.3-V-drive-strength-on-the-PHY-reset.patch \
-    file://0009-dts-qs95-write-the-KSZ9131-pad-skews-in-the-KSZ9131-.patch \
-    file://0010-dts-qs95-drive-PCIE_PWR_EN-from-the-M.2-regulator.patch \
-    file://0011-dts-qs95-256-MiB-CMA-for-a-2-GiB-module.patch \
-    file://0012-dts-qs95-no-eDMA1-on-LPUART1-ERR052900.patch \
-    file://0013-dts-qs95-disable-USB-park-mode-in-HS-ERR052487.patch \
-    file://0014-board-karo-qs95-cap-PCIe-read-requests-ERR051382.patch \
-    file://0015-i2c-imx_lpi2c-repeated-start-between-read-chunks-ERR.patch \
-"
+SRC_URI += "file://0001-arm-mach-imx-imx9-make-imx_get_mac_from_fuse-weak.patch"
+SRC_URI += "file://0002-i2c-imx_lpi2c-work-around-ERR053261-on-i.MX95.patch"
+SRC_URI += "file://0003-mmc-fsl_esdhc_imx-fail-HS400-setup-when-the-strobe-D.patch"
+SRC_URI += "file://0004-fastboot-do-not-tie-UUU-support-to-the-FSL-implement.patch"
+SRC_URI += "file://0005-board-karo-add-support-for-the-QS95-5610-i.MX95-modu.patch"
 
 UBOOT_FEATURES:append:qs95 = " fastboot"
 
