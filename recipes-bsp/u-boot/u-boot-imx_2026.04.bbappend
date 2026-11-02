@@ -21,7 +21,6 @@ SRC_URI:append = " \
     file://0013-dts-qs95-disable-USB-park-mode-in-HS-ERR052487.patch \
     file://0014-board-karo-qs95-cap-PCIe-read-requests-ERR051382.patch \
     file://0015-i2c-imx_lpi2c-repeated-start-between-read-chunks-ERR.patch \
-    file://0016-configs-qs95-persist-the-DDR-quickboot-data-in-SPL.patch \
 "
 
 UBOOT_FEATURES:append:qs95 = " fastboot"
