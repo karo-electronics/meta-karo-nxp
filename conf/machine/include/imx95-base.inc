@@ -5,7 +5,7 @@ require conf/machine/include/arm/armv8-2a/tune-cortexa55.inc
 
 SOC_PREFIX = "imx95"
 
-MACHINE_FEATURES += "pci optee"
+MACHINE_FEATURES:append = " pci optee gpu"
 
 ATF_PLATFORM = "imx95"
 OEI_CORE   = "m33"
