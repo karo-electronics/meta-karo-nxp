@@ -1,6 +1,6 @@
 require conf/machine/include/imx-base.inc
 
-MACHINE_FEATURES += "emmc"
+MACHINE_FEATURES:append = " emmc"
 
 SOC_FAMILY ??= "${SOC_PREFIX}"
 
@@ -27,7 +27,6 @@ SPL_BINARY = "spl/u-boot-spl.bin"
 UBOOT_CONFIG ??= "default mfg noenv"
 
 UBOOT_FEATURES ??= ""
-UBOOT_FEATURES:append = "${@ " optee" if 'optee' in d.getVar('MACHINE_FEATURES').split() else ""}"
 
 # for fw_printenv/fw_setenv
 UBOOT_INITIAL_ENV ?= "u-boot-initial-env"
