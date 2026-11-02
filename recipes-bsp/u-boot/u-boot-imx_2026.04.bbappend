@@ -13,7 +13,7 @@ SRC_URI += "file://0005-board-karo-add-support-for-the-QS95-5610-i.MX95-modu.pat
 
 UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "optee", " optee", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
-UBOOT_FEATURES:append:qs95 = " fastboot"
+UBOOT_FEATURES:append = " fastboot"
 
 SRC_URI:append = "${@ "".join(" file://%s.cfg" % f for f in (d.getVar('UBOOT_FEATURES') or "").split())}"
 
