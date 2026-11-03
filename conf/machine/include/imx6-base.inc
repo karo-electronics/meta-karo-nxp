@@ -5,8 +5,8 @@ MACHINEOVERRIDES =. "mx6:"
 require karo-base.inc
 
 # Monolithic DCD image; karo-base.inc and imx-base.inc assume SPL + u-boot.bin.
-UBOOT_MAKE_TARGET = "u-boot-dtb.imx"
-UBOOT_BINARY = "u-boot-dtb.imx"
+UBOOT_MAKE_TARGET = "u-boot-flash.imx"
+UBOOT_BINARY = "u-boot-flash.imx"
 SPL_BINARY = ""
 
 # U-Boot config names follow the module, not the baseboard.
