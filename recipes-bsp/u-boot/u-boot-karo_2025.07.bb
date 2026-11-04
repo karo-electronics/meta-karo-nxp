@@ -36,8 +36,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/defconfigs:${THISDIR}/${BP}/cfg:${T
 
 PROVIDES += "u-boot"
 
-KARO_FW_ENV_DEV ?= "/dev/mmcblk0boot0"
-
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
 UBOOT_REV_DEFAULT = "c9f00792446a4cc343e08e22f2230e0af2d8831c"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
