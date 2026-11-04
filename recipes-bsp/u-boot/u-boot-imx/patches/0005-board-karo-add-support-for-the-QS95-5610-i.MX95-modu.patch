@@ -1,4 +1,4 @@
-From 26c55dff124e3590a012a9fbf348e7a87dc7e70d Mon Sep 17 00:00:00 2001
+From 5aa5378265024d35289594b16fe8d5dea0e93304 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 15:29:18 +0000
 Subject: [PATCH] board: karo: add support for the QS95-5610 i.MX95 module
@@ -24,7 +24,7 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
 ---
  arch/arm/dts/imx95-qs95-5610-qsbase95.dts | 174 +++++++++
  arch/arm/dts/imx95-qs95-5610-u-boot.dtsi  | 105 ++++++
- arch/arm/dts/imx95-qs95-5610.dts          | 423 ++++++++++++++++++++++
+ arch/arm/dts/imx95-qs95-5610.dts          | 421 ++++++++++++++++++++++
  arch/arm/mach-imx/Kconfig                 |   2 +
  arch/arm/mach-imx/imx9/Kconfig            |   7 +
  board/karo/Kconfig                        |  22 ++
@@ -43,7 +43,7 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
  configs/qs95-5610_mfg_defconfig           | 298 +++++++++++++++
  configs/qs95-5610_noenv_defconfig         | 298 +++++++++++++++
  include/configs/imx95.h                   |  30 ++
- 21 files changed, 2651 insertions(+)
+ 21 files changed, 2649 insertions(+)
  create mode 100644 arch/arm/dts/imx95-qs95-5610-qsbase95.dts
  create mode 100644 arch/arm/dts/imx95-qs95-5610-u-boot.dtsi
  create mode 100644 arch/arm/dts/imx95-qs95-5610.dts
@@ -66,7 +66,7 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
 
 diff --git a/arch/arm/dts/imx95-qs95-5610-qsbase95.dts b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
 new file mode 100644
-index 00000000000..eb7a7480b21
+index 00000000000..efa44bd623e
 --- /dev/null
 +++ b/arch/arm/dts/imx95-qs95-5610-qsbase95.dts
 @@ -0,0 +1,174 @@
@@ -116,10 +116,10 @@ index 00000000000..eb7a7480b21
 +
 +	ethphy0: ethernet-phy@3 {
 +		reg = <3>;
-+		interrupt-parent = <&gpio2>;
-+		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-parent = <&gpio4>;
++		interrupts = <14 IRQ_TYPE_LEVEL_LOW>;
 +		eee-broken-1000t;
-+		reset-gpios = <&gpio2 28 GPIO_ACTIVE_LOW>;
++		reset-gpios = <&gpio2 24 GPIO_ACTIVE_LOW>;
 +		reset-assert-us = <10000>;
 +		reset-deassert-us = <120000>;
 +
@@ -140,10 +140,10 @@ index 00000000000..eb7a7480b21
 +
 +	ethphy1: ethernet-phy@7 {
 +		reg = <7>;
-+		interrupt-parent = <&gpio2>;
-+		interrupts = <23 IRQ_TYPE_LEVEL_LOW>;
++		interrupt-parent = <&gpio4>;
++		interrupts = <15 IRQ_TYPE_LEVEL_LOW>;
 +		eee-broken-1000t;
-+		reset-gpios = <&gpio2 29 GPIO_ACTIVE_LOW>;
++		reset-gpios = <&gpio2 23 GPIO_ACTIVE_LOW>;
 +		reset-assert-us = <10000>;
 +		reset-deassert-us = <120000>;
 +
@@ -186,16 +186,16 @@ index 00000000000..eb7a7480b21
 +	pinctrl_ethphy0: ethphy0grp {
 +		fsl,pins = <
 +			/* DSE=X4: IMX95RM SW_PAD_CTL bits 6-1, X5/X6 need 1.8 V NVCC */
-+			IMX95_PAD_GPIO_IO28__GPIO2_IO_BIT28  			0x11e
 +			IMX95_PAD_GPIO_IO24__GPIO2_IO_BIT24  			0x11e
++			IMX95_PAD_ENET2_MDC__GPIO4_IO_BIT14				0x11e
 +		>;
 +	};
 +
 +	pinctrl_ethphy1: ethphy1grp {
 +		fsl,pins = <
 +			/* DSE=X4: IMX95RM SW_PAD_CTL bits 6-1, X5/X6 need 1.8 V NVCC */
-+			IMX95_PAD_GPIO_IO29__GPIO2_IO_BIT29  			0x11e
 +			IMX95_PAD_GPIO_IO23__GPIO2_IO_BIT23  			0x11e
++			IMX95_PAD_ENET2_MDIO__GPIO4_IO_BIT15			0x11e
 +		>;
 +	};
 +
@@ -357,10 +357,10 @@ index 00000000000..ed38b73f1d5
 +};
 diff --git a/arch/arm/dts/imx95-qs95-5610.dts b/arch/arm/dts/imx95-qs95-5610.dts
 new file mode 100644
-index 00000000000..dbf44890714
+index 00000000000..e6bbd78e914
 --- /dev/null
 +++ b/arch/arm/dts/imx95-qs95-5610.dts
-@@ -0,0 +1,423 @@
+@@ -0,0 +1,421 @@
 +// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 +/*
 + * Copyright 2026 Ka-Ro electronics GmbH
@@ -388,8 +388,6 @@ index 00000000000..dbf44890714
 +		mmc0 = &usdhc1;
 +		mmc1 = &usdhc2;
 +		serial0 = &lpuart1;
-+		serial1 = &lpuart2;
-+		serial2 = &lpuart3;
 +		usb-host = &usb2;
 +		usbotg = &usb3_dwc3;
 +	};
