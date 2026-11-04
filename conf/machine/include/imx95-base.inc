@@ -16,8 +16,6 @@ DDR_TYPE   ?= "lpddr4"
 OEI_DDR_CONFIG_ECC = ""
 
 SYSTEM_MANAGER_CONFIG = "krimx95"
-# NXP sm/doc/monitor.md: M=0 is the only valid option for production
-SYSTEM_MANAGER_MONITOR_MODE ?= "0"
 
 IMXBOOT_TARGETS = "${IMXBOOT_TARGETS_BASENAME}_a55"
 

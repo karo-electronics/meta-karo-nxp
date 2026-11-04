@@ -35,5 +35,4 @@ IMXBOOT_VARIANTS = ""
 
 SOC_DEFAULT_WKS_FILE = "karo-image.wks.in"
 
-# ttyLP1 = customer UART_B, ttyLP2 pads drive PCIe (QSBASE95)
 SERIAL_CONSOLES = "115200;ttyLP0"
