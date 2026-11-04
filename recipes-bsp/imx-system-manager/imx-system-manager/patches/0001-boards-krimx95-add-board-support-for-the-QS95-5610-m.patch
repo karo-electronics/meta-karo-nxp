@@ -1,4 +1,4 @@
-From 7f871f1e36ddb9d7ce836db5b140d45d450970d4 Mon Sep 17 00:00:00 2001
+From 7ac430564f887ea27c9edb8bbe5cfccd7b11d44f Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 14:29:02 +0000
 Subject: [PATCH] boards: krimx95: add board support for the QS95-5610 module
@@ -10,7 +10,7 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
 ---
  boards/krimx95/board.c              | 637 +++++++++++++++++++++
  boards/krimx95/board.h              | 164 ++++++
- boards/krimx95/pin_mux.c            |  61 ++
+ boards/krimx95/pin_mux.c            |  62 ++
  boards/krimx95/pin_mux.h            |  44 ++
  boards/krimx95/sm/Makefile          |  73 +++
  boards/krimx95/sm/brd_sm.c          | 789 ++++++++++++++++++++++++++
@@ -26,7 +26,7 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
  boards/krimx95/sm/brd_sm_sensor.h   | 210 +++++++
  boards/krimx95/sm/brd_sm_voltage.c  | 851 ++++++++++++++++++++++++++++
  boards/krimx95/sm/brd_sm_voltage.h  | 241 ++++++++
- 18 files changed, 5633 insertions(+)
+ 18 files changed, 5634 insertions(+)
  create mode 100755 boards/krimx95/board.c
  create mode 100755 boards/krimx95/board.h
  create mode 100755 boards/krimx95/pin_mux.c
@@ -861,10 +861,10 @@ index 0000000..bb4c664
 +
 diff --git a/boards/krimx95/pin_mux.c b/boards/krimx95/pin_mux.c
 new file mode 100755
-index 0000000..c2c6634
+index 0000000..e5e8d48
 --- /dev/null
 +++ b/boards/krimx95/pin_mux.c
-@@ -0,0 +1,61 @@
+@@ -0,0 +1,62 @@
 +/*
 + * Copyright 2023, 2025 NXP
 + *
@@ -882,14 +882,15 @@ index 0000000..c2c6634
 + * END ****************************************************************************************************************/
 +void BOARD_InitPins(void)
 +{
-+#if (BOARD_DEBUG_UART_INSTANCE == 1U)
++#if (BOARD_DEBUG_UART_INSTANCE != 0U)
 +    /* Configure LPUART 1 */
 +    IOMUXC_SetPinMux(IOMUXC_PAD_UART1_RXD__LPUART1_RX, 0U);
 +    IOMUXC_SetPinConfig(IOMUXC_PAD_UART1_RXD__LPUART1_RX, IOMUXC_PAD_PD(1U));
 +
 +    IOMUXC_SetPinMux(IOMUXC_PAD_UART1_TXD__LPUART1_TX, 0);
 +    IOMUXC_SetPinConfig(IOMUXC_PAD_UART1_TXD__LPUART1_TX, IOMUXC_PAD_DSE(0xFU));
-+#elif (BOARD_DEBUG_UART_INSTANCE == 2U)
++#endif
++#if (BOARD_DEBUG_UART_INSTANCE == 2U)
 +    /* Configure LPUART 2 */
 +    IOMUXC_SetPinMux(IOMUXC_PAD_UART2_RXD__LPUART2_RX, 0);
 +    IOMUXC_SetPinConfig(IOMUXC_PAD_UART2_RXD__LPUART2_RX, IOMUXC_PAD_PD(1U));
