@@ -35,4 +35,7 @@ IMXBOOT_VARIANTS = ""
 
 SOC_DEFAULT_WKS_FILE = "karo-image.wks.in"
 
+# Update fstab file when using wic images
+WIC_CREATE_EXTRA_ARGS:remove = "--no-fstab-update"
+
 SERIAL_CONSOLES = "115200;ttyLP0"
