@@ -11,6 +11,7 @@ SRC_URI += "file://0003-mmc-fsl_esdhc_imx-fail-HS400-setup-when-the-strobe-D.pat
 SRC_URI += "file://0004-fastboot-do-not-tie-UUU-support-to-the-FSL-implement.patch"
 SRC_URI += "file://0005-board-karo-add-support-for-the-QS95-5610-i.MX95-modu.patch"
 
+UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "quickboot", " quickboot", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('MACHINE_FEATURES', "optee", " optee", "", d)}"
 UBOOT_FEATURES:append = "${@ bb.utils.contains('DISTRO_FEATURES', "copro", " copro", "", d)}"
 UBOOT_FEATURES:append = " fastboot"
