@@ -37,7 +37,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BP}/defconfigs:${THISDIR}/${BP}/cfg:${T
 PROVIDES += "u-boot"
 
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "c9f00792446a4cc343e08e22f2230e0af2d8831c"
+UBOOT_REV_DEFAULT = "38be6fc49debe7793ca4d959d3628348ab51b574"
 UBOOT_BRANCH_DEFAULT = "u-boot-denx"
 
 CVE_PRODUCT = "denx:u-boot"
