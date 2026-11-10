@@ -1,0 +1,19 @@
+ARM: imx6ul: find the ocotp node on i.MX6ULL
+
+The i.MX6ULL ocotp node is "fsl,imx6ull-ocotp": the MAC init did not
+find it and warned "failed to find ocotp node".
+
+Upstream-Status: Pending
+---
+--- a/arch/arm/mach-imx/mach-imx6ul.c
++++ b/arch/arm/mach-imx/mach-imx6ul.c
+@@ -16,7 +16,8 @@
+ 		imx_get_soc_revision());
+ 
+ 	of_platform_default_populate(NULL, NULL, NULL);
+-	imx6_enet_mac_init("fsl,imx6ul-fec", "fsl,imx6ul-ocotp");
++	imx6_enet_mac_init("fsl,imx6ul-fec", cpu_is_imx6ull() ?
++			   "fsl,imx6ull-ocotp" : "fsl,imx6ul-ocotp");
+ 	imx_anatop_init();
+ 	imx6ul_pm_init();
+ }
