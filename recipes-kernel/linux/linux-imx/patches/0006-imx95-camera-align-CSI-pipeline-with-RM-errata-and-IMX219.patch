@@ -1,0 +1,183 @@
+From: Chedy Souffargi <csouffargi@localhost>
+Date: Mon, 10 Nov 2026 09:00:00 +0100
+Subject: [PATCH] imx95: align camera pipeline with RM, errata and IMX219 datasheet
+
+Review of the QS95 IMX219 capture path against IMX95RM Rev. 5, the
+i.MX95 errata (IMX95_P21N Rev. 2) and the Sony IMX219PQH5-C datasheet
+7.0.0. Every change is limited to i.MX95 or to the IMX219 sensor; each
+one names its source.
+
+imx8-isi (drivers/media/platform/nxp/imx8-isi/imx8-isi-hw.c), i.MX95 only
+- Do not set CHNL_CTRL bit 23: IMX95RM 152.7.2 marks it reserved; the
+  RAW LSB alignment it selects exists on i.MX952 only.
+- Apply ERR053260: program the native RAW format (RAW10 for the IMX219)
+  instead of forcing RAW16, so the ISI does not store the LSB padding
+  that the CSI formatter generates; select the MSB side (bit 22) because
+  the i.MX95 pixel link is MSB aligned (ERR053003, ERR053260).
+
+dwc-mipi-csi2 (drivers/media/platform/nxp/dwc-mipi-csi2.c), i.MX95 only
+- Skip the IPI programming: IMX95RM 147.5.1.1 has no IPI registers
+  (nothing between 0x54 and 0xc8, nor 0x140); the IDI output feeds the
+  pixel formatter, so these writes had no target.
+
+phy-fsl-imx9-dphy-rx (drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c), i.MX95 path only
+- Write the mandatory test codes of IMX95RM 148.4.2 for the standalone
+  RX D-PHY (settle counter, LP bias, deskew, clock lane, DDL) in
+  imx95_dphy_config(); only the combo PHY path wrote part of them.
+
+imx219 (drivers/media/i2c/imx219.c)
+- Drop the write to register 0xffff at the end of the 1080p table: it
+  is a vendor end-of-table marker, not a register (IMX219PQH5-C 7.0.0
+  p.19 and section 3-4).
+
+The IMX219 image on the QS95 is unchanged by these fixes except for
+the ERR053260 one, which clears the 6 padding bits of each RAW10 word.
+
+Upstream-Status: Pending
+---
+  drivers/media/i2c/imx219.c                        |  5 -----
+  drivers/media/platform/nxp/dwc-mipi-csi2.c        | 18 +++++++++++++++++-
+  drivers/media/platform/nxp/imx8-isi/imx8-isi-hw.c | 10 +++++++---
+  drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c      | 15 +++++++++++++++
+  4 files changed, 39 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
+index 156ff645ca54..8f7e8d9e453d 100644
+--- a/drivers/media/i2c/imx219.c
++++ b/drivers/media/i2c/imx219.c
+@@ -273,11 +273,6 @@ static const struct cci_reg_sequence imx219_init_setting_1080p[] = {
+ 
+ 	{CCI_REG8(0x0162), 0x0d},
+ 	{CCI_REG8(0x0163), 0x78},
+-
+-
+-	 {CCI_REG8(0xFFFF), 0x00}
+-
+-
+ };
+ 
+ static const s64 imx219_link_freq_menu[] = {
+diff --git a/drivers/media/platform/nxp/dwc-mipi-csi2.c b/drivers/media/platform/nxp/dwc-mipi-csi2.c
+index 0cf1eeb99cd4..e409474afd05 100644
+--- a/drivers/media/platform/nxp/dwc-mipi-csi2.c
++++ b/drivers/media/platform/nxp/dwc-mipi-csi2.c
+@@ -593,10 +593,19 @@ static void dwc_csi_device_pg_disable(struct dwc_csi_device *csidev)
+ 	dwc_csi_write(csidev, CSI2RX_PPI_PG_ENABLE, 0);
+ }
+ 
++/* IMX95RM 147.5.1.1: no IPI block on i.MX95, the IDI feeds the formatter */
++static bool dwc_csi_has_ipi(void)
++{
++	return !of_machine_is_compatible("fsl,imx95");
++}
++
+ static void dwc_csi_ipi_enable(struct dwc_csi_device *csidev)
+ {
+ 	u32 val;
+ 
++	if (!dwc_csi_has_ipi())
++		return;
++
+ 	/* Memory is automatically flushed at each Frame Start */
+ 	val = CSI2RX_IPI_MEM_FLUSH_AUTO;
+ 	dwc_csi_write(csidev, CSI2RX_IPI_MEM_FLUSH, val);
+@@ -609,6 +618,9 @@ static void dwc_csi_ipi_enable(struct dwc_csi_device *csidev)
+ 
+ static void dwc_csi_ipi_disable(struct dwc_csi_device *csidev)
+ {
++	if (!dwc_csi_has_ipi())
++		return;
++
+ 	dwc_csi_write(csidev, CSI2RX_IPI_MODE, 0);
+ }
+ 
+@@ -617,6 +629,9 @@ static void dwc_csi_device_ipi_config(struct dwc_csi_device *csidev)
+ 	const struct dwc_csi_pix_format *csi_fmt = csidev->csi_fmt;
+ 	u32 val;
+ 
++	if (!dwc_csi_has_ipi())
++		return;
++
+ 	/* Do IPI soft reset */
+ 	dwc_csi_write(csidev, CSI2RX_IPI_SOFTRSTN, 0x0);
+ 	dwc_csi_write(csidev, CSI2RX_IPI_SOFTRSTN, 0x1);
+@@ -750,7 +765,8 @@ static void dwc_csi_device_enable_interrupts(struct dwc_csi_device *csidev, bool
+ 	dwc_csi_write(csidev, CSI2RX_INT_MSK_DPHY_FATAL, on ? 0x3 : 0);
+ 	dwc_csi_write(csidev, CSI2RX_INT_MSK_PKT_FATAL, on ? 0x3 : 0);
+ 	dwc_csi_write(csidev, CSI2RX_INT_MSK_DPHY, on ? 0x30003 : 0);
+-	dwc_csi_write(csidev, CSI2RX_INT_MSK_IPI_FATAL, on ? 0x7f : 0);
++	if (dwc_csi_has_ipi())
++		dwc_csi_write(csidev, CSI2RX_INT_MSK_IPI_FATAL, on ? 0x7f : 0);
+ }
+ 
+ /* -----------------------------------------------------------------------------
+diff --git a/drivers/media/platform/nxp/imx8-isi/imx8-isi-hw.c b/drivers/media/platform/nxp/imx8-isi/imx8-isi-hw.c
+index 8b975e97f727..bd8d574e1714 100644
+--- a/drivers/media/platform/nxp/imx8-isi/imx8-isi-hw.c
++++ b/drivers/media/platform/nxp/imx8-isi/imx8-isi-hw.c
+@@ -365,13 +365,15 @@ static void mxc_isi_channel_set_control(struct mxc_isi_pipe *pipe,
+ 	 * Enable RAW10/12/14 output LSB alignment by default since the
+ 	 * default value is either 1 or reserved as zero in previous ISI.
+ 	 */
+-	val |= CHNL_CTRL_RAW_OUT_LSB_ALIGN;
++	/* IMX95RM 152.7.2: bit 23 is reserved on i.MX95 */
++	if (pdata->model != MXC_ISI_IMX95)
++		val |= CHNL_CTRL_RAW_OUT_LSB_ALIGN;
+ 
+ 	/*
+ 	 * Aligns the data selection from the pixel link(PL) to MSB to
+ 	 * avoid data shift issue since the data from PL is MSB.
+ 	 */
+-	if (pdata->raw_out_lsb)
++	if (pdata->raw_out_lsb || pdata->model == MXC_ISI_IMX95)
+ 		val |= CHNL_CTRL_RAW_IN_MSB_ALIGN;
+ 
+ 	mxc_isi_write(pipe, CHNL_CTRL, val);
+@@ -456,7 +458,9 @@ void mxc_isi_channel_set_output_format(struct mxc_isi_pipe *pipe,
+ 	 * After i.MX952, ISI add RAW10/12/14 LSB output alignment, so skip
+ 	 * the above workaround.
+ 	 */
+-	fmt = !pdata->raw_out_lsb && isi_out_raw(info->isi_out_format) ?
++	/* ERR053260: i.MX95 must store RAW in the native format, not RAW16 */
++	fmt = !pdata->raw_out_lsb && pdata->model != MXC_ISI_IMX95 &&
++	      isi_out_raw(info->isi_out_format) ?
+ 	      CHNL_IMG_CTRL_FORMAT_RAW16 :
+ 	      info->isi_out_format;
+ 
+diff --git a/drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c b/drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c
+index d5567a23cf7e..4502c435990d 100644
+--- a/drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c
++++ b/drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c
+@@ -603,15 +603,30 @@ static const struct dw_dphy_reg imx95_dphy_regs[] = {
+ 	[DPHY_RX_PHY_ENABLE_BYP] = PHY_REG(IMX95_CSR_PHY_TEST_MODE_CTRL, 1, 14),
+ };
+ 
++static inline void rx_dphy_write_control(struct dw_dphy *priv,
++					 u32 addr, u32 data);
++
+ static void imx95_dphy_config(struct dw_dphy *priv)
+ {
+ 	struct phy_configure_opts_mipi_dphy *config = &priv->config;
+ 	u32 active_lanes = GENMASK(config->lanes - 1, 0);
++	unsigned int lane;
+ 
+ 	/* Configure the PHY frequency range */
+ 	dphy_write(priv, DPHY_RX_CFGCLKFREQRANGE, priv->cfgclkfreqrange, 0);
+ 	dphy_write(priv, DPHY_RX_HSFREQRANGE, priv->hsfreqrange, 0);
+ 
++	/* IMX95RM 148.4.2 test codes; Table 1014 value 1 is for cfg_clk 24 MHz */
++	rx_dphy_write_control(priv, 0xe5, 0x01);
++	rx_dphy_write_control(priv, 0x1ac, 0x4b);
++	rx_dphy_write_control(priv, 0x08, 0x38);
++	rx_dphy_write_control(priv, 0x307, 0x80);
++	for (lane = 0; lane < config->lanes; lane++)
++		rx_dphy_write_control(priv, 0x607 + 0x200 * lane, 0x7f);
++	rx_dphy_write_control(priv, 0xe2, priv->ddlfreq & 0xff);
++	rx_dphy_write_control(priv, 0xe3, priv->ddlfreq >> 8);
++	rx_dphy_write_control(priv, 0xe4, 0x11);
++
+ 	dphy_write(priv, DPHY_RX_DATA_LANE_BASEDIR, 1, 0);
+ 	ndelay(15);
+ 
+-- 
+2.47.0
