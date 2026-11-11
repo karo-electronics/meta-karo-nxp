@@ -1,4 +1,4 @@
-From 6f1bb35fab4f29d9dbfbf4263c44f6b15f717949 Mon Sep 17 00:00:00 2001
+From d7a2d97d4690f7f6d5c5895c371ec9674c689129 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 15:28:48 +0000
 Subject: [PATCH] arm: mach-imx: imx9: make imx_get_mac_from_fuse() weak
@@ -19,7 +19,7 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm/mach-imx/imx9/scmi/soc.c b/arch/arm/mach-imx/imx9/scmi/soc.c
-index 79114704d6d..f12901764e0 100644
+index a047b46b0ba..168a9ced4ff 100644
 --- a/arch/arm/mach-imx/imx9/scmi/soc.c
 +++ b/arch/arm/mach-imx/imx9/scmi/soc.c
 @@ -772,7 +772,7 @@ static inline void eth_addr_add(u8 *addr, long offset)

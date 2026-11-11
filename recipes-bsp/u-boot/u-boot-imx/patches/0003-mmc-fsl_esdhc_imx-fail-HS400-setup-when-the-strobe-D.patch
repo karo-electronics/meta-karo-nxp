@@ -1,4 +1,4 @@
-From 1b5e0203953159881478099786de560a36fa51bf Mon Sep 17 00:00:00 2001
+From b0dedfd06cc86feee88a18c074c701f687f04d71 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 15:29:02 +0000
 Subject: [PATCH] mmc: fsl_esdhc_imx: fail HS400 setup when the strobe DLL does

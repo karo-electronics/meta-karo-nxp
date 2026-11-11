@@ -1,4 +1,4 @@
-From b3e76c767048af3f1607e4d2a4d0d1a81578c0c2 Mon Sep 17 00:00:00 2001
+From 48674c85159569d3f93399e3186e48ca8cca7023 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 15:29:07 +0000
 Subject: [PATCH] fastboot: do not tie UUU support to the FSL implementation

@@ -1,4 +1,4 @@
-From 10b716217377169bf62ce79a19b4a6316f5de322 Mon Sep 17 00:00:00 2001
+From 961ddc8762bb6c8010ce447aadeeba685dac473c Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 15:28:56 +0000
 Subject: [PATCH] i2c: imx_lpi2c: work around ERR053261 on i.MX95

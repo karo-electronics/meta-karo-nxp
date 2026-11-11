@@ -1,4 +1,4 @@
-From 5aa5378265024d35289594b16fe8d5dea0e93304 Mon Sep 17 00:00:00 2001
+From b0b21ac3e65df7a5eeb9ccba5d62c5aa81d7704e Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 15:29:18 +0000
 Subject: [PATCH] board: karo: add support for the QS95-5610 i.MX95 module
@@ -793,10 +793,10 @@ index f2b00248d90..72c16578898 100644
 +
 +source "board/karo/Kconfig"
 diff --git a/arch/arm/mach-imx/imx9/Kconfig b/arch/arm/mach-imx/imx9/Kconfig
-index fa127f0506d..d5a91b3f572 100644
+index a82d234bb4d..7b1cd074c94 100644
 --- a/arch/arm/mach-imx/imx9/Kconfig
 +++ b/arch/arm/mach-imx/imx9/Kconfig
-@@ -220,6 +220,12 @@ config TARGET_IMX95_15X15_EVK
+@@ -260,6 +260,12 @@ config TARGET_IMX95_15X15_EVK
  	imply BOOTSTD_BOOTCOMMAND
  	imply BOOTSTD_FULL
  
@@ -809,14 +809,14 @@ index fa127f0506d..d5a91b3f572 100644
  config TARGET_IMX95_15X15_FRDM
  	bool "imx95_15x15_frdm"
  	select IMX95
-@@ -282,6 +288,7 @@ source "board/variscite/imx93_var_som/Kconfig"
+@@ -346,6 +352,7 @@ source "board/variscite/imx93_var_som/Kconfig"
  source "board/nxp/imx94_evk/Kconfig"
  source "board/nxp/imx94_orangebox/Kconfig"
  source "board/nxp/imx95_evk/Kconfig"
 +source "board/karo/imx95/Kconfig"
  source "board/nxp/imx95_frdm/Kconfig"
  source "board/nxp/imx952_evk/Kconfig"
- source "board/toradex/smarc-imx95/Kconfig"
+ source "board/nxp/imx952_frdm/Kconfig"
 diff --git a/board/karo/Kconfig b/board/karo/Kconfig
 new file mode 100644
 index 00000000000..c3bc42c5109
@@ -1070,7 +1070,7 @@ index 00000000000..c1a5a0cc897
 +#endif
 diff --git a/board/karo/common/fdt.c b/board/karo/common/fdt.c
 new file mode 100644
-index 00000000000..1ddb527d201
+index 00000000000..2f829ca373a
 --- /dev/null
 +++ b/board/karo/common/fdt.c
 @@ -0,0 +1,357 @@
@@ -1396,6 +1396,7 @@ index 00000000000..1ddb527d201
 +{
 +	int node;
 +	const char *serno_str;
++	const char *otg_mode;
 +
 +	serno_str = env_get("serial#");
 +	if (serno_str) {
@@ -1407,11 +1408,10 @@ index 00000000000..1ddb527d201
 +
 +	fdt_fixup_ethernet(blob);
 +
++	otg_mode = env_get("otg_mode");
 +	node = fdt_path_offset(blob, "usbotg");
-+	if (node > 0) {
-+		const char *otg_mode = env_get("otg_mode");
-+
-+		if (!otg_mode || strcmp(otg_mode, "none") == 0) {
++	if (otg_mode && node > 0) {
++		if (strcmp(otg_mode, "none") == 0) {
 +			printf("disabling usbotg interface\n");
 +			fdt_status_disabled(blob, node);
 +		} else if (strcmp(otg_mode, "otg") == 0 ||
