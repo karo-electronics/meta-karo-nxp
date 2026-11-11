@@ -42,8 +42,8 @@ LIC_FILES_CHKSUM = "file://Licenses/gpl-2.0.txt;md5=b234ee4d69f5fce4486a80fdaf4a
 
 # karo fork
 UBOOT_SRC_DEFAULT = "git://github.com/karo-electronics/karo-tx-uboot.git;protocol=https"
-UBOOT_REV_DEFAULT = "4443bcd2df45efcd48cc07418e6531a708bf4a6a"
-UBOOT_BRANCH_DEFAULT = "u-boot-denx"
+UBOOT_REV_DEFAULT = "e4058bdd429504950dbd866f2ff73f2d9b86afb9"
+UBOOT_BRANCH_DEFAULT = "karo-imx91"
 
 KARO_UBOOT_SRC ?= "${UBOOT_SRC_DEFAULT}"
 KARO_UBOOT_REV ?= "${UBOOT_REV_DEFAULT}"
