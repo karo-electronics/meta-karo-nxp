@@ -1,4 +1,4 @@
-From 256c9b70335c4abe20b53f546fa4d18426193cea Mon Sep 17 00:00:00 2001
+From 97a94e16db45294b5669e405f791abf8e795638d Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 15:29:18 +0000
 Subject: [PATCH] board: karo: add support for the QS95-5610 i.MX95 module
@@ -39,11 +39,11 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
  board/karo/imx95/qs95-5610-qsbase95.env   |  32 ++
  board/karo/imx95/qs95-5610.env            |  32 ++
  board/karo/imx95/spl.c                    |  98 +++++
- configs/qs95-5610_defconfig               | 315 ++++++++++++++++
- configs/qs95-5610_mfg_defconfig           | 298 +++++++++++++++
- configs/qs95-5610_noenv_defconfig         | 298 +++++++++++++++
+ configs/qs95-5610_defconfig               | 316 ++++++++++++++++
+ configs/qs95-5610_mfg_defconfig           | 299 +++++++++++++++
+ configs/qs95-5610_noenv_defconfig         | 299 +++++++++++++++
  include/configs/imx95.h                   |  30 ++
- 21 files changed, 2649 insertions(+)
+ 21 files changed, 2652 insertions(+)
  create mode 100644 arch/arm/dts/imx95-qs95-5610-qsbase95.dts
  create mode 100644 arch/arm/dts/imx95-qs95-5610-u-boot.dtsi
  create mode 100644 arch/arm/dts/imx95-qs95-5610.dts
@@ -1890,10 +1890,10 @@ index 00000000000..0b0123bb477
 +}
 diff --git a/configs/qs95-5610_defconfig b/configs/qs95-5610_defconfig
 new file mode 100644
-index 00000000000..0382400c0e7
+index 00000000000..df02e3a0b33
 --- /dev/null
 +++ b/configs/qs95-5610_defconfig
-@@ -0,0 +1,315 @@
+@@ -0,0 +1,316 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +# CONFIG_ARM64_SUPPORT_AARCH32 is not set
@@ -2131,6 +2131,7 @@ index 00000000000..0382400c0e7
 +CONFIG_SYSRESET_PSCI=y
 +# CONFIG_PSCI_RESET is not set
 +CONFIG_SPL_SYSRESET=y
++CONFIG_PSCI_BOARD_REBOOT=y
 +CONFIG_USB=y
 +CONFIG_DM_USB=y
 +CONFIG_USB_XHCI_HCD=y
@@ -2211,10 +2212,10 @@ index 00000000000..0382400c0e7
 +CONFIG_CMD_NVME=y
 diff --git a/configs/qs95-5610_mfg_defconfig b/configs/qs95-5610_mfg_defconfig
 new file mode 100644
-index 00000000000..74f6d7b1d41
+index 00000000000..5fb0ebea81e
 --- /dev/null
 +++ b/configs/qs95-5610_mfg_defconfig
-@@ -0,0 +1,298 @@
+@@ -0,0 +1,299 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +# CONFIG_ARM64_SUPPORT_AARCH32 is not set
@@ -2452,6 +2453,7 @@ index 00000000000..74f6d7b1d41
 +CONFIG_SYSRESET_PSCI=y
 +# CONFIG_PSCI_RESET is not set
 +CONFIG_SPL_SYSRESET=y
++CONFIG_PSCI_BOARD_REBOOT=y
 +CONFIG_USB=y
 +CONFIG_DM_USB=y
 +CONFIG_USB_XHCI_HCD=y
@@ -2515,10 +2517,10 @@ index 00000000000..74f6d7b1d41
 +CONFIG_CMD_NVME=y
 diff --git a/configs/qs95-5610_noenv_defconfig b/configs/qs95-5610_noenv_defconfig
 new file mode 100644
-index 00000000000..1c04bd72453
+index 00000000000..40f772f8484
 --- /dev/null
 +++ b/configs/qs95-5610_noenv_defconfig
-@@ -0,0 +1,298 @@
+@@ -0,0 +1,299 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +# CONFIG_ARM64_SUPPORT_AARCH32 is not set
@@ -2756,6 +2758,7 @@ index 00000000000..1c04bd72453
 +CONFIG_SYSRESET_PSCI=y
 +# CONFIG_PSCI_RESET is not set
 +CONFIG_SPL_SYSRESET=y
++CONFIG_PSCI_BOARD_REBOOT=y
 +CONFIG_USB=y
 +CONFIG_DM_USB=y
 +CONFIG_USB_XHCI_HCD=y
