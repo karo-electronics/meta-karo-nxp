@@ -20,10 +20,11 @@ SRC_URI:append = "${@ "".join(" file://%s.cfg" % f for f in (d.getVar('UBOOT_FEA
 
 UBOOT_BOARD_DIR:qs95 = "board/karo/imx95"
 
-# deploy only; a file in UNPACKDIR would also land in the rootfs
+# also deploy a plain fw_env.config next to the imx-boot image for
+# flashing tools; the rootfs copy is installed via ${UNPACKDIR}/fw_env.config
 do_deploy:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'u-boot-fw-utils', 'true', 'false', d)}; then
-        install -D -m 0644 "${WORKDIR}/fw_env.config" "${DEPLOYDIR}/u-boot/fw_env.config"
+        install -D -m 0644 "${UNPACKDIR}/fw_env.config" "${DEPLOYDIR}/u-boot/fw_env.config"
     fi
 }
 
