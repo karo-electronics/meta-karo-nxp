@@ -7,7 +7,7 @@ For documentation see our Yocto Guide: https://karo-electronics.github.io/docs/y
 
 ## Machines
 
-* `qs95-5610` - Ka-Ro QS95-5610 module (NXP i.MX95)
+* `qs95-9610` - Ka-Ro QS95-9610 module (NXP i.MX95)
 
 ## Dependencies
 
@@ -33,7 +33,7 @@ details):
   overlays appended to `KERNEL_DEVICETREE`
   (`conf/machine/include/karo-overlays.inc`)
 * `NETWORK_INTERFACES` - network interfaces of the machine, set in
-  `conf/machine/qs95-5610.conf`
+  `conf/machine/qs95-9610.conf`
 
 ## License
 

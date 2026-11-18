@@ -1,6 +1,8 @@
+From 9075e03caf4769f641d6ccb172fe7c1da075c7c5 Mon Sep 17 00:00:00 2001
 From: Chedy Souffargi <csouffargi@localhost>
-Date: Mon, 10 Nov 2026 09:00:00 +0100
-Subject: [PATCH] imx95: align camera pipeline with RM, errata and IMX219 datasheet
+Date: Tue, 10 Nov 2026 09:00:00 +0100
+Subject: [PATCH] imx95: align camera pipeline with RM, errata and IMX219
+ datasheet
 
 Review of the QS95 IMX219 capture path against IMX95RM Rev. 5, the
 i.MX95 errata (IMX95_P21N Rev. 2) and the Sony IMX219PQH5-C datasheet
@@ -35,14 +37,14 @@ the ERR053260 one, which clears the 6 padding bits of each RAW10 word.
 
 Upstream-Status: Pending
 ---
-  drivers/media/i2c/imx219.c                        |  5 -----
-  drivers/media/platform/nxp/dwc-mipi-csi2.c        | 18 +++++++++++++++++-
-  drivers/media/platform/nxp/imx8-isi/imx8-isi-hw.c | 10 +++++++---
-  drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c      | 15 +++++++++++++++
-  4 files changed, 39 insertions(+), 9 deletions(-)
+ drivers/media/i2c/imx219.c                     |  5 -----
+ drivers/media/platform/nxp/dwc-mipi-csi2.c     | 18 +++++++++++++++++-
+ .../media/platform/nxp/imx8-isi/imx8-isi-hw.c  | 10 +++++++---
+ drivers/phy/freescale/phy-fsl-imx9-dphy-rx.c   | 15 +++++++++++++++
+ 4 files changed, 39 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
-index 156ff645ca54..8f7e8d9e453d 100644
+index 76fe4005535d..2dd5fd44bcb6 100644
 --- a/drivers/media/i2c/imx219.c
 +++ b/drivers/media/i2c/imx219.c
 @@ -273,11 +273,6 @@ static const struct cci_reg_sequence imx219_init_setting_1080p[] = {
@@ -179,5 +181,3 @@ index d5567a23cf7e..4502c435990d 100644
  	dphy_write(priv, DPHY_RX_DATA_LANE_BASEDIR, 1, 0);
  	ndelay(15);
  
--- 
-2.47.0

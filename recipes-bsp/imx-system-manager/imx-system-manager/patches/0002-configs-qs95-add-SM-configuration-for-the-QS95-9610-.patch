@@ -1,8 +1,7 @@
-From 42d301dc4da1b814ce60c6f4800846cbf1c8b265 Mon Sep 17 00:00:00 2001
+From d845f266fefd46b0fdc18b0c3e6fa61685dd9b62 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 14:29:04 +0000
-Subject: [PATCH 2/2] configs: qs95: add SM configuration for the QS95-5610
- module
+Subject: [PATCH] configs: qs95: add SM configuration for the QS95-9610 module
 
 Upstream-Status: Inappropriate [karo-specific]
 
@@ -4465,6 +4464,3 @@ index 0000000..690de41
 +
 +/** @} */
 +
--- 
-2.43.0
-

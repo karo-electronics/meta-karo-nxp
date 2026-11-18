@@ -1,4 +1,4 @@
-From af2873ff7ad1af087ff968fb8b0ea26e76f5aca5 Mon Sep 17 00:00:00 2001
+From 841fd038a11e061046ec9406682cb0cf90485c90 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Fri, 13 Nov 2026 09:00:20 +0000
 Subject: [PATCH] board: karo: add i.MX95 module family support
@@ -407,7 +407,7 @@ index 00000000000..0b0123bb477
 +}
 diff --git a/include/configs/imx95.h b/include/configs/imx95.h
 new file mode 100644
-index 00000000000..9f4cbfcf66a
+index 00000000000..532013919d4
 --- /dev/null
 +++ b/include/configs/imx95.h
 @@ -0,0 +1,30 @@
@@ -416,8 +416,8 @@ index 00000000000..9f4cbfcf66a
 + * Copyright 2025 NXP
 + */
 +
-+#ifndef __QS95_5610_H
-+#define __QS95_5610_H
++#ifndef __KARO_IMX95_H
++#define __KARO_IMX95_H
 +
 +#include <linux/sizes.h>
 +#include <linux/stringify.h>

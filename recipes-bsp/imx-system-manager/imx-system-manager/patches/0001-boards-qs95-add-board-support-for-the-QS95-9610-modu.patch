@@ -1,7 +1,7 @@
-From 92a9eee88e208c63aeb9c0dea02a5e3ab3433b32 Mon Sep 17 00:00:00 2001
+From e26c3b8a3feda7b6022a9dc329d66de195c244e8 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 14:29:02 +0000
-Subject: [PATCH 1/2] boards: qs95: add board support for the QS95-5610 module
+Subject: [PATCH] boards: qs95: add board support for the QS95-9610 module
 
 Upstream-Status: Inappropriate [karo-specific]
 
@@ -1913,7 +1913,7 @@ index 0000000..931d98e
 +
 diff --git a/boards/qs95/sm/brd_sm.h b/boards/qs95/sm/brd_sm.h
 new file mode 100755
-index 0000000..18928ad
+index 0000000..b277726
 --- /dev/null
 +++ b/boards/qs95/sm/brd_sm.h
 @@ -0,0 +1,108 @@
@@ -1981,7 +1981,7 @@ index 0000000..18928ad
 +
 +/*! Board name string */
 +/* MISC_BOARD_INFO must identify the module, not the reference design */
-+#define BRD_SM_NAME  "QS95-5610"
++#define BRD_SM_NAME  "QS95"
 +
 +/*! Board attributes */
 +#define BRD_SM_ATTR  0x0
@@ -5788,6 +5788,3 @@ index 0000000..f688059
 +
 +/** @} */
 +
--- 
-2.43.0
-
