@@ -286,19 +286,19 @@ index 00000000000..ed38b73f1d5
 +};
 +
 +&pinctrl_uart1 {
-+	bootph-pre-ram;
++	bootph-all;
 +};
 +
 +&pinctrl_usdhc1 {
-+	bootph-pre-ram;
++	bootph-all;
 +};
 +
 +&pinctrl_usdhc1_100mhz {
-+	bootph-pre-ram;
++	bootph-all;
 +};
 +
 +&pinctrl_usdhc1_200mhz {
-+	bootph-pre-ram;
++	bootph-all;
 +};
 +
 +&usb2 {
