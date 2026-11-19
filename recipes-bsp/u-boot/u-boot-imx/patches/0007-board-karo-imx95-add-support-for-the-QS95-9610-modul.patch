@@ -1,4 +1,4 @@
-From 65b49485b4c0e6ec8b551ddbc0a0248a1a18f441 Mon Sep 17 00:00:00 2001
+From f327a7c11e70072ade5d420fa38631e0cfef806e Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Wed, 18 Nov 2026 12:20:20 +0000
 Subject: [PATCH] board: karo: imx95: add support for the QS95-9610 module
@@ -28,10 +28,10 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
  board/karo/imx95/MAINTAINERS              |   1 +
  board/karo/imx95/qs95-9610-qsbase95.env   |  32 ++
  board/karo/imx95/qs95-9610.env            |  32 ++
- configs/qs95-9610_defconfig               | 316 ++++++++++++++++
- configs/qs95-9610_mfg_defconfig           | 299 +++++++++++++++
- configs/qs95-9610_noenv_defconfig         | 299 +++++++++++++++
- 11 files changed, 1693 insertions(+)
+ configs/qs95-9610_defconfig               | 318 ++++++++++++++++
+ configs/qs95-9610_mfg_defconfig           | 301 ++++++++++++++++
+ configs/qs95-9610_noenv_defconfig         | 301 ++++++++++++++++
+ 11 files changed, 1699 insertions(+)
  create mode 100644 arch/arm/dts/imx95-qs95-9610-qsbase95.dts
  create mode 100644 arch/arm/dts/imx95-qs95-9610-u-boot.dtsi
  create mode 100644 arch/arm/dts/imx95-qs95-9610.dts
@@ -43,7 +43,7 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
 
 diff --git a/arch/arm/dts/imx95-qs95-9610-qsbase95.dts b/arch/arm/dts/imx95-qs95-9610-qsbase95.dts
 new file mode 100644
-index 00000000000..714aca2076a
+index 00000000000..d8fefe4248e
 --- /dev/null
 +++ b/arch/arm/dts/imx95-qs95-9610-qsbase95.dts
 @@ -0,0 +1,174 @@
@@ -147,7 +147,7 @@ index 00000000000..714aca2076a
 +	/* host-wake-gpio: fsl,imx6q-pcie.yaml; no disable-gpio there */
 +	host-wake-gpio = <&gpio2 14 GPIO_ACTIVE_LOW>;
 +	vpcie-supply = <&reg_m2_pwr>;
-+	supports-clkreq;
++	/* No 'supports-clkreq': imx pci driver fails to initialize when clock is gated */
 +	status = "okay";
 +};
 +
@@ -334,7 +334,7 @@ index 00000000000..ed38b73f1d5
 +};
 diff --git a/arch/arm/dts/imx95-qs95-9610.dts b/arch/arm/dts/imx95-qs95-9610.dts
 new file mode 100644
-index 00000000000..784de33f04c
+index 00000000000..ac0e8d4b3f6
 --- /dev/null
 +++ b/arch/arm/dts/imx95-qs95-9610.dts
 @@ -0,0 +1,421 @@
@@ -718,7 +718,7 @@ index 00000000000..784de33f04c
 +
 +&usb3_dwc3 {
 +	adp-disable;
-+	dr_mode = "otg";
++	dr_mode = "peripheral";
 +	hnp-disable;
 +	role-switch-default-mode = "peripheral";
 +	srp-disable;
@@ -805,7 +805,7 @@ index 604767d953c..5e30b055868 100644
 +F:	configs/qs95-9610_defconfig
 diff --git a/board/karo/imx95/qs95-9610-qsbase95.env b/board/karo/imx95/qs95-9610-qsbase95.env
 new file mode 100644
-index 00000000000..3cf715007a4
+index 00000000000..525eb1a91ce
 --- /dev/null
 +++ b/board/karo/imx95/qs95-9610-qsbase95.env
 @@ -0,0 +1,32 @@
@@ -822,7 +822,7 @@ index 00000000000..3cf715007a4
 +console=ttyLP0,115200 earlycon
 +debug_overlays=yes
 +default_bootargs=setenv bootargs console=${console} panic=-1 pci=pcie_bus_perf
-+dyndbg=dyndbg=\\"-p\\"
++dyndbg=dyndbg='"-p"'
 +emmc_boot_ack=1
 +emmc_boot_part=1
 +emmc_dev=0
@@ -840,10 +840,10 @@ index 00000000000..3cf715007a4
 +loadaddr=90400000
 +loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}
 +loadkernel=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${linux_image}
-+otg_mode=otg
++otg_mode=peripheral
 diff --git a/board/karo/imx95/qs95-9610.env b/board/karo/imx95/qs95-9610.env
 new file mode 100644
-index 00000000000..52adb5f2689
+index 00000000000..d6b86b05e6e
 --- /dev/null
 +++ b/board/karo/imx95/qs95-9610.env
 @@ -0,0 +1,32 @@
@@ -860,7 +860,7 @@ index 00000000000..52adb5f2689
 +console=ttyLP0,115200 earlycon
 +debug_overlays=yes
 +default_bootargs=setenv bootargs console=${console} panic=-1 pci=pcie_bus_perf
-+dyndbg=dyndbg=\\"-p\\"
++dyndbg=dyndbg='"-p"'
 +emmc_boot_ack=1
 +emmc_boot_part=1
 +emmc_dev=0
@@ -878,13 +878,13 @@ index 00000000000..52adb5f2689
 +loadaddr=90400000
 +loadfdt=load mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}
 +loadkernel=load mmc ${mmcdev}:${mmcpart} ${loadaddr} ${linux_image}
-+otg_mode=otg
++otg_mode=peripheral
 diff --git a/configs/qs95-9610_defconfig b/configs/qs95-9610_defconfig
 new file mode 100644
-index 00000000000..58473a24f4e
+index 00000000000..d4fee521908
 --- /dev/null
 +++ b/configs/qs95-9610_defconfig
-@@ -0,0 +1,316 @@
+@@ -0,0 +1,318 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +# CONFIG_ARM64_SUPPORT_AARCH32 is not set
@@ -934,6 +934,7 @@ index 00000000000..58473a24f4e
 +CONFIG_SPL=y
 +CONFIG_SPL_RECOVER_DATA_SECTION=y
 +CONFIG_PCI=y
++CONFIG_PRE_CON_BUF_ADDR=0x90000000
 +CONFIG_SYS_MEMTEST_START=0x90000000
 +CONFIG_SYS_MEMTEST_END=0xA0000000
 +CONFIG_ENV_VARS_UBOOT_CONFIG=y
@@ -961,6 +962,7 @@ index 00000000000..58473a24f4e
 +# CONFIG_TPL_SILENT_CONSOLE is not set
 +CONFIG_SILENT_U_BOOT_ONLY=y
 +CONFIG_SILENT_CONSOLE_UNTIL_ENV=y
++CONFIG_PRE_CONSOLE_BUFFER=y
 +CONFIG_SYS_CONSOLE_INFO_QUIET=y
 +# CONFIG_REQUIRE_SERIAL_CONSOLE is not set
 +# CONFIG_CONSOLE_NORMAL is not set
@@ -1203,10 +1205,10 @@ index 00000000000..58473a24f4e
 +CONFIG_CMD_NVME=y
 diff --git a/configs/qs95-9610_mfg_defconfig b/configs/qs95-9610_mfg_defconfig
 new file mode 100644
-index 00000000000..48313ded523
+index 00000000000..6b98c29ca7a
 --- /dev/null
 +++ b/configs/qs95-9610_mfg_defconfig
-@@ -0,0 +1,299 @@
+@@ -0,0 +1,301 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +# CONFIG_ARM64_SUPPORT_AARCH32 is not set
@@ -1256,6 +1258,7 @@ index 00000000000..48313ded523
 +CONFIG_SPL=y
 +CONFIG_SPL_RECOVER_DATA_SECTION=y
 +CONFIG_PCI=y
++CONFIG_PRE_CON_BUF_ADDR=0x90000000
 +CONFIG_SYS_MEMTEST_START=0x90000000
 +CONFIG_SYS_MEMTEST_END=0xA0000000
 +CONFIG_ENV_VARS_UBOOT_CONFIG=y
@@ -1282,6 +1285,7 @@ index 00000000000..48313ded523
 +# CONFIG_TPL_SILENT_CONSOLE is not set
 +CONFIG_SILENT_U_BOOT_ONLY=y
 +CONFIG_SILENT_CONSOLE_UNTIL_ENV=y
++CONFIG_PRE_CONSOLE_BUFFER=y
 +CONFIG_SYS_CONSOLE_IS_IN_ENV=y
 +CONFIG_SYS_CONSOLE_INFO_QUIET=y
 +# CONFIG_REQUIRE_SERIAL_CONSOLE is not set
@@ -1508,10 +1512,10 @@ index 00000000000..48313ded523
 +CONFIG_CMD_NVME=y
 diff --git a/configs/qs95-9610_noenv_defconfig b/configs/qs95-9610_noenv_defconfig
 new file mode 100644
-index 00000000000..179f714a36b
+index 00000000000..2933c141b35
 --- /dev/null
 +++ b/configs/qs95-9610_noenv_defconfig
-@@ -0,0 +1,299 @@
+@@ -0,0 +1,301 @@
 +CONFIG_ARM=y
 +CONFIG_ARM_SMCCC=y
 +# CONFIG_ARM64_SUPPORT_AARCH32 is not set
@@ -1561,6 +1565,7 @@ index 00000000000..179f714a36b
 +CONFIG_SPL=y
 +CONFIG_SPL_RECOVER_DATA_SECTION=y
 +CONFIG_PCI=y
++CONFIG_PRE_CON_BUF_ADDR=0x90000000
 +CONFIG_SYS_MEMTEST_START=0x90000000
 +CONFIG_SYS_MEMTEST_END=0xA0000000
 +CONFIG_ENV_VARS_UBOOT_CONFIG=y
@@ -1587,6 +1592,7 @@ index 00000000000..179f714a36b
 +# CONFIG_TPL_SILENT_CONSOLE is not set
 +CONFIG_SILENT_U_BOOT_ONLY=y
 +CONFIG_SILENT_CONSOLE_UNTIL_ENV=y
++CONFIG_PRE_CONSOLE_BUFFER=y
 +CONFIG_SYS_CONSOLE_IS_IN_ENV=y
 +CONFIG_SYS_CONSOLE_INFO_QUIET=y
 +# CONFIG_REQUIRE_SERIAL_CONSOLE is not set
