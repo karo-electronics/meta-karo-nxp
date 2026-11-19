@@ -1,4 +1,4 @@
-From ef458c1a19a6080b0c0b238630a72c8980436609 Mon Sep 17 00:00:00 2001
+From 770d0b4085ecfd805b6f0b209b84820cd335e66a Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Mon, 2 Nov 2026 14:56:38 +0000
 Subject: [PATCH] arm64: dts: add the imx95-qs95-9610 module dts and overlays
@@ -70,7 +70,7 @@ index 1eba413cbd5e..e0d5e5f01180 100644
  dtb-$(CONFIG_ARCH_MXC) += imx95-15x15-evk-mqs.dtb
 diff --git a/arch/arm64/boot/dts/freescale/imx95-qs95-9610.dts b/arch/arm64/boot/dts/freescale/imx95-qs95-9610.dts
 new file mode 100644
-index 000000000000..deb8718c18a0
+index 000000000000..06bd15eb0ab7
 --- /dev/null
 +++ b/arch/arm64/boot/dts/freescale/imx95-qs95-9610.dts
 @@ -0,0 +1,528 @@
@@ -539,7 +539,7 @@ index 000000000000..deb8718c18a0
 +
 +&usb3_dwc3 {
 +	adp-disable;
-+	dr_mode = "otg";
++	dr_mode = "peripheral";
 +	hnp-disable;
 +	role-switch-default-mode = "peripheral";
 +	srp-disable;

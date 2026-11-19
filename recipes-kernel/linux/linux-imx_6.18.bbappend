@@ -7,9 +7,9 @@ SRC_URI += "file://0001-media-i2c-imx219-rework-timing-setup-and-stream-cont.pat
 SRC_URI += "file://0002-Input-edt-ft5x06-add-polling-fallback-and-touch-rele.patch"
 SRC_URI += "file://0003-drm-bridge-tc358762-program-panel-timing-registers-f.patch"
 SRC_URI += "file://0004-drm-panel-panel-simple-honor-data-mapping-for-panel-.patch"
-SRC_URI += "file://0005-arm64-dts-add-the-imx95-qs95-9610-module-dts-and-ove.patch"
-SRC_URI += "file://0006-imx95-align-camera-pipeline-with-RM-errata-and-IMX21.patch"
-SRC_URI += "file://0007-drm-imx-dpu95-don-t-spam-error-log-when-bridge-attac.patch"
+SRC_URI += "file://0005-imx95-align-camera-pipeline-with-RM-errata-and-IMX21.patch"
+SRC_URI += "file://0006-drm-imx-dpu95-don-t-spam-error-log-when-bridge-attac.patch"
+SRC_URI += "file://0007-arm64-dts-add-the-imx95-qs95-9610-module-dts-and-ove.patch"
 
 SRC_URI:append = " file://${SOC_FAMILY}_defconfig"
 

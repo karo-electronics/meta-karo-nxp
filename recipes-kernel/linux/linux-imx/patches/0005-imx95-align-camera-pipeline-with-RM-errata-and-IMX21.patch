@@ -1,4 +1,4 @@
-From 9075e03caf4769f641d6ccb172fe7c1da075c7c5 Mon Sep 17 00:00:00 2001
+From 91012d3c0a01d5324c8fa55e347e0e15afa008d0 Mon Sep 17 00:00:00 2001
 From: Chedy Souffargi <csouffargi@localhost>
 Date: Tue, 10 Nov 2026 09:00:00 +0100
 Subject: [PATCH] imx95: align camera pipeline with RM, errata and IMX219
