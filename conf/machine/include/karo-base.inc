@@ -18,6 +18,9 @@ IMX_DEFAULT_BSP = "nxp"
 IMX_DEFAULT_BOOTLOADER:use-nxp-bsp = "u-boot-imx"
 IMX_DEFAULT_BOOTLOADER:use-mainline-bsp = "u-boot-fslc"
 
+# Name of the bootloader flash image deployed by the imx-boot recipe.
+IMAGE_BOOTLOADER ?= "imx-boot"
+
 LOADADDR = ""
 UBOOT_SUFFIX = "bin"
 UBOOT_MAKE_TARGET = ""
