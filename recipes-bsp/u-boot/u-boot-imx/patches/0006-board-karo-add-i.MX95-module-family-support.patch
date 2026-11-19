@@ -1,4 +1,4 @@
-From 841fd038a11e061046ec9406682cb0cf90485c90 Mon Sep 17 00:00:00 2001
+From 53b04575f9595ce0da9339c5d4161894f6c410b1 Mon Sep 17 00:00:00 2001
 From: Robin Lintermann <rl@karo-electronics.de>
 Date: Fri, 13 Nov 2026 09:00:20 +0000
 Subject: [PATCH] board: karo: add i.MX95 module family support
@@ -17,11 +17,11 @@ Co-Authored-By: Mistral Vibe <vibe@mistral.ai>
  arch/arm/mach-imx/imx9/Kconfig |   7 ++
  board/karo/imx95/Kconfig       |  15 +++
  board/karo/imx95/MAINTAINERS   |   5 +
- board/karo/imx95/Makefile      |  12 +++
- board/karo/imx95/imx95.c       | 191 +++++++++++++++++++++++++++++++++
+ board/karo/imx95/Makefile      |  12 ++
+ board/karo/imx95/imx95.c       | 193 +++++++++++++++++++++++++++++++++
  board/karo/imx95/spl.c         |  98 +++++++++++++++++
- include/configs/imx95.h        |  30 ++++++
- 7 files changed, 358 insertions(+)
+ include/configs/imx95.h        |  30 +++++
+ 7 files changed, 360 insertions(+)
  create mode 100644 board/karo/imx95/Kconfig
  create mode 100644 board/karo/imx95/MAINTAINERS
  create mode 100644 board/karo/imx95/Makefile
@@ -106,10 +106,10 @@ index 00000000000..f9c0605b853
 +endif
 diff --git a/board/karo/imx95/imx95.c b/board/karo/imx95/imx95.c
 new file mode 100644
-index 00000000000..69e5ab05b71
+index 00000000000..369453cb2ba
 --- /dev/null
 +++ b/board/karo/imx95/imx95.c
-@@ -0,0 +1,191 @@
+@@ -0,0 +1,193 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +/*
 + * Copyright 2025 NXP
@@ -264,6 +264,8 @@ index 00000000000..69e5ab05b71
 +		clear_ctrlc();
 +		return 0;
 +	}
++
++	karo_set_ethaddr(0);
 +
 +	if (IS_ENABLED(CONFIG_KARO_UBOOT_MFG))
 +		goto out;
